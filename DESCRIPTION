@@ -1,11 +1,26 @@
 Package: tscopulaplus
-Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Date: 2020-09-18
+Title: Time Series Copula Processes Extra
+Version: 0.1.1
+Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
+                  role = c("aut", "cre")),
+                  person("Martin", "Bladt", email = "martinbladt@gmail.com", 
+                  role = "aut")
+                  )
+Description: Simulation and estimation of copula-based models for time series.
+Depends: R (>= 3.1.0)
+License: GPL-3
+Lazydata: true
+RoxygenNote: 7.1.0
 Encoding: UTF-8
-LazyData: true
+Collate:
+    'all_new_generics.R'
+    'basic_objects.R'
+    'armacopula.R'
+    'dvinecopula.R'
+    'dvinecopula2.R'
+    'fitting_basic.R'
+    'margins.R'
+    'full_models.R'
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
