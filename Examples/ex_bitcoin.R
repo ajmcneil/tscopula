@@ -36,3 +36,43 @@ armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_exp",
                               pars = list(c(-1,0)), maxlag = 30)
 fit_Frank2 <-fit(armamod_Frank, V)
 AIC(fit_Gauss2, fit_Joe2, fit_Gumbel2, fit_Frank2)
+#
+
+armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_pow",
+                              pars = list(c(-1,0)), maxlag = 30)
+fit_Gauss3 <-fit(armamod_Gauss, V)
+armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_pow",
+                            pars = list(c(-1,0)), maxlag = 30)
+fit_Joe3 <- fit(armamod_Joe, V)
+armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_pow",
+                               pars = list(c(-1,0)), maxlag = 30)
+fit_Gumbel3 <- fit(armamod_Gumbel, V)
+armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_pow",
+                              pars = list(c(-1,0)), maxlag = 30)
+fit_Frank3 <-fit(armamod_Frank, V)
+AIC(fit_Gauss3, fit_Joe3, fit_Gumbel3, fit_Frank3)
+
+#
+
+armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_fbn",
+                              pars = list(c(1)), maxlag = 30)
+fit_Gauss4 <-fit(armamod_Gauss, V)
+armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_fbn",
+                            pars = list(c(1)), maxlag = 30)
+fit_Joe4 <- fit(armamod_Joe, V)
+armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_fbn",
+                               pars = list(c(1)), maxlag = 30)
+fit_Gumbel4 <- fit(armamod_Gumbel, V)
+armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_fbn",
+                              pars = list(c(1)), maxlag = 30)
+fit_Frank4 <-fit(armamod_Frank, V)
+AIC(fit_Gauss4, fit_Joe4, fit_Gumbel4, fit_Frank4)
+
+
+
+u <- sim(fit_Frank4)
+u2 <- sim(dvinecopula2(family = "frank", kpacf = "kpacf_fbn",
+                       pars = list(c(6)), maxlag = 30))
+acf(qnorm(u), 50)
+acf(qnorm(u2), 50)
+

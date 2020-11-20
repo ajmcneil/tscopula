@@ -45,7 +45,7 @@ dvinecopula2 <- function(family = "gauss",
   )
 }
 
-#' Title
+#' KPACF ARMA
 #'
 #' @param k
 #' @param theta
@@ -70,7 +70,25 @@ kpacf_arma <- function(k, theta){
   (2/pi)*asin(rho)
 }
 
-#' Title
+#' KPACF Fractional Brownian Noise
+#'
+#' @param k
+#' @param theta
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kpacf_fbn <- function(k, theta){
+  if (is.list(theta))
+    theta <- tsunlist(theta)
+  theta <- plogis(theta)
+  acf <- ((k + 1)^{2 * theta[1]} + abs(k - 1)^{2 * theta[1]} - 2 * k^{2 * theta[1]})/2
+  rho <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
+  return(suppressWarnings((2/pi)*asin(rho)))
+}
+
+#' KPACF exponential
 #'
 #' @param k
 #' @param theta
@@ -83,6 +101,23 @@ kpacf_exp <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
   arg <- theta[1] + theta[2] * k
+  arg <- pmin(arg, 0)
+  exp(arg)
+}
+
+#' KPACF power
+#'
+#' @param k
+#' @param theta
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kpacf_pow <- function(k, theta){
+  if (is.list(theta))
+    theta <- tsunlist(theta)
+  arg <- theta[1] + theta[2] * log(k)
   arg <- pmin(arg, 0)
   exp(arg)
 }
