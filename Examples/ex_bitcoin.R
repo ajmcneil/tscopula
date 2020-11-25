@@ -30,7 +30,7 @@ armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_exp",
                             pars = list(c(-1,0)), maxlag = 30)
 fit_Joe2 <- fit(armamod_Joe, V)
 armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_exp",
-                               pars = list(c(-1,0)), maxlag = 30)
+                               pars = list(c(-1,-0.2)), maxlag = 30)
 fit_Gumbel2 <- fit(armamod_Gumbel, V)
 armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_exp",
                               pars = list(c(-1,0)), maxlag = 30)
