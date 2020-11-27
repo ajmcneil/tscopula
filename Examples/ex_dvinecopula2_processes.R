@@ -79,7 +79,7 @@ hist(gooddata)
 
 # This seems like a model that should be forbidden
 oddmod <- dvinecopula2(family = "joe", kpacf = "kpacf_exp",
-                       pars = list(c(-1, -0.1)), maxlag = 2)
-odddata <- sim(oddmod, 10000)
+                       pars = list(c(-1, 0.02)), maxlag = 30)
+odddata <- sim(oddmod, 1000)
 ts.plot(odddata)
 hist(odddata)
