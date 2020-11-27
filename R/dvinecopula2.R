@@ -70,6 +70,37 @@ kpacf_arma <- function(k, theta){
   (2/pi)*asin(rho)
 }
 
+
+#' KPACF ARFIMA1
+#'
+#' @param k
+#' @param theta
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kpacf_arfima1 <- function(k, theta){
+  if (is.list(theta))
+    theta <- tsunlist(theta)
+  phi0 <- numeric()
+  theta0 <- numeric()
+  H <- numeric()
+  nm <- substring(names(theta), 1, 3)
+  if ("phi" %in% nm)
+    phi0 <- theta[nm == "phi"]
+  if ("theta" %in% nm)
+    theta0 <- theta[nm == "theta"]
+  if ("H" %in% nm)
+    H <- plogis(theta[nm == "H"])
+  t1 <- arfima::tacvfARFIMA(phi = phi0, theta = theta0, H = H, maxlag = max(k))
+  if (is.null(t1))
+    return(rep(NA, length(k)))
+  rho <- drop(.Call(stats:::C_pacf1, c(1,t1[-1]/t1[1]), lag.max = max(k)))[k]
+  (2/pi)*asin(rho)
+}
+
+
 #' KPACF Fractional Brownian Noise
 #'
 #' @param k
@@ -121,6 +152,46 @@ kpacf_pow <- function(k, theta){
   arg <- pmin(arg, 0)
   exp(arg)
 }
+
+#' KPACF exponential 2
+#'
+#' @param k
+#' @param theta
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kpacf_exp2 <- function(k, theta){
+  if (is.list(theta))
+    theta <- tsunlist(theta)
+  arg <- theta[1] + theta[2] * k
+  arg <- pmin(arg, 0)
+  acf <- exp(arg)
+  pacf <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
+  pacf
+}
+
+#' KPACF power 2
+#'
+#' @param k
+#' @param theta
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kpacf_pow2 <- function(k, theta){
+  if (is.list(theta))
+    theta <- tsunlist(theta)
+  arg <- theta[1] + theta[2] * log(k)
+  arg <- pmin(arg, 0)
+  acf <- exp(arg)
+  pacf <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
+  pacf
+}
+
+
 
 #' Coef Method for dvinecopula2 Class
 #'
