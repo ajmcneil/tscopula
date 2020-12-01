@@ -73,19 +73,20 @@ AIC(fit_Gauss4, fit_Joe4, fit_Gumbel4, fit_Frank4)
 #
 
 armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_arfima1",
-                              pars = list(phi = 0.4, theta = 0.5, H = 0), maxlag = 30)
+                              pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
 fit_Gauss5 <-fit(armamod_Gauss, V)
 armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_arfima1",
-                            pars = list(phi = 0.4, theta = 0.5, H = 0), maxlag = 30)
+                            pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
 fit_Joe5 <- fit(armamod_Joe, V)
 armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_arfima1",
-                               pars = list(phi = 0.4, theta = 0.5, H = 0), maxlag = 30)
+                               pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
 fit_Gumbel5 <- fit(armamod_Gumbel, V)
 armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_arfima1",
-                              pars = list(phi = 0.4, theta = 0.5, H = 0), maxlag = 30)
+                              pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
 fit_Frank5 <-fit(armamod_Frank, V)
-AIC(fit_Gauss5, fit_Joe5, fit_Gumbel5, fit_Frank5) # looks good, but not reaching ARMA (but close)??
+AIC(fit_Gauss5, fit_Joe5, fit_Gumbel5, fit_Frank5)
 
+fit_Frank
 u <- sim(fit_Frank5)
 acf(qnorm(u), 50)
 

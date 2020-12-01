@@ -86,7 +86,7 @@ kpacf_arfima1 <- function(k, theta){
   phi0 <- numeric()
   theta0 <- numeric()
   H <- numeric()
-  nm <- substring(names(theta), 1, 3)
+  nm <- substring(names(theta), 1, 5)
   if ("phi" %in% nm)
     phi0 <- theta[nm == "phi"]
   if ("theta" %in% nm)
