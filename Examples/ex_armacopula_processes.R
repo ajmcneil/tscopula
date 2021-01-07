@@ -1,39 +1,25 @@
 # create armacopula process specification
-ar1 <- armacopula(list(ar = 0.7))
-ar1
-
-# simulate a realisation
-data <- sim(ar1, 1000)
-ts.plot(data)
-
-# fit specification to data
-ar1fit <- fit(ar1, data)
-ar1fit
-
-# create armacopula process specification
 arma11 <- armacopula(list(ar = 0.95, ma = -0.85))
 arma11
 
 # simulate a realisation
+set.seed(13)
 data <- sim(arma11, 1000)
 ts.plot(data)
 
-# fit specification to data
-tmp <- fit(arma11, data)
-tmp
-coef(tmp)
+# fit ARMA(1,1) specification to data
+arma11spec <- armacopula(list(ar = 0.1, ma = 0.1))
+modfit <- fit(arma11spec, data)
+modfit
+coef(modfit)
 
 # plot fit
-plot(tmp, type = 1)
-plot(tmp, type = 2)
-plot(tmp, type = 3)
-plot(tmp, type = 4)
-plot(tmp, type = 5)
-
-# apply Kalman filter to data
-head(kfilter(tmp@tscopula, data))
-tail(kfilter(tmp@tscopula, data))
+plot(modfit, plotoption = 1)
+plot(modfit, plotoption = 2)
+plot(modfit, plotoption = 3)
+plot(modfit, plotoption = 4)
+plot(modfit, plotoption = 5)
 
 # resimulate fitted model
-tmp2 <- sim(tmp, 1000)
-ts.plot(tmp2)
+data2 <- sim(modfit, 1000)
+ts.plot(data2)

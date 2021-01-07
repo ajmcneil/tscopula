@@ -2,16 +2,19 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{ktau_to_par}
 \alias{ktau_to_par}
-\title{Title}
+\title{Transform Kendall's tau Values to Copula Parameters}
 \usage{
 ktau_to_par(family, tau)
 }
 \arguments{
-\item{tau}{}
+\item{family}{name of copula family}
+
+\item{tau}{value of Kendall's tau}
 }
 \value{
 
 }
 \description{
-Title
+Transform Kendall's tau Values to Copula Parameters
 }
+\keyword{internal}

@@ -2,16 +2,21 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{dvinecopula2_objective}
 \alias{dvinecopula2_objective}
-\title{Title}
+\title{Objective Function for dvinecopula2 process}
 \usage{
 dvinecopula2_objective(theta, modelspec, u)
 }
 \arguments{
-\item{u}{}
+\item{theta}{parameters of kpacf}
+
+\item{modelspec}{list specifying model}
+
+\item{u}{data}
 }
 \value{
 
 }
 \description{
-Title
+Objective Function for dvinecopula2 process
 }
+\keyword{internal}

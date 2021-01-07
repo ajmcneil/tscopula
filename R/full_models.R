@@ -257,7 +257,7 @@ fitFULLa <- function(x, y, tsoptions, control) {
   dens <- eval(parse(text = paste("d", x@margin@name, sep = "")))
   cdf <- eval(parse(text = paste("p", x@margin@name, sep = "")))
   parlist <- x@tscopula@pars
-  parlist$margin <- x@margin@pars[!x@margin@fixed]
+  parlist$margin <- x@margin@pars
   theta <- tsunlist(parlist, tsoptions$fulcrum)
   fit <- optim(
     par = theta,
@@ -266,41 +266,36 @@ fitFULLa <- function(x, y, tsoptions, control) {
     modeltype = is(x@tscopula)[[1]],
     dens = dens,
     cdf = cdf,
-    margfixed = x@margin@pars[x@margin@fixed],
     y = as.numeric(y),
     method = tsoptions$method,
     hessian = tsoptions$hessian,
     control = control
   )
   newpars <- tsrelist(fit$par, fulcrum = tsoptions$fulcrum)
-  x@margin@pars[!x@margin@fixed] <- newpars$margin
+  x@margin@pars <- newpars$margin
   x@tscopula@pars <- newpars[names(newpars) != "margin"]
   new("tscmfit", tscopula = x@tscopula, margin = x@margin, data = y, fit = fit)
 }
 
 
 
-#' Objective Function for Full Fit
+#' Objective Function for Full of tscopula plus margin Model
 #'
-#' @param theta
-#' @param order
-#' @param dens
-#' @param cdf
-#' @param margfixed
-#' @param Vtrans
-#' @param y
-#' @param fulcrum
-#' @param avoidzero
+#' @param theta vector of parameter values
+#' @param modelspec list containing model specification
+#' @param modeltype character string giving type of model
+#' @param dens marginal density function
+#' @param cdf marginal cdf
+#' @param y vector of data values
 #'
 #' @return
 #' @keywords internal
 #'
 tsc_objectivea <-
-  function(theta, modelspec, modeltype, dens, cdf, margfixed, y) {
+  function(theta, modelspec, modeltype, dens, cdf, y) {
     margpars <- theta[substring(names(theta), 1, 6) == "margin"]
     nonmargpars <- theta[substring(names(theta), 1, 6) != "margin"]
     names(margpars) <- substring(names(margpars), 8)
-    margpars <- c(margpars, margfixed)
     dx <- do.call(dens, append(as.list(margpars), list(x = y, log = TRUE)))
     termA <- -sum(dx)
     if (is.na(termA)) {
@@ -363,5 +358,92 @@ setMethod("logLik", "tscmfit", function(object) {
   ll
 })
 
+#' Plot Method for tscmfit Class
+#'
+#' @param x an object of class \linkS4class{tscmfit}.
+#' @param y missing.
+#' @param plotoption choice of plot within plottype.
+#' @param plottype type of plot required.
+#' @param bw logical variable specifying whether black-white options should be chosen.
+#' @param klimit maximum lag value for dvinecopula2 cplots
+#'
+#' @return
+#' @export
+#'
+setMethod("plot", c(x = "tscmfit", y = "missing"),
+          function(x, plotoption = 1L, plottype = "copula", bw = FALSE, klimit = 30) {
+            switch(plottype,
+                   margin = plot(new("marginfit",
+                                     margin = x@margin,
+                                     data = x@data,
+                                     fit = x@fit), plotoption = plotoption, bw = bw),
+                   copula = plot(new("tscopulafit",
+                                     tscopula = x@tscopula,
+                                     data = pmarg(x@margin, x@data),
+                                     fit = x@fit), plotoption = plotoption, bw = bw, klimit = klimit),
+                   vtransform = plot(x@tscopula@Vtransform),
+                   volprofile = plot_volprofile(x, bw = bw),
+                   volproxy = plot_volproxy(x, plotoption = plotoption, bw = bw))
+          })
 
 
+#' Plot Function for Volatility Profile Plot
+#'
+#' @param x an object of class \linkS4class{tscmfit}.
+#' @param bw logical variable specifying whether black-white options should be chosen.
+#'
+#' @return
+#' @export
+#'
+plot_volprofile <- function(x, bw) {
+  if (!(is(x@tscopula, "vtscopula")))
+    stop("tscopula must be vtscopula")
+  xvals <- seq(from = 0,
+               to = max(abs(x@data)),
+               length = 100)
+  vpars <- x@tscopula@Vtransform@pars
+  brk <- qmarg(x@margin, vpars["delta"])
+  u <- pmarg(x@margin, brk - xvals)
+  v <- vtrans(x@tscopula@Vtransform, u)
+  yvals <- qmarg(x@margin, u + v) - brk
+  plot(xvals, yvals, type = "l", ylab = expression(g[T](x)))
+  colchoice <- ifelse(bw, "gray50", "red")
+  abline(0, 1, col = colchoice, lty = 2)
+}
+
+#' Plot Function for Volatility Proxy Plot
+#'
+#' @param x an object of class \linkS4class{tscmfit}.
+#' @param plotoption choice of plot.
+#' @param bw logical variable specifying whether black-white options should be chosen.
+#'
+#' @return
+#' @export
+#'
+plot_volproxy <- function(x, plotoption, bw){
+  if (!(is(x@tscopula, "vtscopula")))
+    stop("tscopula must be vtscopula")
+  X <- x@data
+  U <- pmarg(x@margin, X)
+  V <- vtrans(x@tscopula@Vtransform, U, correction = FALSE)
+  colchoice <- ifelse(bw, "gray50", "red")
+  switch(plotoption,
+         {
+           plot(strank(X),
+                strank(V),
+                xlab = "edf data",
+                ylab = "edf vol proxy",
+                col = colchoice
+           )
+           lines(sort(U), V[order(U)])
+         },
+         {
+           plot(X,
+                qnorm(strank(V)),
+                xlab = "data",
+                ylab = "std. vol proxy",
+                col = colchoice
+           )
+           lines(sort(X), qnorm(V[order(X)]))
+         })
+}

@@ -1,0 +1,410 @@
+#' VT Time Series Copula Processes
+#'
+#' Class of objects for V-transformed time series copula processes.
+#'
+#' @slot name name of time series copula process.
+#' @slot type character string giving type of copula process (ARMA or d-vine).
+#' @slot modelspec list containing vital specification information.
+#' @slot pars a list comprising of the parameters.
+#' @slot Vtransform object of class \linkS4class{Vtransform}.
+#'
+#' @return
+#' @export
+#'
+setClass("vtscopula",
+  contains = "tscopula",
+  slots = list(
+    Vcopula = "tscopulaU",
+    Vtransform = "Vtransform",
+    Wcopula = "tscopula"
+  )
+)
+
+#' Constructor Function for vtscopula Object
+#'
+#' @param tscopulaU an object of class
+#' \linkS4class{armacopula} or \linkS4class{dvinecopula}.
+#' @param Vtransform an object of class \linkS4class{Vtransform}.
+#' @param Wcopula an object of class \linkS4class{tscopula}.
+#'
+#' @return an object of class \linkS4class{vtscopula}.
+#' @export
+#'
+#' @examples
+#' copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
+#' vtscopula(copobject, Vtransform = V2p())
+vtscopula <- function(tscopulaU,
+                      Vtransform = Vlinear(),
+                      Wcopula = swncopula()) {
+  new("vtscopula",
+    Vcopula = tscopulaU,
+    Vtransform = Vtransform,
+    Wcopula = Wcopula
+  )
+}
+
+#' Show Method for vtscopula objects
+#'
+#' @param object an object of class \linkS4class{vtscopula}.
+#'
+#' @return
+#' @export
+#'
+setMethod("show", "vtscopula", function(object) {
+  cat("object class: ", is(object)[[1]], "\n", sep = "")
+  cat("____________ \n")
+  cat("Base copula: \n")
+  show(object@Vcopula)
+  cat("____________ \n")
+  cat("V-transform: \n")
+  show(object@Vtransform)
+  if (!(is(object@Wcopula, "swncopula"))){
+    cat("________ \n")
+    cat("Wcopula: \n")
+    show(object@Wcopula)
+  }
+})
+
+#' Coef Method for vtscopula Class
+#'
+#' @param object an object of class \linkS4class{vtscopula}.
+#'
+#' @return parameters of vtscopula model
+#' @export
+#'
+setMethod("coef", "vtscopula", function(object) {
+  c(coef(object@Vcopula), coef(object@Vtransform), coef(object@Wcopula))
+})
+
+getparlist <- function(object) {
+  if (is(object, "tscopulaU")) {
+    return(object@pars)
+  } else if (is(object, "vtscopula")) {
+    output <- object@Vcopula@pars
+    output$vt <- coef(object@Vtransform)
+    if (!is(object@Wcopula, "swncopula")) {
+      output$wcopula <- object@Wcopula@pars[[1]]
+    }
+    output
+  }
+  else {
+    (stop("Unrecognized tscopula object"))
+  }
+}
+
+#' Simulation Method for vtscopula Class
+#'
+#' @param x an object of class \linkS4class{vtscopula}.
+#' @param n length of realization.
+#'
+#' @return A realization of a time series copula process.
+#' @export
+#'
+#' @examples
+#' copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
+#' sim(vtscopula(copobject, Vtransform = V2p()))
+setMethod("sim", c(x = "vtscopula"), function(x, n = 1000) {
+  U <- sim(x@Vcopula, n)
+  stochinverse(x@Vtransform, U, x@Wcopula)
+})
+
+#' Fit Method for vtscopula Class
+#'
+#' Fit object of class \linkS4class{vtscopula}
+#' to data using maximum likelihood.
+#'
+#' @param x an object of class \linkS4class{vtscopula}.
+#' @param y a vector or time series of data.
+#' @param tsoptions list of optional arguments:
+#' hessian is logical variable specifying whether Hessian matrix should be returned;
+#' start is vector od named starting values;
+#' avoidzero - logical variable specifying whether to implement correction to prevent V = 0;
+#' fulcrum - fixed value for fulcrum parameter or NA.
+#' @param control list of control parameters to be passed to the
+#' \code{\link[stats]{optim}} function.
+#'
+#'
+#' @return an object of class \linkS4class{tscopulafit}.
+#' @export
+#'
+#' @examples
+#' copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
+#' vtcop <- vtscopula(copobject, Vtransform = V2p())
+#' y <- sim(vtcop)
+#' fit(vtcop, y)
+setMethod(
+  "fit", c(x = "vtscopula", y = "ANY"),
+  function(x, y,
+           tsoptions = list(),
+           control = list(maxit = 2000, warn.1d.NelderMead = FALSE)) {
+    defaults <- list(hessian = FALSE, method = "Nelder-Mead", fulcrum = NA, avoidzero = TRUE)
+    tsoptions <- setoptions(tsoptions, defaults)
+    if (is(x, "tscopulafit")) {
+      x <- x@tscopula
+    }
+    parlist <- getparlist(x)
+    fit <- optim(
+      par = tsunlist(parlist, tsoptions$fulcrum),
+      fn = vtscopula_objective,
+      modelspec = x@Vcopula@modelspec,
+      modeltype = is(x@Vcopula)[[1]],
+      vt = x@Vtransform,
+      wcopula = setwcopula(x),
+      y = as.numeric(y),
+      fulcrum = tsoptions$fulcrum,
+      avoidzero = tsoptions$avoidzero,
+      method = tsoptions$method,
+      hessian = tsoptions$hessian,
+      control = control
+    )
+    newpars <- tsrelist(fit$par, tsoptions$fulcrum)
+    x@Vtransform@pars <- newpars$vt
+    if (!is(x@Wcopula, "swncopula")) {
+      x@Wcopula@pars[[1]] <- newpars$wcopula
+    }
+    x@Vcopula@pars <- newpars[(names(newpars) != "vt") & (names(newpars) != "wcopula")]
+    new("tscopulafit", tscopula = x, data = y, fit = fit)
+  }
+)
+
+setwcopula <- function(x) {
+  if (is(x@Wcopula, "swncopula")) {
+    return(NULL)
+  } else if (length(x@Wcopula@modelspec) > 1) {
+    stop("W copula must be a pair copula: recommended is Frank")
+  } else {
+    return(x@Wcopula@modelspec[[1]])
+  }
+}
+
+#' Objective function for gvtscopula fitting
+#'
+#' @param theta vector of parameters
+#' @param modelspec list containing tscopula specification
+#' @param modeltype character vector specifying tscopula type
+#' @param vt a v transform
+#' @param wcopula W copula for serial dependence
+#' @param y vector of data
+#' @param fulcrum fixed value for fulcrum or NA
+#' @param avoidzero logical for whether zero should be avoided
+#'
+#' @return
+#' @keywords internal
+#'
+vtscopula_objective <- function(theta, modelspec, modeltype, vt, wcopula, y, fulcrum, avoidzero) {
+  if (!is.na(fulcrum)) {
+    theta <- c(theta, vt.delta = fulcrum)
+  }
+  n_corepars <- switch(modeltype,
+    armacopula = sum(modelspec),
+    dvinecopula = sum(sapply(modelspec, function(v) {
+      v$npars
+    })),
+    dvinecopulaNE = sum(sapply(modelspec, function(v) {
+      v$npars
+    })),
+    dvinecopula2 = modelspec$npar
+  )
+  n_vt <- length(theta[substring(names(theta), 1, 2) == "vt"])
+  theta_core <- theta[1:n_corepars]
+  theta_vt <- NULL
+  if (n_vt > 0) {
+    theta_vt <- theta[substring(names(theta), 1, 2) == "vt"]
+    if ((min(theta_vt) < 0) | (theta_vt["vt.delta"] > 1)) {
+      return(NA)
+    }
+    names(theta_vt) <- substring(names(theta_vt), 4)
+  }
+  V <- do.call(vt@Vtrans, append(theta_vt, list(u = y)))
+  if (avoidzero) {
+    V <- pmax(V, 1 / (length(y) + 1))
+  }
+  objective <- eval(parse(text = paste(modeltype, "_objective", sep = "")))
+  value <- objective(theta_core, modelspec, V)
+  if (!(is.null(wcopula))) {
+    theta_wcopula <- theta[substring(names(theta), 1, 7) == "wcopula"]
+    value <- value + wobjective(theta_wcopula, wcopula, theta_vt, vt@gradient, y)
+  }
+  value
+}
+
+#' Additional objective for generalized processes
+#'
+#' @param theta parameter of W copula
+#' @param paircop specification of W copula
+#' @param vt v-transform
+#' @param u vector of data
+#'
+#' @return
+#' @keywords internal
+#'
+wobjective <- function(theta, paircop, theta_vt, vtgrad, u) {
+  if (length(theta_vt) > 0) {
+    delta <- theta_vt["delta"]
+  } else {
+    delta <- 0.5
+  }
+  if (length(theta_vt) <= 1) {
+    Delta <- rep(delta, length(u))
+  } else {
+    Delta <- -1 / do.call(vtgrad, append(theta_vt, list(u = u)))
+    Delta[u > delta] <- Delta[u > delta] + 1
+  }
+  Delta1 <- Delta[-length(Delta)]
+  Delta2 <- Delta[-1]
+  u1 <- u[-length(u)]
+  u2 <- u[-1]
+  zone1 <- (u1 <= delta) & (u2 <= delta)
+  zone2 <- (u1 <= delta) & (u2 > delta)
+  zone3 <- (u1 > delta) & (u2 <= delta)
+  zone4 <- (u1 > delta) & (u2 > delta)
+  pars <- theta[1]
+  if (paircop$npars > 1) {
+    pars <- c(pars, theta[2])
+  }
+  copfamily <- tryCatch(rvinecopulib::bicop_dist(
+    family = tolower(paircop$family),
+    rotation = paircop$rotation,
+    parameters = pars
+  ),
+  error = function(e) {
+    return(NA)
+  }
+  )
+  if (is.na(copfamily[[1]])) {
+    return(NA)
+  }
+  Cvals <- rvinecopulib::pbicop(u = cbind(Delta1, Delta2), family = copfamily)
+  output <- rep(NA, length(u) - 1)
+  output[zone1] <- Cvals[zone1] / (Delta1[zone1] * Delta2[zone1])
+  output[zone2] <- (Delta1[zone2] - Cvals[zone2]) / (Delta1[zone2] * (1 - Delta2[zone2]))
+  output[zone3] <- (Delta2[zone3] - Cvals[zone3]) / ((1 - Delta1[zone3]) * Delta2[zone3])
+  output[zone4] <- (1 - Delta1[zone4] - Delta2[zone4] + Cvals[zone4]) / ((1 - Delta1[zone4]) * (1 - Delta2[zone4]))
+  -sum(log(output))
+}
+
+#' Profile likelihood for fulcrum parameter
+#'
+#' @param data a vector or time series of data on (0,1).
+#' @param tscopula an object of class \linkS4class{tscopulaU} or \linkS4class{vtscopula}.
+#' @param locations vector containing locations of different values for fulcrum.
+#' @param plot logical values specifying whether plot should be created.
+#'
+#' @return a matrix containing fulcrum values and log likelihood values.
+#' @export
+#'
+#' @examples
+#' copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
+#' vtcop <- vtscopula(copobject, Vtransform = V2p())
+#' y <- sim(vtcop)
+#' profilefulcrum(y, vtcop)
+profilefulcrum <- function(data,
+                           tscopula = dvinecopula(family = 1, pars = list(0.1)),
+                           locations = seq(0, 1, by = 0.1),
+                           plot = TRUE) {
+  if (!is(tscopula, "vtscopula")) {
+    tscopula <- new("vtscopula",
+      Vcopula = tscopula,
+      Vtransform = Vlinear(),
+      Wcopula = swncopula()
+    )
+  }
+  if (length(tscopula@Vtransform@pars) == 0) {
+    tscopula@Vtransform <- Vlinear()
+  }
+  results <- numeric(length(locations))
+  for (i in seq_along(locations)) {
+    fitted_model <- fit(
+      x = tscopula,
+      y = data,
+      tsoptions = list(
+        fulcrum = locations[i],
+        avoidfulcrum = TRUE,
+        hessian = FALSE
+      )
+    )
+    results[i] <- -fitted_model@fit$value
+  }
+  if (plot) {
+    plot(locations, results, xlab = expression(delta), ylab = "L", type = "l")
+  }
+  invisible(cbind(fulcrum = locations, logLik = results))
+}
+
+#' Fit tscm Jointly
+#'
+#' @param x an object of class \linkS4class{tscm}.
+#' @param y a vector or time series of data.
+#' @param tsoptions list of variables
+#' @param control list of control parameters to be passed to the
+#' \code{\link[stats]{optim}} function.
+#'
+#' @return an object of class \linkS4class{tscmfit}.
+#' @keywords internal
+#'
+fitFULLb <- function(x, y, tsoptions, control) {
+  dens <- eval(parse(text = paste("d", x@margin@name, sep = "")))
+  cdf <- eval(parse(text = paste("p", x@margin@name, sep = "")))
+  parlist <- getparlist(x@tscopula)
+  parlist$margin <- x@margin@pars
+  theta <- tsunlist(parlist, tsoptions$fulcrum)
+  fit <- optim(
+    par = theta,
+    fn = tsc_objectiveb,
+    modelspec = x@tscopula@Vcopula@modelspec,
+    modeltype = is(x@tscopula@Vcopula)[[1]],
+    dens = dens,
+    cdf = cdf,
+    vt = x@tscopula@Vtransform,
+    wcopula = setwcopula(x@tscopula),
+    y = as.numeric(y),
+    fulcrum = tsoptions$fulcrum,
+    avoidzero = tsoptions$avoidzero,
+    method = tsoptions$method,
+    hessian = tsoptions$hessian,
+    control = control
+  )
+  newpars <- tsrelist(fit$par, fulcrum = tsoptions$fulcrum)
+  x@margin@pars <- newpars$margin
+  newpars <- newpars[names(newpars) != "margin"]
+  x@tscopula@Vtransform@pars <- newpars$vt
+  newpars <- newpars[names(newpars) != "vt"]
+  if (!is(x@tscopula@Wcopula, "swncopula")) {
+    x@tscopula@Wcopula@pars[[1]] <- newpars$wcopula
+    newpars <- newpars[names(newpars) != "wcopula"]
+  }
+  x@tscopula@Vcopula@pars <- newpars
+  new("tscmfit", tscopula = x@tscopula, margin = x@margin, data = y, fit = fit)
+}
+
+#' Objective Function for Full Fit With V-Tranform
+#'
+#' @param theta vector of parameters
+#' @param modelspec list containing model specification
+#' @param modeltype character vector giving type of model
+#' @param dens marginal density function
+#' @param cdf marginal distribution function
+#' @param vt v-transform
+#' @param wcopula W copula if used
+#' @param y vector of data
+#' @param fulcrum value for fulcrum or NA
+#' @param avoidzero whether zero should be avoided
+#'
+#' @return
+#' @keywords internal
+#'
+tsc_objectiveb <-
+  function(theta, modelspec, modeltype, dens, cdf, vt, wcopula, y, fulcrum, avoidzero) {
+    margpars <- theta[substring(names(theta), 1, 6) == "margin"]
+    nonmargpars <- theta[substring(names(theta), 1, 6) != "margin"]
+    names(margpars) <- substring(names(margpars), 8)
+    dx <- do.call(dens, append(as.list(margpars), list(x = y, log = TRUE)))
+    termA <- -sum(dx)
+    if (is.na(termA)) {
+      return(NA)
+    }
+    U <- do.call(cdf, append(margpars, list(q = y)))
+    termBC <-
+      vtscopula_objective(nonmargpars, modelspec, modeltype, vt, wcopula, U, fulcrum, avoidzero)
+    return(termA + termBC)
+  }

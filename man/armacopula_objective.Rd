@@ -7,7 +7,11 @@
 armacopula_objective(theta, modelspec, u)
 }
 \arguments{
-\item{u}{}
+\item{theta}{vector of parameters of ARMA process}
+
+\item{modelspec}{vector containing model order (p,q)}
+
+\item{u}{vector of data}
 }
 \value{
 

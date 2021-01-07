@@ -7,7 +7,11 @@
 starmaStateSpace(ar, ma, order)
 }
 \arguments{
-\item{order}{}
+\item{ar}{vector of ar parameters}
+
+\item{ma}{vector of ma parameters}
+
+\item{order}{vector giving order (p,q)}
 }
 \value{
 

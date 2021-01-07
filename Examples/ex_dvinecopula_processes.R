@@ -1,58 +1,26 @@
-# AR1
-set.seed(1)
-ar1mod <- armacopula(pars = list(ar = 0.4))
-ar1modB <- dvinecopula(family = "gauss", pars = list(0.4))
-acc <- 10 * .Machine$double.eps
-y <- sim(ar1mod, n = 1000)
-fit1 <- fit(ar1mod, y, control = list(reltol = acc, warn.1d.NelderMead = F))
-fit1
-fit2 <- fit(ar1modB, y, control = list(factr = acc, warn.1d.NelderMead = F))
-fit2
-
-# AR2
-set.seed(2)
-ar2mod <- armacopula(pars = list(ar = c(0.5, 0.2)))
-ar2modB <- dvinecopula(family = "gauss", pars = list(0.5, 0.2))
-acc <- 10 * .Machine$double.eps
-y <- sim(ar2mod, n = 1000)
-fit1 <- fit(ar2mod, y, control = list(reltol = acc))
-fit1
-fit2 <- fit(ar2modB, y, control = list(factr = acc))
-fit2
-ARMAacf(ar = fit1@tscopula@pars$ar, pacf = TRUE)
-
-# AR3
-set.seed(3)
-ar3mod <- armacopula(pars = list(ar = c(0.5, 0.2, -0.3)))
-ar3modB <- dvinecopula(family = "gauss", pars = list(0.5, 0.2, -0.3))
-acc <- 10 * .Machine$double.eps
-y <- sim(ar3mod, n = 1000)
-fit1 <- fit(ar3mod, y, control = list(reltol = acc))
-fit1
-fit2 <- fit(ar3modB, y, control = list(factr = acc))
-fit2
-ARMAacf(ar = fit1@tscopula@pars$ar, pacf = TRUE)
-
-# Mixed model
-mixmod <- dvinecopula(family = c("Gaussian", "Clayton", "Gumbel"), pars = list(0.3, 1.0, 1.5))
-mixmod
-y <- sim(mixmod, n = 1000)
-ts.plot(y)
-fit <- fit(mixmod, y, list(hessian = TRUE))
-fit
-coef(fit)
-
-# Mixed model 2
-mixmod2 <- dvinecopula(
-  family = c("Gaussian", "Frank", "Gumbel"), pars = list(0.3, 1.1, 1.2),
-  rotation = c(0, 0, 180)
+mixmod <- dvinecopula(
+  family = c("Gaussian", "Frank", "Clayton","t"),
+  pars = list(0.3, 2, 1.2, c(0.4,5)),
+  rotation = c(0, 0, 180,0)
 )
-mixmod2
-y2 <- sim(mixmod2, n = 1000)
-ts.plot(y2)
+mixmod
 
-fit2 <- fit(mixmod2, y2, list(hessian = TRUE))
-fit2
-coef(fit2)
+set.seed(17)
+data <- sim(mixmod, n = 2000)
+ts.plot(data)
 
+modspec <- dvinecopula(
+  family = c("Gaussian", "Frank", "Clayton","t"),
+  pars = list(0, 1, 0.5, c(0,10)),
+  rotation = c(0, 0, 180,0)
+)
+fitmod <- fit(modspec, data, tsoptions = list(hessian = TRUE))
+fitmod
+coef(fitmod)
+# plot fit
+plot(fitmod, plotoption = 1)
+plot(fitmod, plotoption = 2)
+plot(fitmod, plotoption = 3)
 
+data2 <- sim(fitmod, n =1000)
+ts.plot(data2)

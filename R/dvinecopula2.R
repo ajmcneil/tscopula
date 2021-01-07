@@ -15,11 +15,11 @@ setClass("dvinecopula2", contains = "tscopula", slots = list(
   pars = "list"
 ))
 
-#' Constructor Function for dvinecopula2 process
+#' Constructor Function for dvinecopula2 Process
 #'
 #' @param family family name
 #' @param rotation rotation
-#' @param kapcf
+#' @param kapcf character string giving name of Kendal pacf
 #' @param pars a list containing the parameters of each lag
 #' @param rotation a vector of rotations
 #'
@@ -27,6 +27,8 @@ setClass("dvinecopula2", contains = "tscopula", slots = list(
 #' @export
 #'
 #' @examples
+#' dvinecopula2(family = "joe", kpacf = "kpacf_arma",
+#' pars = list(ar = 0.95, ma = -0.85), maxlag = 30)
 dvinecopula2 <- function(family = "gauss",
                          rotation = 0,
                          kpacf = "kpacf_arma",
@@ -37,7 +39,8 @@ dvinecopula2 <- function(family = "gauss",
  modelspec <- list(family = tolower(family),
                    rotation = rotation,
                    kpacf = kpacf,
-                   maxlag = maxlag)
+                   maxlag = maxlag,
+                   npar = length(unlist(pars)))
   new("dvinecopula2",
       name = paste("type2-d-vine"),
       modelspec = modelspec,
@@ -45,15 +48,14 @@ dvinecopula2 <- function(family = "gauss",
   )
 }
 
-#' KPACF ARMA
+#' KPACF of ARMA Process
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta list with components ar and ma specifying the ARMA parameters
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_arma <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -71,15 +73,14 @@ kpacf_arma <- function(k, theta){
 }
 
 
-#' KPACF ARFIMA1
+#' KPACF of ARFIMA Process
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta list with components ar, ma and H specifying the ARFIMA parameters
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_arfima1 <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -101,15 +102,14 @@ kpacf_arfima1 <- function(k, theta){
 }
 
 
-#' KPACF Fractional Brownian Noise
+#' KPACF of Fractional Brownian Noise
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta parameter of process
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_fbn <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -119,15 +119,14 @@ kpacf_fbn <- function(k, theta){
   return(suppressWarnings((2/pi)*asin(rho)))
 }
 
-#' KPACF exponential
+#' KPACF of Exponential Type
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta parameters of exponential decay function
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_exp <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -136,15 +135,14 @@ kpacf_exp <- function(k, theta){
   exp(arg)
 }
 
-#' KPACF power
+#' KPACF of Power Type
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta parameters of power decay function
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_pow <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -153,15 +151,14 @@ kpacf_pow <- function(k, theta){
   exp(arg)
 }
 
-#' KPACF exponential 2
+#' KPACF of Transformed Exponential Type
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta parameters of exponential decay function
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_exp2 <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -172,15 +169,14 @@ kpacf_exp2 <- function(k, theta){
   pacf
 }
 
-#' KPACF power 2
+#' KPACF of Transformed Power Type
 #'
-#' @param k
-#' @param theta
+#' @param k vector of lags
+#' @param theta parameters of power decay function
 #'
-#' @return
+#' @return vector of Kendall partial autocorrelations for each lag k
 #' @export
 #'
-#' @examples
 kpacf_pow2 <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
@@ -230,17 +226,13 @@ setMethod("show", c(object = "dvinecopula2"), function(object) {
   print(coef(object))
 })
 
-
-#' Title
+#' Objective Function for dvinecopula2 process
 #'
-#' @param theta
-#' @param modelspec
-#' @param u
-#'
+#' @param theta parameters of kpacf
+#' @param modelspec list specifying model
+#' @param u data
 #' @return
-#' @export
-#'
-#' @examples
+#' @keywords internal
 dvinecopula2_objective <- function(theta, modelspec, u) {
   n <- length(u)
   kpacf <- eval(parse(text = modelspec$kpacf))
@@ -285,15 +277,13 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
   }
 }
 
-#' Title
+#' Transform Kendall's tau Values to Copula Parameters
 #'
-#' @param family
-#' @param tau
+#' @param family name of copula family
+#' @param tau value of Kendall's tau
 #'
 #' @return
-#' @export
-#'
-#' @examples
+#' @keywords internal
 ktau_to_par <- function(family, tau){
   if (family %in% c("joe", "gumbel", "clayton"))
     if (tau < 0)
@@ -309,7 +299,6 @@ ktau_to_par <- function(family, tau){
 #' @return A realization of a time series copula process.
 #' @export
 #'
-#' @examples
 setMethod("sim", c(x = "dvinecopula2"), function(x, n = 1000) {
   kpacf <- eval(parse(text = x@modelspec$kpacf))
   tauvals <- kpacf(1:(n-1), x@pars)
@@ -342,3 +331,71 @@ setMethod("sim", c(x = "dvinecopula2"), function(x, n = 1000) {
   }
   sim
 })
+
+#' Plot Function for dvinecopula2 Objects
+#'
+#' @param copula a fitted dvinecopula2 object
+#' @param data the data to which copula is fitted
+#' @param plotoption number giving plot choice
+#' @param bw logical for black-white plot
+#' @param klimit maximum lag value for plots
+#'
+#' @return
+#' @export
+plot_dvinecopula2 <- function(copula, data, plotoption, bw, klimit){
+  data0 <- data
+  n <- length(data)
+  kpacf <- eval(parse(text = copula@modelspec$kpacf))
+  tauvals <- kpacf(1:(n-1), copula@pars)
+  kmax <- max((1:(n-1))[abs(tauvals) > .Machine$double.eps])
+  k <- min(max(1, kmax), copula@modelspec$maxlag, klimit)
+  kplotmax <- min(k, 9)
+  datavecs <- vector(mode = "list", length = kplotmax)
+  tau_empirical <- rep(NA, k)
+  data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
+  datavecs[[1]] <- data
+  tau_empirical[1] <- cor(data, method = "kendall")[1, 2]
+  for (i in 1:(k-1)) {
+    n <- dim(data)[1]
+    model <- rvinecopulib::bicop_dist(
+      family = tolower(copula@modelspec$family),
+      rotation = copula@modelspec$rotation,
+      parameters = rvinecopulib::ktau_to_par(
+        family = copula@modelspec$family,
+        tau = tauvals[i]))
+    data <-
+      cbind(rvinecopulib::hbicop(data[(1:(n - 1)), ], model, cond_var = 2),
+            rvinecopulib::hbicop(data[(2:n), ], model, cond_var = 1))
+    tau_empirical[i+1] <- cor(data, method = "kendall")[1, 2]
+    if (i < kplotmax)
+      datavecs[[i+1]] <- data
+  }
+  tau_theoretical <- tauvals[1:k]
+  colchoice <- ifelse(bw, "gray50", "red")
+  switch(plotoption,
+         {
+           plot(1:k, tau_empirical, xlab ="k", ylab = "tau",
+                ylim = range(tau_empirical, tau_theoretical), type = "h")
+           lines(1:k, tau_theoretical, col = colchoice)
+           abline(h = 0)},
+         {
+           pacf0 <- pacf(qnorm(data0), lag.max = k, plot = FALSE)
+           plot(2/pi * asin(pacf0$acf[,,1]), type = "h", ylab = "Gaussian KPACF",
+                ylim = range(tau_theoretical, tau_empirical, pacf0$acf))
+           lines(1:k, tau_theoretical, col = colchoice)
+           lines(1:k, tau_empirical)
+           abline(h = 0)
+         },
+         {
+           lc <- ifelse(kplotmax > 4, 3, 2)
+           lr <- ceiling(kplotmax / lc)
+           default_par <- par(mfrow = c(lr, lc), mar = c(2.1, 2.1, 1.5, 0.5), oma = rep(2, 4),
+                              pty = "s", cex = 0.5)
+           for (i in 1:kplotmax)
+             plot(datavecs[[i]], main = paste("Lag ", i, sep = ""), asp = 1,
+                  xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+           par(default_par)
+         },
+         stop("Not a plot option")
+  )
+}

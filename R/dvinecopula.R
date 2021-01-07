@@ -196,3 +196,93 @@ dvinecopula_objective <- function(theta, modelspec, u) {
   }
 }
 
+#' Plot Function for dvinecopula Objects
+#'
+#' @param copula a fitted dvinecopula object
+#' @param data the data to which copula is fitted
+#' @param plotoption number giving plot choice
+#' @param bw logical for black-white plot
+#'
+#' @return
+#' @export
+plot_dvinecopula <- function(copula, data, plotoption, bw){
+  data0 <- data
+  n <- length(data)
+  k <- length(copula@modelspec)
+  kplotmax <- min(k, 9)
+  datavecs <- vector(mode = "list", length = kplotmax)
+  tau_empirical <- rep(NA, k)
+  data <- cbind(data[1:(n - 1)], data[2:n])
+  datavecs[[1]] <- data
+  tau_empirical[1] <- cor(data, method = "kendall")[1, 2]
+  for (i in 1:(k - 1)) {
+    n <- dim(data)[1]
+    model <- rvinecopulib::bicop_dist(
+      family = tolower(copula@modelspec[[i]]$family),
+      rotation = copula@modelspec[[i]]$rotation,
+      parameters = copula@pars[[i]][1:copula@modelspec[[i]]$npars]
+    )
+    data <-
+      cbind(rvinecopulib::hbicop(data[(1:(n - 1)), ], model, cond_var = 2),
+            rvinecopulib::hbicop(data[(2:n), ], model, cond_var = 1))
+    tau_empirical[i+1] <- cor(data, method = "kendall")[1, 2]
+    if (i < kplotmax)
+      datavecs[[i+1]] <- data
+  }
+  tau_theoretical <- get_tau(copula)
+  colchoice <- ifelse(bw, "gray50", "red")
+  switch(plotoption,
+         {
+           plot(1:k, tau_empirical, xlab ="k", ylab = "tau",
+                ylim = range(tau_empirical, tau_theoretical), type = "h")
+           lines(1:k, tau_theoretical, col = colchoice)
+           abline(h = 0)},
+         {
+           pacf0 <- pacf(qnorm(data0), plot = FALSE)
+           plot(2/pi * asin(pacf0$acf[,,1]), type = "h", ylab = "Gaussian KPACF",
+                ylim = range(tau_theoretical, tau_empirical, pacf0$acf))
+           lines(1:k, tau_theoretical, col = colchoice)
+           lines(1:k, tau_empirical)
+           abline(h = 0)
+         },
+         {
+           lc <- ifelse(kplotmax > 4, 3, 2)
+           lr <- ceiling(kplotmax / lc)
+           default_par <- par(mfrow = c(lr, lc), mar = c(2.1, 2.1, 1.5, 0.5), oma = rep(2, 4),
+               pty = "s", cex = 0.5)
+           for (i in 1:kplotmax)
+             plot(datavecs[[i]], main = paste("Lag ", i, sep = ""), asp = 1,
+                  xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+           par(default_par)
+         },
+         stop("Not a plot option")
+  )
+}
+
+#' Calculate Kendall's tau values for pair copulas in d-vine copula
+#'
+#' @param vinemodel a \linkS4class{dvinecopula} object
+#'
+#' @return vector consisting of Kendall's tau values for each pair copula
+#' @export
+#'
+#' @examples
+#' mixmod <- dvinecopula(family = c("gumbel", "gauss", "joe", "clayton"), pars = list(1.5, -0.6, 1.6, 2.1))
+#' get_tau(mixmod)
+get_tau <- function(vinemodel){
+  if (is(vinemodel, "tscopulafit"))
+    vinemodel <- vinemodel@tscopula
+  if (!is(vinemodel, "dvinecopula"))
+    stop("This function is for d-vine copulas")
+  tau <- vector("numeric",length(vinemodel@modelspec))
+  for (i in seq_along(tau)){
+    model <- rvinecopulib::bicop_dist(
+      family = tolower(vinemodel@modelspec[[i]]$family),
+      rotation = vinemodel@modelspec[[i]]$rotation,
+      parameters = vinemodel@pars[[i]][1:vinemodel@modelspec[[i]]$npars]
+    )
+    tau[i] <- rvinecopulib::par_to_ktau(model)
+  }
+  names(tau) <- sapply(vinemodel@modelspec, function(v){v$family})
+  tau
+}

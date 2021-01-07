@@ -2,17 +2,27 @@
 % Please edit documentation in R/full_models.R
 \name{tsc_objectivea}
 \alias{tsc_objectivea}
-\title{Objective Function for Full Fit}
+\title{Objective Function for Full of tscopula plus margin Model}
 \usage{
-tsc_objectivea(theta, modelspec, modeltype, dens, cdf, margfixed, y)
+tsc_objectivea(theta, modelspec, modeltype, dens, cdf, y)
 }
 \arguments{
-\item{avoidzero}{}
+\item{theta}{vector of parameter values}
+
+\item{modelspec}{list containing model specification}
+
+\item{modeltype}{character string giving type of model}
+
+\item{dens}{marginal density function}
+
+\item{cdf}{marginal cdf}
+
+\item{y}{vector of data values}
 }
 \value{
 
 }
 \description{
-Objective Function for Full Fit
+Objective Function for Full of tscopula plus margin Model
 }
 \keyword{internal}

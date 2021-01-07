@@ -1,7 +1,7 @@
 Package: tscopulaplus
-Date: 2020-09-18
-Title: Time Series Copula Processes Extra
-Version: 0.1.1
+Date: 2021-01-07
+Title: Time Series Copula Processes
+Version: 0.1.2
 Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
                   role = c("aut", "cre")),
                   person("Martin", "Bladt", email = "martinbladt@gmail.com", 
@@ -13,8 +13,13 @@ License: GPL-3
 Lazydata: true
 RoxygenNote: 7.1.0
 Encoding: UTF-8
+Imports:
+    zoo,
+    xts,
+    FKF,
+    ltsa,
+    rvinecopulib
 Collate:
-    'all_new_generics.R'
     'basic_objects.R'
     'armacopula.R'
     'dvinecopula.R'
@@ -22,5 +27,9 @@ Collate:
     'fitting_basic.R'
     'margins.R'
     'full_models.R'
+    'vtransforms.R'
+    'fitting_vtscopula.R'
+    'helper_vtarma.R'
+    'data.R'
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

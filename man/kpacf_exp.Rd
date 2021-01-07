@@ -2,16 +2,18 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{kpacf_exp}
 \alias{kpacf_exp}
-\title{Title}
+\title{KPACF of Exponential Type}
 \usage{
 kpacf_exp(k, theta)
 }
 \arguments{
-\item{theta}{}
+\item{k}{vector of lags}
+
+\item{theta}{parameters of exponential decay function}
 }
 \value{
-
+vector of Kendall partial autocorrelations for each lag k
 }
 \description{
-Title
+KPACF of Exponential Type
 }

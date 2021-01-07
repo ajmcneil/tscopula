@@ -178,9 +178,9 @@ sigmastarma <- function(x) {
 
 #' Objective Function for ARMA copula process
 #'
-#' @param theta
-#' @param modelspec
-#' @param u
+#' @param theta vector of parameters of ARMA process
+#' @param modelspec vector containing model order (p,q)
+#' @param u vector of data
 #'
 #' @return
 #' @keywords internal
@@ -212,9 +212,9 @@ armacopula_objective <- function(theta, modelspec, u) {
 
 #' State Space Representation for standardized ARMA model
 #'
-#' @param ar
-#' @param ma
-#' @param order
+#' @param ar vector of ar parameters
+#' @param ma vector of ma parameters
+#' @param order vector giving order (p,q)
 #'
 #' @return
 #' @keywords internal
@@ -299,4 +299,32 @@ kfilter <- function(x, y) {
   fseries <- cbind(mu_t, sigma_t, resid)
   dimnames(fseries) <- list(NULL, c("mu_t", "sigma_t", "resid"))
   fseries
+}
+
+#' Plot Function for armacopula Objects
+#'
+#' @param copula a fitted armacopula object
+#' @param data the data to which copula is fitted
+#' @param plotoption number giving plot choice
+#' @param bw logical for black-white plot
+#'
+#' @return
+#' @export
+#'
+plot_armacopula <- function(copula, data, plotoption, bw){
+  series <- kfilter(copula, data)
+  resid <- series[, "resid"]
+  mu_t <- series[, "mu_t"]
+  colchoice <- ifelse(bw, "gray50", "red")
+  switch(plotoption,
+         zoo::plot.zoo(resid, xlab = "", type = "h"),
+         zoo::plot.zoo(mu_t, xlab = "", type = "l"),
+         {
+           qqnorm(resid / sigmastarma(copula), main = "", xlab = "Theoretical", ylab = "resid")
+           abline(0, 1, col = colchoice)
+         },
+         plot(acf(resid, plot = FALSE), ci.col = colchoice),
+         plot(acf(abs(resid), plot = FALSE), ci.col = colchoice),
+         stop("Not a plot option")
+  )
 }

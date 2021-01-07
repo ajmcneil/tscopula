@@ -1,124 +1,55 @@
-library(stats4)
-suppressMessages(library(quantmod))
-BTCUSD <- suppressWarnings(getSymbols("BTCUSD=X", auto.assign = FALSE,
-                                      from = "2015-12-31", to = "2019-12-31"))
-BTCUSD <- na.omit(BTCUSD) # omit missing values
-BTCUSD <- BTCUSD$`BTCUSD=X.Close` # closing values
-plot(BTCUSD)
-
-X <- (diff(log(BTCUSD))[-1]) * 100 # log-returns (as percentages)
+data(bitcoin)
+X <- (diff(log(bitcoin))[-1]) * 100 # log-returns (as percentages)
 length(X)
 plot(X)
+U <- strank(X)
 
-V <- strank(abs(X))
+tsoptions <- list(hessian = TRUE, method = "Nelder-Mead", avoidzero= FALSE)
 
+copmod_Gauss <- armacopula(pars = list(ar = 0.95, ma = -0.85))
+mod_Gauss <- vtscopula(copmod_Gauss, Vlinear(0.45))
+fit_Gauss <- fit(mod_Gauss, U, tsoptions = tsoptions)
 
-armamod_Gauss <- dvinecopula2(family = "gauss", pars = list(ar = 0.1, ma = 0.1), maxlag = 30)
-fit_Gauss <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", pars = list(ar = 0, ma = 0), maxlag = 30)
-fit_Joe <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", pars = list(ar = 0, ma = 0), maxlag = 30)
-fit_Gumbel <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", pars = list(ar = 0, ma = 0), maxlag = 30)
-fit_Frank <-fit(armamod_Frank, V)
-AIC(fit_Gauss, fit_Joe, fit_Gumbel, fit_Frank)
+copmod_Frank <- dvinecopula2(family = "frank",
+                             pars = list(ar = 0.95, ma = -0.85),
+                             maxlag = 30)
+mod_Frank <- vtscopula(copmod_Frank, Vlinear(0.45))
+fit_Frank <- fit(mod_Frank, U, tsoptions = tsoptions)
 
+copmod_Gauss2 <- armacopula(list(ar = 0.96, ma = -0.84))
+mod_Gauss2 <- vtscopula(copmod_Gauss2, V2p(delta=0.42, kappa=1))
+fit_Gauss2 <- fit(mod_Gauss2, U, tsoptions = tsoptions)
+
+copmod_Frank2 <- dvinecopula2(family = "frank",
+                              pars = list(ar = 0.96, ma = -0.84),
+                              maxlag = 30)
+mod_Frank2 <- vtscopula(copmod_Frank2, V2p(delta=0.42, kappa=1))
+fit_Frank2 <- fit(mod_Frank2, U, tsoptions = tsoptions)
+
+copmod_Frank3 <- dvinecopula2(family = "frank",
+                             pars = list(ar = 0.95, ma = -0.85),
+                             maxlag = Inf)
+mod_Frank3 <- vtscopula(copmod_Frank3, Vlinear(0.45))
+fit_Frank3 <- fit(mod_Frank3, U, tsoptions = tsoptions)
+
+AIC(fit_Gauss, fit_Gauss2, fit_Frank, fit_Frank2, fit_Frank3)
 #
+plot(fit_Frank3, plotoption = 1)
+plot(fit_Frank3, plotoption = 2)
+plot(fit_Frank3, plotoption = 3)
+plot(fit_Frank, plottype = "vtransform")
 
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_exp",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Gauss2 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_exp",
-                            pars = list(c(-1,0)), maxlag = 30)
-fit_Joe2 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_exp",
-                               pars = list(c(-1,-0.2)), maxlag = 30)
-fit_Gumbel2 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_exp",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Frank2 <-fit(armamod_Frank, V)
-AIC(fit_Gauss2, fit_Joe2, fit_Gumbel2, fit_Frank2)
-#
-
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_pow",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Gauss3 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_pow",
-                            pars = list(c(-1,0)), maxlag = 30)
-fit_Joe3 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_pow",
-                               pars = list(c(-1,0)), maxlag = 30)
-fit_Gumbel3 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_pow",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Frank3 <-fit(armamod_Frank, V)
-AIC(fit_Gauss3, fit_Joe3, fit_Gumbel3, fit_Frank3)
-
-#
-
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_fbn",
-                              pars = list(c(1)), maxlag = 30)
-fit_Gauss4 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_fbn",
-                            pars = list(c(1)), maxlag = 30)
-fit_Joe4 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_fbn",
-                               pars = list(c(1)), maxlag = 30)
-fit_Gumbel4 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_fbn",
-                              pars = list(c(1)), maxlag = 30)
-fit_Frank4 <-fit(armamod_Frank, V)
-AIC(fit_Gauss4, fit_Joe4, fit_Gumbel4, fit_Frank4)
-
-#
-
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_arfima1",
-                              pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
-fit_Gauss5 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_arfima1",
-                            pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
-fit_Joe5 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_arfima1",
-                               pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
-fit_Gumbel5 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_arfima1",
-                              pars = list(phi = 0.9, theta = 0.8, H = 0), maxlag = 30)
-fit_Frank5 <-fit(armamod_Frank, V)
-AIC(fit_Gauss5, fit_Joe5, fit_Gumbel5, fit_Frank5)
-
-fit_Frank
-u <- sim(fit_Frank5)
-acf(qnorm(u), 50)
-
-#
-
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_exp2",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Gauss6 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_exp2",
-                            pars = list(c(-1,0)), maxlag = 30)
-fit_Joe6 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_exp2",
-                               pars = list(c(-1,0)), maxlag = 30)
-fit_Gumbel6 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_exp2",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Frank6 <-fit(armamod_Frank, V)
-AIC(fit_Gauss6, fit_Joe6, fit_Gumbel6, fit_Frank6)
-
-#
-
-armamod_Gauss <- dvinecopula2(family = "gauss", kpacf = "kpacf_pow2",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Gauss7 <-fit(armamod_Gauss, V)
-armamod_Joe <- dvinecopula2(family = "joe", kpacf = "kpacf_pow2",
-                            pars = list(c(-1,0)), maxlag = 30)
-fit_Joe7 <- fit(armamod_Joe, V)
-armamod_Gumbel <- dvinecopula2(family = "gumbel", kpacf = "kpacf_pow2",
-                               pars = list(c(-1,0)), maxlag = 30)
-fit_Gumbel7 <- fit(armamod_Gumbel, V)
-armamod_Frank <- dvinecopula2(family = "frank", kpacf = "kpacf_pow2",
-                              pars = list(c(-1,0)), maxlag = 30)
-fit_Frank7 <-fit(armamod_Frank, V)
-AIC(fit_Gauss7, fit_Joe7, fit_Gumbel7, fit_Frank7)
-
+marg_dweibull <- fit(margin("doubleweibull",
+                            pars = c(mu = 0.2, shape =0.8, scale = 2.7)), X)
+mod_dweibull <- tscm(fit_Frank3, margin = marg_dweibull)
+mod_dweibull <- fit(mod_dweibull, as.numeric(X), tsoptions = tsoptions)
+AIC(mod_dweibull)
+plot(mod_dweibull, plotoption = 1)
+plot(mod_dweibull, plotoption = 2)
+plot(mod_dweibull, plotoption = 3)
+plot(mod_dweibull, plottype = "margin")
+plot(mod_dweibull, plotoption = 2, plottype = "margin")
+plot(mod_dweibull, plottype = "vtransform")
+plot(mod_dweibull, plottype = "volprofile")
+plot(mod_dweibull, plottype = "volproxy")
+plot(mod_dweibull, plotoption = 2, plottype = "volproxy")

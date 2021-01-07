@@ -2,16 +2,18 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{kpacf_arma}
 \alias{kpacf_arma}
-\title{Title}
+\title{KPACF of ARMA Process}
 \usage{
 kpacf_arma(k, theta)
 }
 \arguments{
-\item{theta}{}
+\item{k}{vector of lags}
+
+\item{theta}{list with components ar and ma specifying the ARMA parameters}
 }
 \value{
-
+vector of Kendall partial autocorrelations for each lag k
 }
 \description{
-Title
+KPACF of ARMA Process
 }

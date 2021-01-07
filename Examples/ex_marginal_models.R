@@ -10,19 +10,6 @@ data <- sim(model, n = 5000)
 fit <- fit(model, data)
 fit
 
-# now with some fixed parameters
-model <- new("margin",
-  name = "sst",
-  pars = c(df = 4, gamma = 0.8, mu = -0.1, sigma = 2),
-  fixed = c(T, T, F, F)
-)
-model
-model@fixed
-
-fit <- fit(model, data)
-fit
-coef(fit)
-
 
 sdweibull_mod <- margin("sdoubleweibull",
                         pars = c(mu = -0.5, shape = 0.8, scale = 1.5, gamma = 0.9))
@@ -39,3 +26,7 @@ fit(laplace_mod, data)
 fit(slaplace_mod, data)
 fit(dweibull_mod, data)
 fit(sdweibull_mod, data)
+
+fitmod <- fit(sdweibull_mod, data)
+plot(fitmod, type = 1)
+plot(fitmod, type = 2)

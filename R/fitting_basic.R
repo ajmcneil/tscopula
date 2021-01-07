@@ -1,5 +1,40 @@
 setClassUnion("tscopulaU", c("armacopula", "dvinecopula", "dvinecopula2"))
 
+#' Calculate Standardized Ranks of Data
+#'
+#' @param x a vector or time series of data.
+#'
+#' @return A vector or time series of standardized ranks in the interval (0,1)
+#' @export
+#'
+#' @examples
+#' strank(rnorm(100))
+strank <- function(x) {
+  U <- rank(x, na.last = "keep", ties.method = "random") / (length(x) + 1)
+  if (inherits(x, "zoo")) {
+    attributes(U) <- attributes(x)
+  }
+  U
+}
+
+#' New Generic for Estimating Time Series Models
+#'
+#' Methods are available for objects of class \linkS4class{tscopula},
+#' \linkS4class{vtscopula}, \linkS4class{margin}
+#' \linkS4class{tsc} and \linkS4class{gvtcopar}.
+#'
+#' @param x an object of the model class.
+#' @param y a vector or time series of data.
+#' @param ...
+#'
+#' @return An object of the fitted model class.
+#' @export
+#'
+#'
+setGeneric("fit", function(x, y, ...) {
+  standardGeneric("fit")
+})
+
 #' Fitted Time Series Copula Processes
 #'
 #' Class of objects for time series copula processes.
@@ -255,8 +290,11 @@ setMethod("logLik", "tscopulafit", function(object) {
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
 #' @param y missing.
-#' @param type type of plot required.
+#' @param plotoption number of plot required.
+#' @param plottype type of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
+#' @param klimit maximum lag value for dvinecopula2 cplots
+#' @param vtransform logical variable specifying whether v-transform is plotted,
 #'
 #' @return
 #' @export
@@ -264,39 +302,26 @@ setMethod("logLik", "tscopulafit", function(object) {
 #' @examples
 #' data <- sim(armacopula(list(ar = 0.5, ma = 0.4)), n = 1000)
 #' fit <- fit(armacopula(list(ar = 0.5, ma = 0.4)), data)
-#' plot(fit, type = 1) # try type 1 through 5
-setMethod("plot", c(x = "tscopulafit", y = "missing"), function(x, type = 1L, bw = FALSE) {
-  if (is(x@tscopula, "vtscopula")) {
-    Vdata <- vtrans(x@tscopula@Vtransform, x@data, correction = TRUE)
-    plot(new("tscopulafit",
-      tscopula = x@tscopula@Vcopula,
-      data = Vdata,
-      fit = x@fit
-    ),
-    type = type,
-    bw = bw
-    )
-  }
-  if (is(x@tscopula, "armacopula")) {
-    series <- kfilter(x@tscopula, x@data)
-    resid <- series[, "resid"]
-    mu_t <- series[, "mu_t"]
-    colchoice <- ifelse(bw, "gray50", "red")
-    switch(type,
-      zoo::plot.zoo(resid, xlab = "", type = "h"),
-      zoo::plot.zoo(mu_t,
-        xlab = "",
-        type = "l"
-      ),
-      {
-        qqnorm(resid / sigmastarma(x@tscopula), main = "", xlab = "Theoretical", ylab = "resid")
-        abline(0, 1, col = colchoice)
-      },
-      plot(acf(resid, plot = FALSE), ci.col = colchoice),
-      plot(acf(abs(resid), plot = FALSE),
-        ci.col = colchoice
-      ),
-      stop("Not a plot option")
-    )
-  }
+#' plot(fit, plotoption = 1) # try plotoption 1 through 5
+setMethod("plot", c(x = "tscopulafit", y = "missing"),
+          function(x, plotoption = 1, plottype = "copula", bw = FALSE, klimit = 30) {
+            if (plottype == "vtransform")
+              plot(x@tscopula@Vtransform)
+            else
+              switch(is(x@tscopula)[1],
+                     armacopula = plot_armacopula(x@tscopula, x@data, plotoption, bw),
+                     dvinecopula = plot_dvinecopula(x@tscopula, x@data, plotoption, bw),
+                     dvinecopula2 = plot_dvinecopula2(x@tscopula, x@data, plotoption, bw, klimit),
+                     vtscopula = {
+                       Vdata <- vtrans(x@tscopula@Vtransform, x@data, correction = TRUE)
+                       plot(new("tscopulafit",
+                                tscopula = x@tscopula@Vcopula,
+                                data = Vdata,
+                                fit = x@fit
+                       ),
+                       plotoption = plotoption,
+                       bw = bw
+                       )
+                     })
 })
+

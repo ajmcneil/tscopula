@@ -2,7 +2,7 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{dvinecopula2}
 \alias{dvinecopula2}
-\title{Constructor Function for dvinecopula2 process}
+\title{Constructor Function for dvinecopula2 Process}
 \usage{
 dvinecopula2(
   family = "gauss",
@@ -18,10 +18,16 @@ dvinecopula2(
 \item{rotation}{a vector of rotations}
 
 \item{pars}{a list containing the parameters of each lag}
+
+\item{kapcf}{character string giving name of Kendal pacf}
 }
 \value{
 An object of class \linkS4class{dvinecopula}.
 }
 \description{
-Constructor Function for dvinecopula2 process
+Constructor Function for dvinecopula2 Process
+}
+\examples{
+dvinecopula2(family = "joe", kpacf = "kpacf_arma",
+pars = list(ar = 0.95, ma = -0.85), maxlag = 30)
 }

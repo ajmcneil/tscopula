@@ -23,8 +23,6 @@ logical argument log specifying whether log density should be computed.
 
 \item{\code{pars}}{a numeric vector containing the named parameters of the distribution
 which are passed as arguments to pname, qname, dname and rname.}
-
-\item{\code{fixed}}{logical vector specifying any parameters that are held fixed}
 }}
 
 \examples{

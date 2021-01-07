@@ -8,6 +8,22 @@
 #'
 setClass("tscopula", contains = c("VIRTUAL"))
 
+#' New Generic for Simulating Time Series Models
+#'
+#' Methods are available for objects of class \linkS4class{tscopula},
+#' \linkS4class{margin} and \linkS4class{tsc}.
+#'
+#' @param x an object of the model class.
+#' @param ...
+#'
+#' @return A realization from the time series model.
+#' @export
+#'
+#'
+setGeneric("sim", function(x, ...) {
+  standardGeneric("sim")
+})
+
 #' Strict White Noise Copula Process
 #'
 #' @return

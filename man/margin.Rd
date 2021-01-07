@@ -4,14 +4,12 @@
 \alias{margin}
 \title{Constructor Function for margin}
 \usage{
-margin(name, pars = NULL, fixed = FALSE)
+margin(name, pars = NULL)
 }
 \arguments{
 \item{name}{character string giving name of distribution}
 
 \item{pars}{parameters of the distribution}
-
-\item{fixed}{fixed parameters, for estimation purposes}
 }
 \value{
 an object of class \linkS4class{margin}
@@ -21,5 +19,4 @@ Constructor Function for margin
 }
 \examples{
 margin("sst")
-margin("weibull2")
 }
