@@ -67,11 +67,59 @@ kpacf_arma <- function(k, theta){
   if ("ma" %in% nm)
     ma <- theta[nm == "ma"]
   if ((non_stat(ar)) | (non_invert(ma)))
-    return(rep(NA, length(k)))
-  rho <- ARMAacf(ar = ar, ma = ma, lag.max = max(k), pacf = TRUE)[k]
-  (2/pi)*asin(rho)
+    return(rep(NA, k))
+  pacf <- ARMAacf(ar = ar, ma = ma, lag.max = k, pacf = TRUE)
+  (2/pi)*asin(pacf)
 }
 
+#' Compute Partial Autocorrelations from Autocorrelations
+#'
+#' @param rho vector of autocorrelation values (excluding 1)
+#'
+#' @return vector of partial autocorrelation values
+#' @export
+#'
+#' @examples
+#' rho <- ARMAacf(ar = -0.9, ma = 0.8, lag.max = 50)[-1]
+#' alpha <- acf2pacf(rho)
+acf2pacf <- function(rho){
+  drop(.Call(stats:::C_pacf1, c(1,rho), lag.max = length(rho)))
+}
+
+#' Compute Autocorrelations from Partial Autocorrelations
+#'
+#' @param alpha vector of partial autocorrelation values
+#'
+#' @return vector of autocorrelation values
+#' @export
+#'
+#' @examples
+#' alpha <- ARMAacf(ar = -0.9, ma = 0.8, lag.max = 50, pacf = TRUE)
+#' rho <- pacf2acf(alpha)
+pacf2acf <- function(alpha){
+  n <- length(alpha)
+  rho <- rep(alpha[1], n)
+  if (n > 1){
+    rho[2] <- rho[1]^2 + alpha[2]*(1-rho[1]^2)
+    if (n >2){
+      for (k in 3:length(alpha)){
+        M <- diag(rep(1,(k-1)))
+        for (i in 1:(k-2))
+          for (j in (i+1):(k-1)){
+            M[i,j] <- rho[j-i]
+            M[j,i] <- M[i,j]
+          }
+        Mi <- solve(M)
+        v <- rho[1:(k-1)]
+        term1 <- t(v) %*% Mi %*% rev(v)
+        D1 <- t(v) %*% Mi %*% v
+        D2 <- t(rev(v)) %*% Mi %*% rev(v)
+        rho[k] <- term1 + alpha[k]*sqrt((1-D1)*(1-D2))
+      }
+    }
+  }
+  rho
+}
 
 #' KPACF of ARFIMA Process
 #'
@@ -94,11 +142,12 @@ kpacf_arfima1 <- function(k, theta){
     theta0 <- theta[nm == "theta"]
   if ("H" %in% nm)
     H <- plogis(theta[nm == "H"])
-  t1 <- arfima::tacvfARFIMA(phi = phi0, theta = theta0, H = H, maxlag = max(k))
-  if (is.null(t1))
-    return(rep(NA, length(k)))
-  rho <- drop(.Call(stats:::C_pacf1, c(1,t1[-1]/t1[1]), lag.max = max(k)))[k]
-  (2/pi)*asin(rho)
+  acvf <- arfima::tacvfARFIMA(phi = phi0, theta = theta0, H = H, maxlag = k)
+  if (is.null(acvf))
+    return(rep(NA, k))
+  acf <- acvf[-1]/acvf[1]
+  pacf <- acf2pacf(acf)
+  (2/pi)*asin(pacf)
 }
 
 
@@ -114,9 +163,9 @@ kpacf_fbn <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
   theta <- plogis(theta)
-  acf <- ((k + 1)^{2 * theta[1]} + abs(k - 1)^{2 * theta[1]} - 2 * k^{2 * theta[1]})/2
-  rho <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
-  return(suppressWarnings((2/pi)*asin(rho)))
+  acf <- (((1:k) + 1)^{2 * theta[1]} + abs((1:k) - 1)^{2 * theta[1]} - 2 * (1:k)^{2 * theta[1]})/2
+  pacf <- acf2pacf(acf)
+  return(suppressWarnings((2/pi)*asin(pacf)))
 }
 
 #' KPACF of Exponential Type
@@ -130,8 +179,7 @@ kpacf_fbn <- function(k, theta){
 kpacf_exp <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
-  arg <- theta[1] + theta[2] * k
-  arg <- pmin(arg, 0)
+  arg <- pmin(theta[1] + theta[2] * (1:k), 0)
   exp(arg)
 }
 
@@ -146,8 +194,7 @@ kpacf_exp <- function(k, theta){
 kpacf_pow <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
-  arg <- theta[1] + theta[2] * log(k)
-  arg <- pmin(arg, 0)
+  arg <- pmin(theta[1] + theta[2] * log(1:k), 0)
   exp(arg)
 }
 
@@ -162,11 +209,9 @@ kpacf_pow <- function(k, theta){
 kpacf_exp2 <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
-  arg <- theta[1] + theta[2] * k
-  arg <- pmin(arg, 0)
+  arg <- pmin(theta[1] + theta[2] * (1:k), 0)
   acf <- exp(arg)
-  pacf <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
-  pacf
+  acf2pacf(acf)
 }
 
 #' KPACF of Transformed Power Type
@@ -180,11 +225,9 @@ kpacf_exp2 <- function(k, theta){
 kpacf_pow2 <- function(k, theta){
   if (is.list(theta))
     theta <- tsunlist(theta)
-  arg <- theta[1] + theta[2] * log(k)
-  arg <- pmin(arg, 0)
+  arg <- pmin(theta[1] + theta[2] * log(1:k), 0)
   acf <- exp(arg)
-  pacf <- drop(.Call(stats:::C_pacf1, c(1,acf), lag.max = max(k)))[k]
-  pacf
+  acf2pacf(acf)
 }
 
 
@@ -236,7 +279,7 @@ setMethod("show", c(object = "dvinecopula2"), function(object) {
 dvinecopula2_objective <- function(theta, modelspec, u) {
   n <- length(u)
   kpacf <- eval(parse(text = modelspec$kpacf))
-  tauvals <- kpacf(1:(n-1), theta)
+  tauvals <- kpacf((n-1), theta)
   if (is.na(sum(tauvals)))
     return(NA)
   k <- 1
@@ -301,7 +344,7 @@ ktau_to_par <- function(family, tau){
 #'
 setMethod("sim", c(x = "dvinecopula2"), function(x, n = 1000) {
   kpacf <- eval(parse(text = x@modelspec$kpacf))
-  tauvals <- kpacf(1:(n-1), x@pars)
+  tauvals <- kpacf((n-1), x@pars)
   kmax <- max((1:(n-1))[abs(tauvals) > .Machine$double.eps])
   k <- min(max(1, kmax), x@modelspec$maxlag)
   pc_list <- vector("list", k)
@@ -346,7 +389,7 @@ plot_dvinecopula2 <- function(copula, data, plotoption, bw, klimit){
   data0 <- data
   n <- length(data)
   kpacf <- eval(parse(text = copula@modelspec$kpacf))
-  tauvals <- kpacf(1:(n-1), copula@pars)
+  tauvals <- kpacf((n-1), copula@pars)
   kmax <- max((1:(n-1))[abs(tauvals) > .Machine$double.eps])
   k <- min(max(1, kmax), copula@modelspec$maxlag, klimit)
   kplotmax <- min(k, 9)

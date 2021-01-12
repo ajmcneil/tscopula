@@ -22,7 +22,7 @@ library(stats4)
 
 ### Construction
 
-We construct a model using the Joe copula and the Kendall partial autocorrelation function (KPACF) of a Gaussian ARMA process with autogressive (ar) parameter 0.97 and moving average (ma) parameter -0.85. The KPACF is truncated at lag 30, so this is a process of finite order. We can also set $\text{maxlag} = \inf$ but this leads to much slower simulation.
+We construct a model using the Joe copula and the Kendall partial autocorrelation function (KPACF) of a Gaussian ARMA process with autogressive (ar) parameter 0.9 and moving average (ma) parameter -0.85. The KPACF is truncated at lag 30, so this is a process of finite order. We can also set $\text{maxlag} = \inf$ but this leads to much slower simulation.
 
 ```{r}
 copmod <- dvinecopula2(family = "joe",
