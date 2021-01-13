@@ -18,6 +18,6 @@ A realization of the time series of length n
 Simulation Method for tscm class
 }
 \examples{
-mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("weibull2"))
+mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 sim(mod)
 }

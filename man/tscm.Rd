@@ -18,5 +18,5 @@ An object of class \linkS4class{tscm}.
 Constructor Function for time series
 }
 \examples{
-tscm(dvinecopula(), margin("weibull2"))
+tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 }

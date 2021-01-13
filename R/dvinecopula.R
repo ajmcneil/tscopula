@@ -267,7 +267,7 @@ plot_dvinecopula <- function(copula, data, plotoption, bw){
 #' @export
 #'
 #' @examples
-#' mixmod <- dvinecopula(family = c("gumbel", "gauss", "joe", "clayton"), pars = list(1.5, -0.6, 1.6, 2.1))
+#' mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
 #' get_tau(mixmod)
 get_tau <- function(vinemodel){
   if (is(vinemodel, "tscopulafit"))

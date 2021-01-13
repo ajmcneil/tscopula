@@ -26,5 +26,5 @@ which are passed as arguments to pname, qname, dname and rname.}
 }}
 
 \examples{
-new("margin", name = "norm", pars = list(mu = 0, sigma = 1))
+new("margin", name = "norm", pars = c(mu = 0, sigma = 1))
 }

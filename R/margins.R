@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' new("margin", name = "norm", pars = list(mu = 0, sigma = 1))
+#' new("margin", name = "norm", pars = c(mu = 0, sigma = 1))
 setClass("margin", slots = list(
   name = "character",
   pars = "numeric"
