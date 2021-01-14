@@ -25,7 +25,7 @@ strank <- function(x) {
 #'
 #' @param x an object of the model class.
 #' @param y a vector or time series of data.
-#' @param ...
+#' @param ... further arguments to be passed on.
 #'
 #' @return An object of the fitted model class.
 #' @export

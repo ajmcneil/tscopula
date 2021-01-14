@@ -11,7 +11,7 @@ fit(x, y, ...)
 
 \item{y}{a vector or time series of data.}
 
-\item{...}{}
+\item{...}{further arguments to be passed on.}
 }
 \value{
 An object of the fitted model class.

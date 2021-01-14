@@ -9,7 +9,7 @@ sim(x, ...)
 \arguments{
 \item{x}{an object of the model class.}
 
-\item{...}{}
+\item{...}{further arguments to be passed on.}
 }
 \value{
 A realization from the time series model.

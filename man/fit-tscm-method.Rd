@@ -31,7 +31,7 @@ an object of class \linkS4class{tscmfit}.
 Fit Method for tscm Class
 }
 \examples{
-mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("weibull2"))
+mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 y <- sim(mod)
 fit(mod, y)
 }

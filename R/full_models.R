@@ -71,7 +71,7 @@ setMethod("coef", "tscm", function(object) {
 #' @export
 #'
 #' @examples
-#' tscm(dvinecopula(), margin("weibull2"))
+#' tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 tscm <- function(tscopula, margin = new("margin", name = "unif")) {
   if (is(tscopula, "tscopulafit")) {
     tscopula <- tscopula@tscopula
@@ -94,7 +94,7 @@ tscm <- function(tscopula, margin = new("margin", name = "unif")) {
 #' @export
 #'
 #' @examples
-#' mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("weibull2"))
+#' mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 #' sim(mod)
 setMethod(
   "sim",
@@ -142,7 +142,7 @@ setClass(
 #' @export
 #'
 #' @examples
-#' mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("weibull2"))
+#' mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
 #' y <- sim(mod)
 #' fit(mod, y)
 setMethod(

@@ -14,7 +14,7 @@ setClass("tscopula", contains = c("VIRTUAL"))
 #' \linkS4class{margin} and \linkS4class{tsc}.
 #'
 #' @param x an object of the model class.
-#' @param ...
+#' @param ... further arguments to be passed on.
 #'
 #' @return A realization from the time series model.
 #' @export

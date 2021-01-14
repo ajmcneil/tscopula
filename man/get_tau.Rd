@@ -16,6 +16,6 @@ vector consisting of Kendall's tau values for each pair copula
 Calculate Kendall's tau values for pair copulas in d-vine copula
 }
 \examples{
-mixmod <- dvinecopula(family = c("gumbel", "gauss", "joe", "clayton"), pars = list(1.5, -0.6, 1.6, 2.1))
+mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
 get_tau(mixmod)
 }
