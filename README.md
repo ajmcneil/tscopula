@@ -1,2 +1,3 @@
-# tscopulaplus
-tscopula with added experimental object class
+# tscopula
+
+Time Series Copula Processes
