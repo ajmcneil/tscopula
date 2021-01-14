@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(tscopulaplus)
+library(tscopula)
 ```
 
 ## ARMA Copula Processes

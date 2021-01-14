@@ -1,7 +1,7 @@
-Package: tscopulaplus
+Package: tscopula
 Date: 2021-01-07
 Title: Time Series Copula Processes
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
                   role = c("aut", "cre")),
                   person("Martin", "Bladt", email = "martinbladt@gmail.com", 
@@ -14,16 +14,15 @@ Lazydata: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Imports:
+    methods,
+    stats,
+    graphics,
+    utils,
     zoo,
     xts,
     FKF,
     ltsa,
     rvinecopulib,
-    methods,
-    stats,
-    graphics,
-    utils,
-    arfima,
     Matrix,
     copula
 Collate:
