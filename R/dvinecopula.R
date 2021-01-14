@@ -212,7 +212,7 @@ plot_dvinecopula <- function(copula, data, plotoption, bw){
   kplotmax <- min(k, 9)
   datavecs <- vector(mode = "list", length = kplotmax)
   tau_empirical <- rep(NA, k)
-  data <- cbind(data[1:(n - 1)], data[2:n])
+  data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
   datavecs[[1]] <- data
   tau_empirical[1] <- cor(data, method = "kendall")[1, 2]
   for (i in 1:(k - 1)) {
