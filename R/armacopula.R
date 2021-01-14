@@ -6,7 +6,6 @@
 #' @slot modelspec vector containing number of AR and MA parameters.
 #' @slot pars list comprising of the parameters.
 #'
-#' @return
 #' @export
 #'
 setClass("armacopula", contains = "tscopula", slots = list(
@@ -88,7 +87,7 @@ setMethod("coef", "armacopula", function(object) {
 #'
 #' @param object an object of class \linkS4class{armacopula}.
 #'
-#' @return
+#' @return summary of \linkS4class{armacopula}.
 #' @export
 #'
 setMethod("show", c(object = "armacopula"), function(object) {
@@ -102,7 +101,7 @@ setMethod("show", c(object = "armacopula"), function(object) {
 #'
 #' @param ar
 #'
-#' @return
+#' @return A logical variable stating whether ARMA process is causal.
 #' @keywords internal
 #'
 non_stat <- function(ar) {
@@ -120,7 +119,7 @@ non_stat <- function(ar) {
 #'
 #' @param ma
 #'
-#' @return
+#' @return A logical variable stating whether ARMA process is invertible.
 #' @keywords internal
 #'
 non_invert <- function(ma) {
@@ -182,7 +181,7 @@ sigmastarma <- function(x) {
 #' @param modelspec vector containing model order (p,q)
 #' @param u vector of data
 #'
-#' @return
+#' @return Value of objective function at parameters.
 #' @keywords internal
 #'
 armacopula_objective <- function(theta, modelspec, u) {
@@ -216,7 +215,7 @@ armacopula_objective <- function(theta, modelspec, u) {
 #' @param ma vector of ma parameters
 #' @param order vector giving order (p,q)
 #'
-#' @return
+#' @return State space representation of ARMA process.
 #' @keywords internal
 #'
 starmaStateSpace <- function(ar, ma, order) {
@@ -308,7 +307,6 @@ kfilter <- function(x, y) {
 #' @param plotoption number giving plot choice
 #' @param bw logical for black-white plot
 #'
-#' @return
 #' @export
 #'
 plot_armacopula <- function(copula, data, plotoption, bw){

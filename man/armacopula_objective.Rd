@@ -14,7 +14,7 @@ armacopula_objective(theta, modelspec, u)
 \item{u}{vector of data}
 }
 \value{
-
+Value of objective function at parameters.
 }
 \description{
 Objective Function for ARMA copula process

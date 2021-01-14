@@ -2,13 +2,10 @@
 #'
 #' Class of objects for V-transformed time series copula processes.
 #'
-#' @slot name name of time series copula process.
-#' @slot type character string giving type of copula process (ARMA or d-vine).
-#' @slot modelspec list containing vital specification information.
-#' @slot pars a list comprising of the parameters.
+#' @slot Vcopula object of class \linkS4class{tscopulaU}.
 #' @slot Vtransform object of class \linkS4class{Vtransform}.
+#' @slot Wcopula object of class \linkS4class{tscopula}.
 #'
-#' @return
 #' @export
 #'
 setClass("vtscopula",
@@ -27,7 +24,7 @@ setClass("vtscopula",
 #' @param Vtransform an object of class \linkS4class{Vtransform}.
 #' @param Wcopula an object of class \linkS4class{tscopula}.
 #'
-#' @return an object of class \linkS4class{vtscopula}.
+#' @return An object of class \linkS4class{vtscopula}.
 #' @export
 #'
 #' @examples
@@ -47,7 +44,7 @@ vtscopula <- function(tscopulaU,
 #'
 #' @param object an object of class \linkS4class{vtscopula}.
 #'
-#' @return
+#' @return Summary of object of class \linkS4class{vtscopula}.
 #' @export
 #'
 setMethod("show", "vtscopula", function(object) {
@@ -69,13 +66,20 @@ setMethod("show", "vtscopula", function(object) {
 #'
 #' @param object an object of class \linkS4class{vtscopula}.
 #'
-#' @return parameters of vtscopula model
+#' @return Parameters of vtscopula model.
 #' @export
 #'
 setMethod("coef", "vtscopula", function(object) {
   c(coef(object@Vcopula), coef(object@Vtransform), coef(object@Wcopula))
 })
 
+#' Extract parameters of tscopula
+#'
+#' @param object an object of class \linkS4class{tscopula}.
+#'
+#' @return A list of parameters.
+#' @keywords internal
+#'
 getparlist <- function(object) {
   if (is(object, "tscopulaU")) {
     return(object@pars)
@@ -124,7 +128,7 @@ setMethod("sim", c(x = "vtscopula"), function(x, n = 1000) {
 #' \code{\link[stats]{optim}} function.
 #'
 #'
-#' @return an object of class \linkS4class{tscopulafit}.
+#' @return An object of class \linkS4class{tscopulafit}.
 #' @export
 #'
 #' @examples
@@ -167,6 +171,13 @@ setMethod(
   }
 )
 
+#' Extract W-Copula
+#'
+#' @param x an object of class \linkS4class{tscopula}.
+#'
+#' @return A description of the W-copula.
+#' @keywords internal
+#'
 setwcopula <- function(x) {
   if (is(x@Wcopula, "swncopula")) {
     return(NULL)
@@ -188,7 +199,7 @@ setwcopula <- function(x) {
 #' @param fulcrum fixed value for fulcrum or NA
 #' @param avoidzero logical for whether zero should be avoided
 #'
-#' @return
+#' @return Value of objective function at parameters.
 #' @keywords internal
 #'
 vtscopula_objective <- function(theta, modelspec, modeltype, vt, wcopula, y, fulcrum, avoidzero) {
@@ -235,7 +246,7 @@ vtscopula_objective <- function(theta, modelspec, modeltype, vt, wcopula, y, ful
 #' @param vt v-transform
 #' @param u vector of data
 #'
-#' @return
+#' @return Value of additional objective for W-copula.
 #' @keywords internal
 #'
 wobjective <- function(theta, paircop, theta_vt, vtgrad, u) {
@@ -290,7 +301,7 @@ wobjective <- function(theta, paircop, theta_vt, vtgrad, u) {
 #' @param locations vector containing locations of different values for fulcrum.
 #' @param plot logical values specifying whether plot should be created.
 #'
-#' @return a matrix containing fulcrum values and log likelihood values.
+#' @return A matrix containing fulcrum values and log likelihood values.
 #' @export
 #'
 #' @examples
@@ -339,7 +350,7 @@ profilefulcrum <- function(data,
 #' @param control list of control parameters to be passed to the
 #' \code{\link[stats]{optim}} function.
 #'
-#' @return an object of class \linkS4class{tscmfit}.
+#' @return An object of class \linkS4class{tscmfit}.
 #' @keywords internal
 #'
 fitFULLb <- function(x, y, tsoptions, control) {
@@ -390,7 +401,7 @@ fitFULLb <- function(x, y, tsoptions, control) {
 #' @param fulcrum value for fulcrum or NA
 #' @param avoidzero whether zero should be avoided
 #'
-#' @return
+#' @return Value of objective function at parameters.
 #' @keywords internal
 #'
 tsc_objectiveb <-

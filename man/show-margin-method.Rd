@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{margin}.}
 }
 \value{
-
+A summary of an object of class \linkS4class{margin}.
 }
 \description{
 Show Method for margin Class

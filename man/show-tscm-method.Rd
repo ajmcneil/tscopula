@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{tscm}.}
 }
 \value{
-
+A summary of an object of class \linkS4class{tscm}.
 }
 \description{
 Show Method for tscm Class

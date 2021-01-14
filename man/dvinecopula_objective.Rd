@@ -14,7 +14,7 @@ dvinecopula_objective(theta, modelspec, u)
 \item{udata}{data}
 }
 \value{
-
+Value of objective function at parameters.
 }
 \description{
 Objective Function for dvinecopula process

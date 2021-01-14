@@ -4,9 +4,6 @@
 \name{margin-class}
 \alias{margin-class}
 \title{Marginal Model for Time Series}
-\value{
-
-}
 \description{
 Class of objects for marginal models for stationary time series. The
 object is given a name and there must exist functions pname, qname,

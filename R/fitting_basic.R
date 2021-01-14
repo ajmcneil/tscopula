@@ -1,4 +1,10 @@
-setClassUnion("tscopulaU", c("armacopula", "dvinecopula", "dvinecopula2"))
+#' @title Time Series Copulas of Class tscopulaU
+#'
+#' @description S4 Class union for basic time series copula types
+#'
+#' @exportClass tscopulaU
+#'
+setClassUnion("tscopulaU", c("armacopula", "dvinecopula"))
 
 #' Calculate Standardized Ranks of Data
 #'
@@ -20,8 +26,8 @@ strank <- function(x) {
 #' New Generic for Estimating Time Series Models
 #'
 #' Methods are available for objects of class \linkS4class{tscopula},
-#' \linkS4class{vtscopula}, \linkS4class{margin}
-#' \linkS4class{tsc} and \linkS4class{gvtcopar}.
+#' \linkS4class{vtscopula}, \linkS4class{margin} and
+#' \linkS4class{tscm}.
 #'
 #' @param x an object of the model class.
 #' @param y a vector or time series of data.
@@ -39,9 +45,10 @@ setGeneric("fit", function(x, y, ...) {
 #'
 #' Class of objects for time series copula processes.
 #'
-#' @slot name name of time series copula process.
+#' @slot tscopula an object of class \linkS4class{tscopula}.
+#' @slot data a vector or time series of data.
+#' @slot fit a list containing details of the fit.
 #'
-#' @return
 #' @export
 #'
 setClass("tscopulafit",
@@ -289,14 +296,11 @@ setMethod("logLik", "tscopulafit", function(object) {
 #' Plot Method for tscopulafit Class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
-#' @param y missing.
 #' @param plotoption number of plot required.
 #' @param plottype type of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #' @param klimit maximum lag value for dvinecopula2 cplots
-#' @param vtransform logical variable specifying whether v-transform is plotted,
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -311,7 +315,7 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
               switch(is(x@tscopula)[1],
                      armacopula = plot_armacopula(x@tscopula, x@data, plotoption, bw),
                      dvinecopula = plot_dvinecopula(x@tscopula, x@data, plotoption, bw),
-                     dvinecopula2 = plot_dvinecopula2(x@tscopula, x@data, plotoption, bw, klimit),
+              #       dvinecopula2 = plot_dvinecopula2(x@tscopula, x@data, plotoption, bw, klimit),
                      vtscopula = {
                        Vdata <- vtrans(x@tscopula@Vtransform, x@data, correction = TRUE)
                        plot(new("tscopulafit",

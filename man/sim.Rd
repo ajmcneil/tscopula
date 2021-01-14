@@ -16,5 +16,5 @@ A realization from the time series model.
 }
 \description{
 Methods are available for objects of class \linkS4class{tscopula},
-\linkS4class{margin} and \linkS4class{tsc}.
+\linkS4class{margin} and \linkS4class{tscm}.
 }

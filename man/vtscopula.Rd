@@ -15,7 +15,7 @@ vtscopula(tscopulaU, Vtransform = Vlinear(), Wcopula = swncopula())
 \item{Wcopula}{an object of class \linkS4class{tscopula}.}
 }
 \value{
-an object of class \linkS4class{vtscopula}.
+An object of class \linkS4class{vtscopula}.
 }
 \description{
 Constructor Function for vtscopula Object

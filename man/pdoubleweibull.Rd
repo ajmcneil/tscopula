@@ -16,7 +16,7 @@ pdoubleweibull(q, mu = 0, shape = 1, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of values for the CDF.
 }
 \description{
 Distribution Function of Double Weibull Distribution

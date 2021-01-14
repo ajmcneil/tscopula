@@ -7,12 +7,12 @@
 \S4method{sim}{swncopula}(x, n = 1000)
 }
 \arguments{
-\item{n}{numeric value for length of simulated realisation.}
+\item{x}{an object of class \linkS4class{swncopula}.}
 
-\item{swncopula}{an object of class \linkS4class{swncopula}.}
+\item{n}{numeric value for length of simulated realisation.}
 }
 \value{
-a realisation of strict white noise of length n
+A realisation of strict white noise of length n.
 }
 \description{
 Simulation Method for Strict White Noise Copula

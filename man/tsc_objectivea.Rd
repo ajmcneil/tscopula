@@ -20,7 +20,7 @@ tsc_objectivea(theta, modelspec, modeltype, dens, cdf, y)
 \item{y}{vector of data values}
 }
 \value{
-
+Value of objective function at parameters.
 }
 \description{
 Objective Function for Full of tscopula plus margin Model

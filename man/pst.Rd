@@ -16,7 +16,7 @@ pst(q, df = 10, mu = 0, sigma = 1)
 \item{sigma}{scale parameter}
 }
 \value{
-
+A vector of values for the CDF.
 }
 \description{
 Distribution Function of Student t

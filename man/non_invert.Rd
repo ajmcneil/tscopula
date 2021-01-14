@@ -10,7 +10,7 @@ non_invert(ma)
 \item{ma}{}
 }
 \value{
-
+A logical variable stating whether ARMA process is invertible.
 }
 \description{
 Check for Invertibility

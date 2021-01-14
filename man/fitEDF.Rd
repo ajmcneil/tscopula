@@ -18,7 +18,7 @@ This differs according to the class of x.}
 \code{\link[stats]{optim}} function.}
 }
 \value{
-an object of class \linkS4class{tscmfit}.
+An object of class \linkS4class{tscmfit}.
 }
 \description{
 Fit tscm Using Empirical Distribution Function

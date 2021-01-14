@@ -18,7 +18,7 @@ rsst(n, df, gamma, mu, sigma)
 \item{sigma}{scale parameter}
 }
 \value{
-
+A vector of simulated values of length n.
 }
 \description{
 Random Number Generation for Skewed Student t

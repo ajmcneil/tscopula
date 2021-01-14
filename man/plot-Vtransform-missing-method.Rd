@@ -27,11 +27,6 @@ should be shaded}
 \item{lower}{the lower x-axis value for plotting.}
 
 \item{upper}{the upper x-axis value for plotting}
-
-\item{y}{missing.}
-}
-\value{
-
 }
 \description{
 Plots the v-transform as well as its gradient or inverse. Can also plot the

@@ -20,7 +20,7 @@ dsdoubleweibull(x, mu = 0, shape = 1, scale = 1, gamma = 1, log = FALSE)
 \item{log}{flag for log density}
 }
 \value{
-
+A vector of values for the density.
 }
 \description{
 Density of Skew Double Weibull Distribution

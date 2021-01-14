@@ -5,7 +5,6 @@
 #' @slot pars vector containing the named parameters of the v-transform.
 #' @slot gradient function to evaluate the gradient of the v-transform.
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -26,7 +25,6 @@ setClass("Vtransform", slots = list(
 #' @slot gradient function to evaluate the gradient of the v-transform.
 #' @slot inverse function to evaluate the inverse of the v-transform.
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -251,6 +249,8 @@ V3b <- function(delta = 0.5, kappa = 1, xi = 1) {
 #'
 #' @param x a \code{Vtransform} object.
 #' @param u a vector or time series with values in [0, 1].
+#' @param correction logical variable specifying whether v-transform
+#' should be bounded away from zero.
 #'
 #' @return A vector or time series with values in [0, 1].
 #' @export
@@ -362,7 +362,6 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
 #' given volatility PIT value v.
 #'
 #' @param x a \code{Vtransform} object.
-#' @param y missing.
 #' @param type type of plot: 'transform' for plot of transform, 'inverse' for plot of inverse,
 #' 'gradient' for plot of gradient or 'pdown' for plot of conditional probability.
 #' @param shading logical variable specifying whether inadmissible zone for v-transform
@@ -371,7 +370,6 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
 #' @param lower the lower x-axis value for plotting.
 #' @param upper the upper x-axis value for plotting
 #'
-#' @return
 #' @export
 #'
 #'
@@ -434,7 +432,7 @@ pcoincide <- function(x) {
 #'
 #' @param object an object of class \linkS4class{Vtransform}.
 #'
-#' @return
+#' @return Summary of object of class \linkS4class{Vtransform}.
 #' @export
 #'
 setMethod("show", "Vtransform", function(object) {
@@ -449,7 +447,7 @@ setMethod("show", "Vtransform", function(object) {
 #'
 #' @param object an object of class \linkS4class{Vtransform}.
 #'
-#' @return parameters of Vtransform model
+#' @return Parameters of Vtransform model.
 #' @export
 #'
 setMethod("coef", "Vtransform", function(object) {

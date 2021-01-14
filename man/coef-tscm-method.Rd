@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{tscm}.}
 }
 \value{
-vector of coefficients of model.
+Vector of coefficients of model.
 }
 \description{
 Coefficient Method for tscm Class

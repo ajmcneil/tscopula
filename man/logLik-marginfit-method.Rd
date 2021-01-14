@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{marginfit}.}
 }
 \value{
-an object of class logLik
+An object of class logLik.
 }
 \description{
 logLik Method for marginfit Class

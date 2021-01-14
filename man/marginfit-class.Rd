@@ -4,9 +4,6 @@
 \name{marginfit-class}
 \alias{marginfit-class}
 \title{Fitted Marginal Model for Time Series}
-\value{
-
-}
 \description{
 Fitted Marginal Model for Time Series
 }

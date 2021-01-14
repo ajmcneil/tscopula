@@ -4,15 +4,16 @@
 \name{tscopulafit-class}
 \alias{tscopulafit-class}
 \title{Fitted Time Series Copula Processes}
-\value{
-
-}
 \description{
 Class of objects for time series copula processes.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{name}}{name of time series copula process.}
+\item{\code{tscopula}}{an object of class \linkS4class{tscopula}.}
+
+\item{\code{data}}{a vector or time series of data.}
+
+\item{\code{fit}}{a list containing details of the fit.}
 }}
 

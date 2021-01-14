@@ -14,7 +14,7 @@ rlaplace(n, mu = 0, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of simulated values of length n.
 }
 \description{
 Random Number Generation for Laplace Distribution

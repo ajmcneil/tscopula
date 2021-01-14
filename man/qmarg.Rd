@@ -12,7 +12,7 @@ qmarg(x, p)
 \item{p}{vector of probabilities for which quantiles should be computed.}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Compute the quantile function of the marginal model.

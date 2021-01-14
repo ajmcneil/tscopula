@@ -16,7 +16,7 @@ qslaplace(p, mu = 0, scale = 1, gamma = 1)
 \item{gamma}{skewness parameter}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Quantile Function of Skew Laplace Distribution

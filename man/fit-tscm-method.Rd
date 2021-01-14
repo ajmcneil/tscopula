@@ -25,7 +25,7 @@
 \item{method}{character string specifying method.}
 }
 \value{
-an object of class \linkS4class{tscmfit}.
+An object of class \linkS4class{tscmfit}.
 }
 \description{
 Fit Method for tscm Class

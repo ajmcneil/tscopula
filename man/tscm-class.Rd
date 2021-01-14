@@ -4,9 +4,6 @@
 \name{tscm-class}
 \alias{tscm-class}
 \title{Full models}
-\value{
-
-}
 \description{
 Class of objects for composite time series models consisting
 of stationary copula processes and marginal distributions.

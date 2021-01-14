@@ -4,9 +4,6 @@
 \name{swncopula-class}
 \alias{swncopula-class}
 \title{Strict White Noise Copula Process}
-\value{
-
-}
 \description{
 Strict White Noise Copula Process
 }

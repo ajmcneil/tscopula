@@ -7,7 +7,7 @@
 swncopula()
 }
 \value{
-the strict white noise copula process
+The strict white noise copula process.
 }
 \description{
 Constructor Function for Strict White Noise Copula

@@ -18,7 +18,7 @@ qsdoubleweibull(p, mu = 0, shape = 1, scale = 1, gamma = 1)
 \item{gamma}{skewness parameter}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Quantile Function of Skew Double Weibull Distribution

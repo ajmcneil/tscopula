@@ -4,9 +4,6 @@
 \name{armacopula-class}
 \alias{armacopula-class}
 \title{ARMA Copula Processes}
-\value{
-
-}
 \description{
 Class of objects for ARMA copula processes.
 }

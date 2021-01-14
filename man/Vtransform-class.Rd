@@ -4,9 +4,6 @@
 \name{Vtransform-class}
 \alias{Vtransform-class}
 \title{V-Transform Class}
-\value{
-
-}
 \description{
 V-Transform Class
 }

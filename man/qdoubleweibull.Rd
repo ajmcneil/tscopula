@@ -16,7 +16,7 @@ qdoubleweibull(p, mu = 0, shape = 1, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Quantile Function of Double Weibull Distribution

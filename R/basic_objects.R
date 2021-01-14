@@ -3,7 +3,6 @@
 #' Class of objects for time series copula processes.
 #'
 #'
-#' @return
 #' @export
 #'
 #' @import stats
@@ -16,7 +15,7 @@ setClass("tscopula", contains = c("VIRTUAL"))
 #' New Generic for Simulating Time Series Models
 #'
 #' Methods are available for objects of class \linkS4class{tscopula},
-#' \linkS4class{margin} and \linkS4class{tsc}.
+#' \linkS4class{margin} and \linkS4class{tscm}.
 #'
 #' @param x an object of the model class.
 #' @param ... further arguments to be passed on.
@@ -31,14 +30,13 @@ setGeneric("sim", function(x, ...) {
 
 #' Strict White Noise Copula Process
 #'
-#' @return
 #' @export
 #'
 setClass("swncopula", contains = "tscopula")
 
 #' Constructor Function for Strict White Noise Copula
 #'
-#' @return the strict white noise copula process
+#' @return The strict white noise copula process.
 #' @export
 #'
 #' @examples
@@ -49,10 +47,10 @@ swncopula <- function() {
 
 #' Simulation Method for Strict White Noise Copula
 #'
-#' @param swncopula an object of class \linkS4class{swncopula}.
+#' @param x an object of class \linkS4class{swncopula}.
 #' @param n numeric value for length of simulated realisation.
 #'
-#' @return a realisation of strict white noise of length n
+#' @return A realisation of strict white noise of length n.
 #' @export
 #'
 #' @examples
@@ -65,7 +63,7 @@ setMethod("sim", "swncopula", function(x, n = 1000) {
 #'
 #' @param object an object of class \linkS4class{swncopula}.
 #'
-#' @return
+#' @return Null object
 #' @export
 #'
 setMethod("coef", "swncopula", function(object) {
@@ -76,7 +74,7 @@ setMethod("coef", "swncopula", function(object) {
 #'
 #' @param object an object of class \linkS4class{swncopula}.
 #'
-#' @return
+#' @return A summary of a \linkS4class{swncopula}.
 #' @export
 #'
 setMethod("show", "swncopula", function(object) {

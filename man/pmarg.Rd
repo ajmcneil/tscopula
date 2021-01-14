@@ -12,7 +12,7 @@ pmarg(x, q)
 \item{q}{vector of values at which CDF should be computed.}
 }
 \value{
-
+A vector of values for the CDF.
 }
 \description{
 Compute the cumulative distribution function of the marginal model.

@@ -6,7 +6,6 @@
 #' @slot modelspec list containing the family, number of parameters and rotations
 #' @slot pars list comprising of the parameters.
 #'
-#' @return
 #' @export
 #'
 setClass("dvinecopula", contains = "tscopula", slots = list(
@@ -85,7 +84,7 @@ setMethod("coef", c(object = "dvinecopula"), function(object) {
 #'
 #' @param object an object of class \linkS4class{dvinecopula}.
 #'
-#' @return
+#' @return A summary of an object of class \linkS4class{dvinecopula}.
 #' @export
 #'
 setMethod("show", "dvinecopula", function(object) {
@@ -156,7 +155,9 @@ setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
 #' @param theta parameters of copulas
 #' @param modelspec list of families of copulas
 #' @param udata data
-#' @return
+#'
+#' @return Value of objective function at parameters.
+#'
 #' @keywords internal
 #'
 dvinecopula_objective <- function(theta, modelspec, u) {
@@ -203,7 +204,6 @@ dvinecopula_objective <- function(theta, modelspec, u) {
 #' @param plotoption number giving plot choice
 #' @param bw logical for black-white plot
 #'
-#' @return
 #' @export
 plot_dvinecopula <- function(copula, data, plotoption, bw){
   data0 <- data

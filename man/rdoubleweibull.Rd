@@ -16,7 +16,7 @@ rdoubleweibull(n, mu = 0, shape = 1, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of simulated values of length n.
 }
 \description{
 Random Number Generation for Double Weibull Distribution

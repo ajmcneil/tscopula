@@ -14,7 +14,7 @@ qlaplace(p, mu = 0, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Quantile Function of Laplace Distribution

@@ -33,7 +33,7 @@ vtscopula_objective(
 \item{avoidzero}{logical for whether zero should be avoided}
 }
 \value{
-
+Value of objective function at parameters.
 }
 \description{
 Objective function for gvtscopula fitting

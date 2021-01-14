@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{Vtransform}.}
 }
 \value{
-
+Summary of object of class \linkS4class{Vtransform}.
 }
 \description{
 Show Method for Vtransform Class

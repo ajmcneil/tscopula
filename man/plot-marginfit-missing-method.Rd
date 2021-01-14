@@ -12,11 +12,6 @@
 \item{plotoption}{number of plot required.}
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
-
-\item{y}{missing.}
-}
-\value{
-
 }
 \description{
 Plot Method for marginfit Class

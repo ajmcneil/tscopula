@@ -18,7 +18,7 @@ dst(x, df, mu, sigma, log = FALSE)
 \item{log}{}
 }
 \value{
-
+A vector of values for the density.
 }
 \description{
 Density of Student t

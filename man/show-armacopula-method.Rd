@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{armacopula}.}
 }
 \value{
-
+summary of \linkS4class{armacopula}.
 }
 \description{
 Show Method for ARMA copula process

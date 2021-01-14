@@ -16,7 +16,7 @@ rst(n, df, mu, sigma)
 \item{sigma}{scale parameter}
 }
 \value{
-
+A vector of values of length n.
 }
 \description{
 Random Number Generation for Student t

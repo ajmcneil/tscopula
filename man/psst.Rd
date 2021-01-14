@@ -18,7 +18,7 @@ psst(q, df = 10, gamma = 1, mu = 0, sigma = 1)
 \item{sigma}{scale parameter}
 }
 \value{
-
+A vector of values for the CDF.
 }
 \description{
 Distribution Function of Skewed Student t

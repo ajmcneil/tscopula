@@ -12,7 +12,6 @@
 #' @slot pars a numeric vector containing the named parameters of the distribution
 #' which are passed as arguments to pname, qname, dname and rname.
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -26,7 +25,7 @@ setClass("margin", slots = list(
 #'
 #' @param object an object of class \linkS4class{margin}.
 #'
-#' @return
+#' @return Vector of coefficients of marginal distribution.
 #' @export
 #'
 #'
@@ -42,7 +41,7 @@ setMethod("coef", "margin", function(object) {
 #' @param name character string giving name of distribution
 #' @param pars parameters of the distribution
 #'
-#' @return an object of class \linkS4class{margin}
+#' @return An object of class \linkS4class{margin}.
 #' @export
 #'
 #' @examples
@@ -71,7 +70,7 @@ margin <- function(name, pars = NULL) {
 #' @param x an object of class \linkS4class{margin}.
 #' @param q vector of values at which CDF should be computed.
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @export
 #'
 #' @examples
@@ -92,7 +91,7 @@ pmarg <- function(x, q) {
 #' @param x an object of class \linkS4class{margin}.
 #' @param p vector of probabilities for which quantiles should be computed.
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @export
 #'
 #' @examples
@@ -115,7 +114,7 @@ qmarg <- function(x, p) {
 #' @param log logical variable specifying whether log density should be
 #' returned.
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @export
 #'
 #' @examples
@@ -136,7 +135,7 @@ dmarg <- function(x, y, log = FALSE) {
 #' @param scale scale parameter
 #' @param log flag for log density
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 dlaplace <- function(x, mu = 0, scale = 1, log = FALSE){
@@ -149,7 +148,7 @@ dlaplace <- function(x, mu = 0, scale = 1, log = FALSE){
 #' @param mu location parameter
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of values for the distribution function.
 #' @keywords internal
 #'
 plaplace <- function(q, mu = 0, scale = 1){
@@ -162,7 +161,7 @@ plaplace <- function(q, mu = 0, scale = 1){
 #' @param mu location parameter
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qlaplace <- function(p, mu = 0, scale = 1){
@@ -175,7 +174,7 @@ qlaplace <- function(p, mu = 0, scale = 1){
 #' @param mu location parameter
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of simulated values of length n.
 #' @keywords internal
 #'
 rlaplace <- function(n, mu = 0, scale = 1){
@@ -190,7 +189,7 @@ rlaplace <- function(n, mu = 0, scale = 1){
 #' @param skewness parameter
 #' @param log flag for log density
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 dslaplace <- function(x, mu = 0, scale = 1, gamma = 1, log = FALSE){
@@ -204,7 +203,7 @@ dslaplace <- function(x, mu = 0, scale = 1, gamma = 1, log = FALSE){
 #' @param scale scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @keywords internal
 #'
 pslaplace <- function(q, mu = 0, scale = 1, gamma = 1){
@@ -218,7 +217,7 @@ pslaplace <- function(q, mu = 0, scale = 1, gamma = 1){
 #' @param scale scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qslaplace <- function(p, mu = 0, scale = 1, gamma = 1){
@@ -232,7 +231,7 @@ qslaplace <- function(p, mu = 0, scale = 1, gamma = 1){
 #' @param scale scale parameter
 #' @param gamma skewness paramater
 #'
-#' @return
+#' @return A vector of simulated values of length n.
 #' @keywords internal
 #'
 rslaplace <- function(n, mu = 0, scale = 1, gamma = 1){
@@ -247,7 +246,7 @@ rslaplace <- function(n, mu = 0, scale = 1, gamma = 1){
 #' @param scale scale parameter
 #' @param log flag for log density
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 ddoubleweibull <- function(x, mu = 0, shape = 1, scale = 1, log = FALSE){
@@ -261,7 +260,7 @@ ddoubleweibull <- function(x, mu = 0, shape = 1, scale = 1, log = FALSE){
 #' @param shape shape paramater
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @keywords internal
 #'
 pdoubleweibull <- function(q, mu = 0, shape = 1, scale = 1){
@@ -275,7 +274,7 @@ pdoubleweibull <- function(q, mu = 0, shape = 1, scale = 1){
 #' @param shape shape parameter
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qdoubleweibull <- function(p, mu = 0, shape = 1, scale = 1){
@@ -289,7 +288,7 @@ qdoubleweibull <- function(p, mu = 0, shape = 1, scale = 1){
 #' @param shape shape parameter
 #' @param scale scale parameter
 #'
-#' @return
+#' @return A vector of simulated values of length n.
 #' @keywords internal
 #'
 rdoubleweibull <- function(n, mu = 0, shape = 1, scale = 1){
@@ -305,7 +304,7 @@ rdoubleweibull <- function(n, mu = 0, shape = 1, scale = 1){
 #' @param gamma skewness parameter
 #' @param log flag for log density
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 dsdoubleweibull <- function(x, mu = 0, shape = 1, scale = 1, gamma = 1, log = FALSE)
@@ -331,7 +330,7 @@ dsdoubleweibull <- function(x, mu = 0, shape = 1, scale = 1, gamma = 1, log = FA
 #' @param scale scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @keywords internal
 #'
 psdoubleweibull <- function(q, mu = 0, shape = 1, scale = 1, gamma = 1)
@@ -353,7 +352,7 @@ psdoubleweibull <- function(q, mu = 0, shape = 1, scale = 1, gamma = 1)
 #' @param scale scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qsdoubleweibull <- function(p, mu = 0, shape = 1, scale = 1, gamma = 1)
@@ -374,7 +373,7 @@ qsdoubleweibull <- function(p, mu = 0, shape = 1, scale = 1, gamma = 1)
 #' @param scale scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values of length n.
 #' @keywords internal
 #'
 rsdoubleweibull <- function(n, mu = 0, shape = 1, scale = 1, gamma = 1)
@@ -389,7 +388,7 @@ rsdoubleweibull <- function(n, mu = 0, shape = 1, scale = 1, gamma = 1)
 #' @param mu location parameter
 #' @param sigma scale parameter
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @keywords internal
 #'
 pst <- function(q, df = 10, mu = 0, sigma = 1) {
@@ -403,7 +402,7 @@ pst <- function(q, df = 10, mu = 0, sigma = 1) {
 #' @param mu location parameter
 #' @param sigma scale parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qst <- function(p, df, mu, sigma) {
@@ -418,7 +417,7 @@ qst <- function(p, df, mu, sigma) {
 #' @param sigma scale parameter
 #' @param log
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 dst <- function(x, df, mu, sigma, log = FALSE) {
@@ -440,7 +439,7 @@ dst <- function(x, df, mu, sigma, log = FALSE) {
 #' @param mu location parameter
 #' @param sigma scale parameter
 #'
-#' @return
+#' @return A vector of values of length n.
 #' @keywords internal
 #'
 rst <- function(n, df, mu, sigma) {
@@ -455,7 +454,7 @@ rst <- function(n, df, mu, sigma) {
 #' @param sigma scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the CDF.
 #' @keywords internal
 #'
 psst <- function(q, df = 10, gamma = 1, mu = 0, sigma = 1) {
@@ -475,7 +474,7 @@ psst <- function(q, df = 10, gamma = 1, mu = 0, sigma = 1) {
 #' @param sigma scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of values for the quantile function.
 #' @keywords internal
 #'
 qsst <- function(p, df, gamma, mu, sigma) {
@@ -496,7 +495,7 @@ qsst <- function(p, df, gamma, mu, sigma) {
 #' @param gamma skewness parameter
 #' @param log
 #'
-#' @return
+#' @return A vector of values for the density.
 #' @keywords internal
 #'
 dsst <- function(x, df, gamma, mu, sigma, log = FALSE) {
@@ -522,7 +521,7 @@ dsst <- function(x, df, gamma, mu, sigma, log = FALSE) {
 #' @param sigma scale parameter
 #' @param gamma skewness parameter
 #'
-#' @return
+#' @return A vector of simulated values of length n.
 #' @keywords internal
 #'
 rsst <- function(n, df, gamma, mu, sigma) {
@@ -540,7 +539,7 @@ rsst <- function(n, df, gamma, mu, sigma) {
 #' @param x an object of class \linkS4class{margin}.
 #' @param n length of realization.
 #'
-#' @return
+#' @return A vector of simulated values of length n.
 #' @export
 #'
 #' @examples
@@ -557,7 +556,6 @@ setMethod("sim", c(x = "margin"), function(x, n = 1000) {
 #' @slot data numeric vector or time series of data.
 #' @slot fit a list containing details of the maximum likelihood fit.
 #'
-#' @return
 #' @export
 #'
 setClass("marginfit",
@@ -612,7 +610,7 @@ setMethod("fit", c(x = "margin", y = "ANY"), function(x, y,
 #'
 #' @param object an object of class \linkS4class{margin}.
 #'
-#' @return
+#' @return A summary of an object of class \linkS4class{margin}.
 #' @export
 #'
 #'
@@ -643,7 +641,7 @@ setMethod("show", "margin", function(object) {
 #'
 #' @param object an object of class \linkS4class{marginfit}.
 #'
-#' @return an object of class logLik
+#' @return An object of class logLik.
 #' @export
 #'
 setMethod("logLik", "marginfit", function(object) {
@@ -657,11 +655,9 @@ setMethod("logLik", "marginfit", function(object) {
 #' Plot Method for marginfit Class
 #'
 #' @param x an object of class \linkS4class{marginfit}.
-#' @param y missing.
 #' @param plotoption number of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
-#' @return
 #' @export
 #'
 setMethod("plot", c(x = "marginfit", y = "missing"),

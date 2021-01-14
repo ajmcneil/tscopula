@@ -21,7 +21,7 @@ profilefulcrum(
 \item{plot}{logical values specifying whether plot should be created.}
 }
 \value{
-a matrix containing fulcrum values and log likelihood values.
+A matrix containing fulcrum values and log likelihood values.
 }
 \description{
 Profile likelihood for fulcrum parameter

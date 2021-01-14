@@ -4,9 +4,6 @@
 \name{VtransformI-class}
 \alias{VtransformI-class}
 \title{Invertible V-Transform Class}
-\value{
-
-}
 \description{
 This class inherits from the \linkS4class{Vtransform} class and contains v-transforms
 with an analytical expression for the inverse.

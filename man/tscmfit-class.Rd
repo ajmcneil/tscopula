@@ -4,9 +4,6 @@
 \name{tscmfit-class}
 \alias{tscmfit-class}
 \title{Fitted tscm Model}
-\value{
-
-}
 \description{
 Class of objects for fitted \linkS4class{tscm} models.
 }

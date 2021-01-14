@@ -12,7 +12,7 @@
 \item{n}{length of realization.}
 }
 \value{
-
+A vector of simulated values of length n.
 }
 \description{
 Simulation Method for margin Class

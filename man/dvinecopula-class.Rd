@@ -4,9 +4,6 @@
 \name{dvinecopula-class}
 \alias{dvinecopula-class}
 \title{D-vine Copula Processes}
-\value{
-
-}
 \description{
 Class of objects for d-vine copula processes.
 }

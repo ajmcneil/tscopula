@@ -20,7 +20,7 @@ dsst(x, df, gamma, mu, sigma, log = FALSE)
 \item{log}{}
 }
 \value{
-
+A vector of values for the density.
 }
 \description{
 Density of Skewed Student t

@@ -18,6 +18,6 @@ An object of the fitted model class.
 }
 \description{
 Methods are available for objects of class \linkS4class{tscopula},
-\linkS4class{vtscopula}, \linkS4class{margin}
-\linkS4class{tsc} and \linkS4class{gvtcopar}.
+\linkS4class{vtscopula}, \linkS4class{margin} and
+\linkS4class{tscm}.
 }

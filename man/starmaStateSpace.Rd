@@ -14,7 +14,7 @@ starmaStateSpace(ar, ma, order)
 \item{order}{vector giving order (p,q)}
 }
 \value{
-
+State space representation of ARMA process.
 }
 \description{
 State Space Representation for standardized ARMA model

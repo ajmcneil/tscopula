@@ -10,9 +10,11 @@
 \item{from}{a \linkS4class{tscopulafit} object.}
 
 \item{to}{a \linkS4class{tscmfit} object.}
+
+\item{strict}{logical variable stating whether strict coercion should be enforced.}
 }
 \value{
-a \linkS4class{tscmfit} object.
+A \linkS4class{tscmfit} object.
 }
 \description{
 Convert tscopulafit Object to be tscmfit Object

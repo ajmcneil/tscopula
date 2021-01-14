@@ -10,9 +10,11 @@
 \item{from}{a \linkS4class{tscopula} object.}
 
 \item{to}{a \linkS4class{tscm} object.}
+
+\item{strict}{logical variable stating whether strict coercion should be enforced.}
 }
 \value{
-a \linkS4class{tscm} object.
+A \linkS4class{tscm} object.
 }
 \description{
 Convert tscopula Object to tscm Object

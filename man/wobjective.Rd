@@ -16,7 +16,7 @@ wobjective(theta, paircop, theta_vt, vtgrad, u)
 \item{vt}{v-transform}
 }
 \value{
-
+Value of additional objective for W-copula.
 }
 \description{
 Additional objective for generalized processes

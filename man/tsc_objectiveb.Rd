@@ -39,7 +39,7 @@ tsc_objectiveb(
 \item{avoidzero}{whether zero should be avoided}
 }
 \value{
-
+Value of objective function at parameters.
 }
 \description{
 Objective Function for Full Fit With V-Tranform

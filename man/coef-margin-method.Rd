@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{margin}.}
 }
 \value{
-
+Vector of coefficients of marginal distribution.
 }
 \description{
 Coef Method for margin Class

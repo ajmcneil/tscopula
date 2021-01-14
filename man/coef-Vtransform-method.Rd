@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{Vtransform}.}
 }
 \value{
-parameters of Vtransform model
+Parameters of Vtransform model.
 }
 \description{
 Coef Method for Vtransform Class

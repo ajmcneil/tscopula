@@ -16,13 +16,6 @@
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 
 \item{klimit}{maximum lag value for dvinecopula2 cplots}
-
-\item{y}{missing.}
-
-\item{vtransform}{logical variable specifying whether v-transform is plotted,}
-}
-\value{
-
 }
 \description{
 Plot Method for tscopulafit Class

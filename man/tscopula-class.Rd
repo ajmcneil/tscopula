@@ -4,9 +4,6 @@
 \name{tscopula-class}
 \alias{tscopula-class}
 \title{Time Series Copula Processes}
-\value{
-
-}
 \description{
 Class of objects for time series copula processes.
 }

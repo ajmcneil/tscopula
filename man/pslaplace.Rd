@@ -16,7 +16,7 @@ pslaplace(q, mu = 0, scale = 1, gamma = 1)
 \item{gamma}{skewness parameter}
 }
 \value{
-
+A vector of values for the CDF.
 }
 \description{
 Distribution Function of Skew Laplace Distribution

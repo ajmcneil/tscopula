@@ -18,7 +18,7 @@ dslaplace(x, mu = 0, scale = 1, gamma = 1, log = FALSE)
 \item{skewness}{parameter}
 }
 \value{
-
+A vector of values for the density.
 }
 \description{
 Density of Skew Laplace Distribution

@@ -15,9 +15,6 @@ plot_armacopula(copula, data, plotoption, bw)
 
 \item{bw}{logical for black-white plot}
 }
-\value{
-
-}
 \description{
 Plot Function for armacopula Objects
 }

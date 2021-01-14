@@ -13,9 +13,6 @@ plot_volproxy(x, plotoption, bw)
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
-\value{
-
-}
 \description{
 Plot Function for Volatility Proxy Plot
 }

@@ -4,23 +4,16 @@
 \name{vtscopula-class}
 \alias{vtscopula-class}
 \title{VT Time Series Copula Processes}
-\value{
-
-}
 \description{
 Class of objects for V-transformed time series copula processes.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{name}}{name of time series copula process.}
-
-\item{\code{type}}{character string giving type of copula process (ARMA or d-vine).}
-
-\item{\code{modelspec}}{list containing vital specification information.}
-
-\item{\code{pars}}{a list comprising of the parameters.}
+\item{\code{Vcopula}}{object of class \linkS4class{tscopulaU}.}
 
 \item{\code{Vtransform}}{object of class \linkS4class{Vtransform}.}
+
+\item{\code{Wcopula}}{object of class \linkS4class{tscopula}.}
 }}
 

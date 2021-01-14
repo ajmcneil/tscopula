@@ -17,7 +17,7 @@ fitFULLb(x, y, tsoptions, control)
 \code{\link[stats]{optim}} function.}
 }
 \value{
-an object of class \linkS4class{tscmfit}.
+An object of class \linkS4class{tscmfit}.
 }
 \description{
 Fit tscm Jointly

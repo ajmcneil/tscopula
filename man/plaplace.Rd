@@ -14,7 +14,7 @@ plaplace(q, mu = 0, scale = 1)
 \item{scale}{scale parameter}
 }
 \value{
-
+A vector of values for the distribution function.
 }
 \description{
 Distribution Function of Laplace Distribution

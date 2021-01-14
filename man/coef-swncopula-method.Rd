@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{swncopula}.}
 }
 \value{
-
+Null object
 }
 \description{
 Coef Method for Strict White Noise Copula

@@ -15,7 +15,7 @@ dmarg(x, y, log = FALSE)
 returned.}
 }
 \value{
-
+A vector of values for the density.
 }
 \description{
 Compute the density function of the marginal model.

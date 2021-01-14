@@ -26,7 +26,7 @@ fulcrum - fixed value for fulcrum parameter or NA.}
 \code{\link[stats]{optim}} function.}
 }
 \value{
-an object of class \linkS4class{tscopulafit}.
+An object of class \linkS4class{tscopulafit}.
 }
 \description{
 Fit object of class \linkS4class{vtscopula}

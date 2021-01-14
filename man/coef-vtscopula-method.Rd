@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{vtscopula}.}
 }
 \value{
-parameters of vtscopula model
+Parameters of vtscopula model.
 }
 \description{
 Coef Method for vtscopula Class

@@ -16,7 +16,7 @@ rslaplace(n, mu = 0, scale = 1, gamma = 1)
 \item{gamma}{skewness paramater}
 }
 \value{
-
+A vector of simulated values of length n.
 }
 \description{
 Random Number Generation for Skew Laplace Distribution

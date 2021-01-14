@@ -12,7 +12,7 @@ margin(name, pars = NULL)
 \item{pars}{parameters of the distribution}
 }
 \value{
-an object of class \linkS4class{margin}
+An object of class \linkS4class{margin}.
 }
 \description{
 Constructor Function for margin

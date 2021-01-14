@@ -10,7 +10,7 @@ non_stat(ar)
 \item{ar}{}
 }
 \value{
-
+A logical variable stating whether ARMA process is causal.
 }
 \description{
 Check for Causality

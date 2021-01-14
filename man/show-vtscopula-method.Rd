@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{vtscopula}.}
 }
 \value{
-
+Summary of object of class \linkS4class{vtscopula}.
 }
 \description{
 Show Method for vtscopula objects

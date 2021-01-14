@@ -6,7 +6,6 @@
 #' @slot tscopula an object of class \linkS4class{tscopula}.
 #' @slot margin an object of class \linkS4class{margin}.
 #'
-#' @return
 #' @export
 #'
 setClass("tscm",
@@ -20,7 +19,7 @@ setClass("tscm",
 #'
 #' @param object an object of class \linkS4class{tscm}.
 #'
-#' @return
+#' @return A summary of an object of class \linkS4class{tscm}.
 #' @export
 #'
 setMethod("show", "tscm", function(object) {
@@ -55,7 +54,7 @@ setMethod("show", "tscm", function(object) {
 #'
 #' @param object an object of class \linkS4class{tscm}.
 #'
-#' @return vector of coefficients of model.
+#' @return Vector of coefficients of model.
 #' @export
 #'
 setMethod("coef", "tscm", function(object) {
@@ -114,7 +113,6 @@ setMethod(
 #' @slot data a vector or time series of data to which process has been fitted.
 #' @slot fit a list containing details of the fit.
 #'
-#' @return
 #' @export
 #'
 setClass(
@@ -138,7 +136,7 @@ setClass(
 #' @param method character string specifying method.
 #'
 #'
-#' @return an object of class \linkS4class{tscmfit}.
+#' @return An object of class \linkS4class{tscmfit}.
 #' @export
 #'
 #' @examples
@@ -194,7 +192,7 @@ setMethod(
 #' @param control list of control parameters to be passed to the
 #' \code{\link[stats]{optim}} function.
 #'
-#' @return an object of class \linkS4class{tscmfit}.
+#' @return An object of class \linkS4class{tscmfit}.
 #' @keywords internal
 #'
 fitEDF <- function(x, y, tsoptions, control) {
@@ -217,7 +215,7 @@ fitEDF <- function(x, y, tsoptions, control) {
 #' @param control list of control parameters to be passed to the
 #' \code{\link[stats]{optim}} function.
 #'
-#' @return an object of class \linkS4class{tscmfit}.
+#' @return An object of class \linkS4class{tscmfit}.
 #' @keywords internal
 #'
 fitSTEPS <- function(x, y, tsoptions, control) {
@@ -250,7 +248,7 @@ fitSTEPS <- function(x, y, tsoptions, control) {
 #' @param control list of control parameters to be passed to the
 #' \code{\link[stats]{optim}} function.
 #'
-#' @return an object of class \linkS4class{tscmfit}.
+#' @return An object of class \linkS4class{tscmfit}.
 #' @keywords internal
 #'
 fitFULLa <- function(x, y, tsoptions, control) {
@@ -288,7 +286,7 @@ fitFULLa <- function(x, y, tsoptions, control) {
 #' @param cdf marginal cdf
 #' @param y vector of data values
 #'
-#' @return
+#' @return Value of objective function at parameters.
 #' @keywords internal
 #'
 tsc_objectivea <-
@@ -312,8 +310,9 @@ tsc_objectivea <-
 #'
 #' @param from a \linkS4class{tscopula} object.
 #' @param to a \linkS4class{tscm} object.
+#' @param strict logical variable stating whether strict coercion should be enforced.
 #'
-#' @return a \linkS4class{tscm} object.
+#' @return A \linkS4class{tscm} object.
 #' @export
 #'
 setMethod(
@@ -327,8 +326,9 @@ setMethod(
 #'
 #' @param from a \linkS4class{tscopulafit} object.
 #' @param to a \linkS4class{tscmfit} object.
+#' @param strict logical variable stating whether strict coercion should be enforced.
 #'
-#' @return a \linkS4class{tscmfit} object.
+#' @return A \linkS4class{tscmfit} object.
 #' @export
 #'
 setMethod(
@@ -347,7 +347,7 @@ setMethod(
 #'
 #' @param object an object of class \linkS4class{tscmfit}.
 #'
-#' @return an object of class logLik
+#' @return An object of class logLik.
 #' @export
 #'
 setMethod("logLik", "tscmfit", function(object) {
@@ -361,13 +361,11 @@ setMethod("logLik", "tscmfit", function(object) {
 #' Plot Method for tscmfit Class
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
-#' @param y missing.
 #' @param plotoption choice of plot within plottype.
 #' @param plottype type of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #' @param klimit maximum lag value for dvinecopula2 cplots
 #'
-#' @return
 #' @export
 #'
 setMethod("plot", c(x = "tscmfit", y = "missing"),
@@ -392,7 +390,6 @@ setMethod("plot", c(x = "tscmfit", y = "missing"),
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
-#' @return
 #' @export
 #'
 plot_volprofile <- function(x, bw) {
@@ -417,7 +414,6 @@ plot_volprofile <- function(x, bw) {
 #' @param plotoption choice of plot.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
-#' @return
 #' @export
 #'
 plot_volproxy <- function(x, plotoption, bw){

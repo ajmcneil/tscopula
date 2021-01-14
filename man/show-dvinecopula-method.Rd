@@ -10,7 +10,7 @@
 \item{object}{an object of class \linkS4class{dvinecopula}.}
 }
 \value{
-
+A summary of an object of class \linkS4class{dvinecopula}.
 }
 \description{
 Show Method for dvinecopula Class

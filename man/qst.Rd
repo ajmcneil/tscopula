@@ -16,7 +16,7 @@ qst(p, df, mu, sigma)
 \item{sigma}{scale parameter}
 }
 \value{
-
+A vector of values for the quantile function.
 }
 \description{
 Quantile Function of Student t
