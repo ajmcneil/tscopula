@@ -81,6 +81,29 @@ plot(fit_mix, plotoption = 1)
 plot(fit_mix, plotoption = 2)
 ```
 
+### D-Vine Copula (second kind)
+
+In the next section we try the Frank copula with a finite value for `maxlag` and a linear v-transform. In this case a 2-parameter v-transform does not add significantly to the model and an infinite value for `maxlag` makes next to no difference in the fit.
+
+The model using a Frank copula seems superior to the ARMA copula model.
+
+```{r}
+copmod_Frank <- dvinecopula2(family = "frank",
+                             pars = list(ar = 0.95, ma = -0.85),
+                             maxlag = 30)
+mod_Frank <- vtscopula(copmod_Frank, Vlinear(0.45))
+fit_Frank <- fit(mod_Frank, U, tsoptions = tsoptions)
+
+AIC(fit_Gauss2, fit_Frank)
+```
+
+We provide plots for the model with Frank copula.
+
+```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+plot(fit_Frank, plotoption = 1)
+plot(fit_Frank, plotoption = 2)
+```
+
 
 ## Marginal Models
 
@@ -102,6 +125,8 @@ AIC(marg_st, marg_sst, marg_slp, marg_lp, marg_dw, marg_sdw)
 
 ## Full Models
 
+### D-Vine Copula
+
 We fit a full model combining the double Weibull margin with the VT-d-vine model.
 
 ```{r,fig.show='hold', dev.args =list(pointsize=9)}
@@ -109,7 +134,6 @@ fullmod <- tscm(fit_mix, margin = marg_dw)
 fullmod <- fit(fullmod, as.numeric(X), 
                method = "full", tsoptions = tsoptions, control = list(maxit = 4000))
 fullmod
-AIC(marg_dw, fullmod)
 ```
 
 The plots show aspect of the fit.
@@ -123,5 +147,28 @@ plot(fullmod, plottype = "volprofile")
 plot(fullmod, plottype = "volproxy")
 plot(fullmod, plotoption = 2, plottype = "volproxy")
 ```
+
+## D-Vine Copula of second kind
+
+We fit a full model combining the double Weibull margin with the VT-d-vine model.
+
+```{r,fig.show='hold', dev.args =list(pointsize=9)}
+fullmod2 <- tscm(fit_Frank, margin = marg_dw)
+fullmod2 <- fit(fullmod2, as.numeric(X), 
+               method = "full", tsoptions = tsoptions)
+fullmod2
+AIC(marg_dw, fullmod, fullmod2)
+```
+
+```{r,fig.show='hold', dev.args =list(pointsize=9)}
+plot(fullmod2, plotoption = 1)
+plot(fullmod2, plotoption = 2)
+plot(fullmod2, plottype = "margin")
+plot(fullmod2, plottype = "vtransform")
+plot(fullmod2, plottype = "volprofile")
+plot(fullmod2, plottype = "volproxy")
+plot(fullmod2, plotoption = 2, plottype = "volproxy")
+```
+
 
 
