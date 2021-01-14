@@ -24,7 +24,8 @@ Imports:
     graphics,
     utils,
     arfima,
-    Matrix
+    Matrix,
+    copula
 Collate:
     'basic_objects.R'
     'armacopula.R'

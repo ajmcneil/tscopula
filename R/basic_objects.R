@@ -6,6 +6,11 @@
 #' @return
 #' @export
 #'
+#' @import stats
+#' @import methods
+#' @import graphics
+#' @import utils
+#'
 setClass("tscopula", contains = c("VIRTUAL"))
 
 #' New Generic for Simulating Time Series Models

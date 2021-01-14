@@ -19,7 +19,7 @@
 \item{type}{type of plot: 'transform' for plot of transform, 'inverse' for plot of inverse,
 'gradient' for plot of gradient or 'pdown' for plot of conditional probability.}
 
-\item{shading}{logical variable specifying whether inadmissable zone for v-transform
+\item{shading}{logical variable specifying whether inadmissible zone for v-transform
 should be shaded}
 
 \item{npoints}{number of plotting points along x-axis.}

@@ -15,9 +15,11 @@ dvinecopula2(
 \arguments{
 \item{family}{family name}
 
-\item{rotation}{a vector of rotations}
+\item{rotation}{rotation}
 
 \item{pars}{a list containing the parameters of each lag}
+
+\item{maxlag}{scalar specifying maximum lag}
 
 \item{kapcf}{character string giving name of Kendal pacf}
 }
