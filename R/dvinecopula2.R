@@ -19,9 +19,9 @@ setClass("dvinecopula2", contains = "tscopula", slots = list(
 #'
 #' @param family family name
 #' @param rotation rotation
-#' @param kapcf character string giving name of Kendal pacf
+#' @param kpacf character string giving name of Kendal pacf
 #' @param pars a list containing the parameters of each lag
-#' @param rotation a vector of rotations
+#' @param maxlag scalar specifying maximum lag
 #'
 #' @return An object of class \linkS4class{dvinecopula}.
 #' @export

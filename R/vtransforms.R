@@ -333,6 +333,7 @@ vdownprob <- function(x, v) {
 #' @return A vector, matrix or time series with values in [0, 1].
 #' @export
 #'
+#'
 #' @examples
 #' stochinverse(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))
 #' library(copula)
@@ -364,7 +365,7 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
 #' @param y missing.
 #' @param type type of plot: 'transform' for plot of transform, 'inverse' for plot of inverse,
 #' 'gradient' for plot of gradient or 'pdown' for plot of conditional probability.
-#' @param shading logical variable specifying whether inadmissable zone for v-transform
+#' @param shading logical variable specifying whether inadmissible zone for v-transform
 #' should be shaded
 #' @param npoints number of plotting points along x-axis.
 #' @param lower the lower x-axis value for plotting.
@@ -372,6 +373,7 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
 #'
 #' @return
 #' @export
+#'
 #'
 #' @examples
 #' plot(Vsymmetric())
