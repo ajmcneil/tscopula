@@ -2,17 +2,16 @@
 % Please edit documentation in R/armacopula.R
 \name{non_stat}
 \alias{non_stat}
-\title{Check for Causality}
+\title{Check for Causality of ARMA Process}
 \usage{
 non_stat(ar)
 }
 \arguments{
-\item{ar}{}
+\item{ar}{vector of autoregressive parameters}
 }
 \value{
 A logical variable stating whether ARMA process is causal.
 }
 \description{
-Check for Causality
+Check for Causality of ARMA Process
 }
-\keyword{internal}

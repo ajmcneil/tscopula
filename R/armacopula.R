@@ -97,12 +97,12 @@ setMethod("show", c(object = "armacopula"), function(object) {
   print(coef(object))
 })
 
-#' Check for Causality
+#' Check for Causality of ARMA Process
 #'
-#' @param ar
+#' @param ar vector of autoregressive parameters
 #'
 #' @return A logical variable stating whether ARMA process is causal.
-#' @keywords internal
+#' @export
 #'
 non_stat <- function(ar) {
   status <- FALSE
@@ -115,12 +115,12 @@ non_stat <- function(ar) {
   status
 }
 
-#' Check for Invertibility
+#' Check for Invertibility of ARMA Process
 #'
-#' @param ma
+#' @param ma vector of moving average parameters
 #'
 #' @return A logical variable stating whether ARMA process is invertible.
-#' @keywords internal
+#' @export
 #'
 non_invert <- function(ma) {
   status <- FALSE
