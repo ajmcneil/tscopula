@@ -6,6 +6,6 @@ This package contains functions for the analysis of time series using copula mod
 
 ## References
 
-McNeil, A.J. (2021). Modelling volatile time series with v-transforms and copula. Risks, 9(14). https://www.mdpi.com/2227-9091/9/1/14
+McNeil, A.J. (2021). Modelling volatile time series with v-transforms and copulas. Risks, 9(14). https://www.mdpi.com/2227-9091/9/1/14
 
 Bladt, M., & McNeil, A.J. (2020). Time series copula models using d-vines and v-transforms: an alternative to GARCH modelling. https://arxiv.org/abs/2006.11088

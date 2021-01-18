@@ -9,15 +9,10 @@ Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.co
                   role = "aut")
                   )
 Maintainer: Alexander J. McNeil <alexanderjmcneil@gmail.com>                  
-Description: Functions for the analysis of time series using copula models. 
-    A full description of a strictly stationary time series can be obtained by 
-    choosing a univariate marginal distribution and a time series copula process, 
-    i.e. a serially dependent process of uniform random variables. 
-    Examples of the latter are the copula processes of Gaussian ARMA models and 
-    D-vine copula processes. Methods are provided for simulation and estimation 
-    of time series copula models. References:
-    McNeil, A.J. (2021) <doi:10.3390/risks9010014>
-    Bladt, M., & McNeil, A.J. (2020) <arXiv:2006.11088>
+Description: Functions for the analysis of time series using copula models.  
+    The package is based on methodology described in the following references.
+    McNeil, A.J. (2021) <doi:10.3390/risks9010014>,
+    Bladt, M., & McNeil, A.J. (2020) <arXiv:2006.11088>.
 Depends: R (>= 3.5.0)
 License: GPL-3
 Lazydata: true
