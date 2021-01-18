@@ -121,9 +121,7 @@ setMethod("sim", c(x = "vtscopula"), function(x, n = 1000) {
 #' @param y a vector or time series of data.
 #' @param tsoptions list of optional arguments:
 #' hessian is logical variable specifying whether Hessian matrix should be returned;
-#' start is vector od named starting values;
-#' avoidzero - logical variable specifying whether to implement correction to prevent V = 0;
-#' fulcrum - fixed value for fulcrum parameter or NA.
+#' method is choice of optimization method.
 #' @param control list of control parameters to be passed to the
 #' \code{\link[stats]{optim}} function.
 #'
@@ -141,27 +139,27 @@ setMethod(
   function(x, y,
            tsoptions = list(),
            control = list(maxit = 2000, warn.1d.NelderMead = FALSE)) {
-    defaults <- list(hessian = FALSE, method = "Nelder-Mead", fulcrum = NA, avoidzero = TRUE)
+    defaults <- list(hessian = FALSE, method = "Nelder-Mead")
     tsoptions <- setoptions(tsoptions, defaults)
     if (is(x, "tscopulafit")) {
       x <- x@tscopula
     }
     parlist <- getparlist(x)
+    fulcrum <- as.numeric(x@Vtransform@pars["delta"])
     fit <- optim(
-      par = tsunlist(parlist, tsoptions$fulcrum),
+      par = tsunlist(parlist, 0.5),
+      fulcrum = fulcrum,
       fn = vtscopula_objective,
       modelspec = x@Vcopula@modelspec,
       modeltype = is(x@Vcopula)[[1]],
       vt = x@Vtransform,
       wcopula = setwcopula(x),
       y = as.numeric(y),
-      fulcrum = tsoptions$fulcrum,
-      avoidzero = tsoptions$avoidzero,
       method = tsoptions$method,
       hessian = tsoptions$hessian,
       control = control
     )
-    newpars <- tsrelist(fit$par, tsoptions$fulcrum)
+    newpars <- tsrelist(fit$par, fulcrum)
     x@Vtransform@pars <- newpars$vt
     if (!is(x@Wcopula, "swncopula")) {
       x@Wcopula@pars[[1]] <- newpars$wcopula
@@ -191,21 +189,17 @@ setwcopula <- function(x) {
 #' Objective function for gvtscopula fitting
 #'
 #' @param theta vector of parameters
+#' @param fulcrum fixed value for fulcrum
 #' @param modelspec list containing tscopula specification
 #' @param modeltype character vector specifying tscopula type
 #' @param vt a v transform
 #' @param wcopula W copula for serial dependence
 #' @param y vector of data
-#' @param fulcrum fixed value for fulcrum or NA
-#' @param avoidzero logical for whether zero should be avoided
 #'
 #' @return Value of objective function at parameters.
 #' @keywords internal
 #'
-vtscopula_objective <- function(theta, modelspec, modeltype, vt, wcopula, y, fulcrum, avoidzero) {
-  if (!is.na(fulcrum)) {
-    theta <- c(theta, vt.delta = fulcrum)
-  }
+vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopula, y) {
   n_corepars <- switch(modeltype,
     armacopula = sum(modelspec),
     dvinecopula = sum(sapply(modelspec, function(v) {
@@ -216,20 +210,19 @@ vtscopula_objective <- function(theta, modelspec, modeltype, vt, wcopula, y, ful
     })),
     dvinecopula2 = modelspec$npar
   )
-  n_vt <- length(theta[substring(names(theta), 1, 2) == "vt"])
   theta_core <- theta[1:n_corepars]
-  theta_vt <- NULL
-  if (n_vt > 0) {
-    theta_vt <- theta[substring(names(theta), 1, 2) == "vt"]
-    if ((min(theta_vt) < 0) | (theta_vt["vt.delta"] > 1)) {
-      return(NA)
+  theta_vt <- c(delta = fulcrum)
+  n_vtextra <- length(theta[substring(names(theta), 1, 2) == "vt"])
+  if (n_vtextra > 0) {
+    theta_vtextra <- theta[substring(names(theta), 1, 2) == "vt"]
+    names(theta_vtextra) <- substring(names(theta_vtextra), 4)
+    theta_vt <- c(theta_vt, theta_vtextra)
     }
-    names(theta_vt) <- substring(names(theta_vt), 4)
-  }
+  if ((min(theta_vt) < 0) | (theta_vt["delta"] > 1))
+    return(NA)
   V <- do.call(vt@Vtrans, append(theta_vt, list(u = y)))
-  if (avoidzero) {
-    V <- pmax(V, 1 / (length(y) + 1))
-  }
+  if (min(V) == 0)
+    stop("Fulcrum coincides with datapoint: change fulcrum value(s)")
   objective <- eval(parse(text = paste(modeltype, "_objective", sep = "")))
   value <- objective(theta_core, modelspec, V)
   if (!(is.null(wcopula))) {
@@ -325,12 +318,11 @@ profilefulcrum <- function(data,
   }
   results <- numeric(length(locations))
   for (i in seq_along(locations)) {
+    tscopula@Vtransform@pars["delta"] <- locations[i]
     fitted_model <- fit(
       x = tscopula,
       y = data,
       tsoptions = list(
-        fulcrum = locations[i],
-        avoidfulcrum = TRUE,
         hessian = FALSE
       )
     )
@@ -358,9 +350,11 @@ fitFULLb <- function(x, y, tsoptions, control) {
   cdf <- eval(parse(text = paste("p", x@margin@name, sep = "")))
   parlist <- getparlist(x@tscopula)
   parlist$margin <- x@margin@pars
-  theta <- tsunlist(parlist, tsoptions$fulcrum)
+  theta <- tsunlist(parlist, 0.5)
+  fulcrum <- as.numeric(x@tscopula@Vtransform@pars["delta"])
   fit <- optim(
     par = theta,
+    fulcrum = fulcrum,
     fn = tsc_objectiveb,
     modelspec = x@tscopula@Vcopula@modelspec,
     modeltype = is(x@tscopula@Vcopula)[[1]],
@@ -369,13 +363,11 @@ fitFULLb <- function(x, y, tsoptions, control) {
     vt = x@tscopula@Vtransform,
     wcopula = setwcopula(x@tscopula),
     y = as.numeric(y),
-    fulcrum = tsoptions$fulcrum,
-    avoidzero = tsoptions$avoidzero,
     method = tsoptions$method,
     hessian = tsoptions$hessian,
     control = control
   )
-  newpars <- tsrelist(fit$par, fulcrum = tsoptions$fulcrum)
+  newpars <- tsrelist(fit$par, fulcrum)
   x@margin@pars <- newpars$margin
   newpars <- newpars[names(newpars) != "margin"]
   x@tscopula@Vtransform@pars <- newpars$vt
@@ -391,6 +383,7 @@ fitFULLb <- function(x, y, tsoptions, control) {
 #' Objective Function for Full Fit With V-Tranform
 #'
 #' @param theta vector of parameters
+#' @param fulcrum value for fulcrum
 #' @param modelspec list containing model specification
 #' @param modeltype character vector giving type of model
 #' @param dens marginal density function
@@ -398,14 +391,12 @@ fitFULLb <- function(x, y, tsoptions, control) {
 #' @param vt v-transform
 #' @param wcopula W copula if used
 #' @param y vector of data
-#' @param fulcrum value for fulcrum or NA
-#' @param avoidzero whether zero should be avoided
 #'
 #' @return Value of objective function at parameters.
 #' @keywords internal
 #'
 tsc_objectiveb <-
-  function(theta, modelspec, modeltype, dens, cdf, vt, wcopula, y, fulcrum, avoidzero) {
+  function(theta, fulcrum, modelspec, modeltype, dens, cdf, vt, wcopula, y) {
     margpars <- theta[substring(names(theta), 1, 6) == "margin"]
     nonmargpars <- theta[substring(names(theta), 1, 6) != "margin"]
     names(margpars) <- substring(names(margpars), 8)
@@ -416,6 +407,6 @@ tsc_objectiveb <-
     }
     U <- do.call(cdf, append(margpars, list(q = y)))
     termBC <-
-      vtscopula_objective(nonmargpars, modelspec, modeltype, vt, wcopula, U, fulcrum, avoidzero)
+      vtscopula_objective(nonmargpars, fulcrum, modelspec, modeltype, vt, wcopula, U)
     return(termA + termBC)
   }

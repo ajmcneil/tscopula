@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 library(tscopula)
 library(stats4)
 library(xts)
-tsoptions <- list(hessian = TRUE, method = "Nelder-Mead", avoidzero= FALSE)
+tsoptions <- list(hessian = TRUE, method = "Nelder-Mead")
 
 ```
 

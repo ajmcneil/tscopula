@@ -154,7 +154,7 @@ setMethod(
              maxit = 5000
            ),
            method = "IFM") {
-    defaults <- list(hessian = FALSE, method = "Nelder-Mead", fulcrum = NA, avoidzero = TRUE)
+    defaults <- list(hessian = FALSE, method = "Nelder-Mead")
     tsoptions <- setoptions(tsoptions, defaults)
     if (is(x, "tscmfit")) {
       tscopula <- x@tscopula
@@ -421,7 +421,7 @@ plot_volproxy <- function(x, plotoption, bw){
     stop("tscopula must be vtscopula")
   X <- x@data
   U <- pmarg(x@margin, X)
-  V <- vtrans(x@tscopula@Vtransform, U, correction = FALSE)
+  V <- vtrans(x@tscopula@Vtransform, U)
   colchoice <- ifelse(bw, "gray50", "red")
   switch(plotoption,
          {

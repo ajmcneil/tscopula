@@ -317,7 +317,7 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
                      dvinecopula = plot_dvinecopula(x@tscopula, x@data, plotoption, bw),
               #       dvinecopula2 = plot_dvinecopula2(x@tscopula, x@data, plotoption, bw, klimit),
                      vtscopula = {
-                       Vdata <- vtrans(x@tscopula@Vtransform, x@data, correction = TRUE)
+                       Vdata <- vtrans(x@tscopula@Vtransform, x@data)
                        plot(new("tscopulafit",
                                 tscopula = x@tscopula@Vcopula,
                                 data = Vdata,

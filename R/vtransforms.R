@@ -249,20 +249,15 @@ V3b <- function(delta = 0.5, kappa = 1, xi = 1) {
 #'
 #' @param x a \code{Vtransform} object.
 #' @param u a vector or time series with values in [0, 1].
-#' @param correction logical variable specifying whether v-transform
-#' should be bounded away from zero.
+#'
 #'
 #' @return A vector or time series with values in [0, 1].
 #' @export
 #'
 #' @examples
 #' vtrans(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))
-vtrans <- function(x, u, correction = FALSE) {
-  output <- do.call(x@Vtrans, append(x@pars, list(u = u)))
-  if (correction) {
-    output <- pmax(output, 1 / (length(u) + 1))
-  }
-  output
+vtrans <- function(x, u) {
+  do.call(x@Vtrans, append(x@pars, list(u = u)))
 }
 
 #' Calculate Gradient of V-Transform
