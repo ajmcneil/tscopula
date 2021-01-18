@@ -18,9 +18,7 @@
 
 \item{tsoptions}{list of optional arguments:
 hessian is logical variable specifying whether Hessian matrix should be returned;
-start is vector od named starting values;
-avoidzero - logical variable specifying whether to implement correction to prevent V = 0;
-fulcrum - fixed value for fulcrum parameter or NA.}
+method is choice of optimization method.}
 
 \item{control}{list of control parameters to be passed to the
 \code{\link[stats]{optim}} function.}

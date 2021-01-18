@@ -42,7 +42,7 @@ We start with the fulcrum profile-likelihood plot which indicates that a value $
 U <- strank(X)
 
 copmod_Gauss <- armacopula(pars = list(ar = 0.95, ma = -0.85))
-profilefulcrum(U, copmod_Gauss, locations = seq(0, 1, by = 0.05))
+profilefulcrum(U, copmod_Gauss, locations = seq(from = 0, to = 1, length = 20))
 abline(v = 0.45)
 ```
 

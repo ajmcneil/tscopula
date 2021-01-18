@@ -4,21 +4,12 @@
 \alias{tsc_objectiveb}
 \title{Objective Function for Full Fit With V-Tranform}
 \usage{
-tsc_objectiveb(
-  theta,
-  modelspec,
-  modeltype,
-  dens,
-  cdf,
-  vt,
-  wcopula,
-  y,
-  fulcrum,
-  avoidzero
-)
+tsc_objectiveb(theta, fulcrum, modelspec, modeltype, dens, cdf, vt, wcopula, y)
 }
 \arguments{
 \item{theta}{vector of parameters}
+
+\item{fulcrum}{value for fulcrum}
 
 \item{modelspec}{list containing model specification}
 
@@ -33,10 +24,6 @@ tsc_objectiveb(
 \item{wcopula}{W copula if used}
 
 \item{y}{vector of data}
-
-\item{fulcrum}{value for fulcrum or NA}
-
-\item{avoidzero}{whether zero should be avoided}
 }
 \value{
 Value of objective function at parameters.

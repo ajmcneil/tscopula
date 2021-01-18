@@ -4,15 +4,12 @@
 \alias{vtrans}
 \title{Evaluate a V-Transform}
 \usage{
-vtrans(x, u, correction = FALSE)
+vtrans(x, u)
 }
 \arguments{
 \item{x}{a \code{Vtransform} object.}
 
 \item{u}{a vector or time series with values in [0, 1].}
-
-\item{correction}{logical variable specifying whether v-transform
-should be bounded away from zero.}
 }
 \value{
 A vector or time series with values in [0, 1].

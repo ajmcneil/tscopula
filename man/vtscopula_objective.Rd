@@ -4,19 +4,12 @@
 \alias{vtscopula_objective}
 \title{Objective function for gvtscopula fitting}
 \usage{
-vtscopula_objective(
-  theta,
-  modelspec,
-  modeltype,
-  vt,
-  wcopula,
-  y,
-  fulcrum,
-  avoidzero
-)
+vtscopula_objective(theta, fulcrum, modelspec, modeltype, vt, wcopula, y)
 }
 \arguments{
 \item{theta}{vector of parameters}
+
+\item{fulcrum}{fixed value for fulcrum}
 
 \item{modelspec}{list containing tscopula specification}
 
@@ -27,10 +20,6 @@ vtscopula_objective(
 \item{wcopula}{W copula for serial dependence}
 
 \item{y}{vector of data}
-
-\item{fulcrum}{fixed value for fulcrum or NA}
-
-\item{avoidzero}{logical for whether zero should be avoided}
 }
 \value{
 Value of objective function at parameters.
