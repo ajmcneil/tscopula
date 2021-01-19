@@ -213,7 +213,7 @@ setMethod(
     tsoptions <- setoptions(tsoptions, defaults)
     objective <- eval(parse(text = paste(is(x)[[1]], "_objective", sep = "")))
     fit <- optim(
-      par = tsunlist(x@pars),
+      par = unlist(x@pars),
       fn = objective,
       modelspec = x@modelspec,
       u = as.numeric(y),
@@ -221,7 +221,7 @@ setMethod(
       hessian = tsoptions$hessian,
       control = control
     )
-    x@pars <- tsrelist(fit$par)
+    x@pars <- relist(fit$par, x@pars)
     new("tscopulafit",
       tscopula = x,
       data = y,
@@ -229,44 +229,6 @@ setMethod(
     )
   }
 )
-
-#' Unlist Function for tscopula Objects
-#'
-#' @param pars list of parameters
-#' @param fulcrum numerical value for fixed fulcrum or NA
-#'
-#' @return relistable vector of parameters
-#' @keywords internal
-#'
-tsunlist <- function(pars, fulcrum = NA) {
-  if ("vt" %in% names(pars)) {
-    if (is.null(pars$vt)) {
-      pars <- pars[-length(pars)]
-    }
-  }
-  if (!is.na(fulcrum)) {
-    if (length(pars$vt) == 1) pars <- pars[!(names(pars) == "vt")]
-    if (length(pars$vt) > 1) pars$vt <- pars$vt[-1]
-  }
-  unlist(as.relistable(pars))
-}
-
-#' Relist Function for tscopula Objects
-#'
-#' @param ests a relistable vector of parameter estimates
-#' @param fulcrum numerical value for fixed fulcrum or NA
-#'
-#' @return list of parameters for \linkS4class{tscopulafit} object.
-#' @keywords internal
-#'
-tsrelist <- function(ests, fulcrum = NA) {
-  newpars <- relist(ests)
-  attributes(newpars)$class <- NULL
-  if (!is.na(fulcrum)) {
-    newpars$vt <- c(delta = fulcrum, newpars$vt)
-  }
-  newpars
-}
 
 #' Set Optional Choices for tscopula Fitting
 #'

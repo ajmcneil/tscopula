@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_vtscopula.R
 \name{vtscopula_objective}
 \alias{vtscopula_objective}
-\title{Objective function for gvtscopula fitting}
+\title{Objective function for vtscopula fitting}
 \usage{
 vtscopula_objective(theta, fulcrum, modelspec, modeltype, vt, wcopula, y)
 }
@@ -25,6 +25,6 @@ vtscopula_objective(theta, fulcrum, modelspec, modeltype, vt, wcopula, y)
 Value of objective function at parameters.
 }
 \description{
-Objective function for gvtscopula fitting
+Objective function for vtscopula fitting
 }
 \keyword{internal}

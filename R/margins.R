@@ -679,5 +679,3 @@ setMethod("plot", c(x = "marginfit", y = "missing"),
             })
 
 
-
-

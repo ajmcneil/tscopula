@@ -154,7 +154,7 @@ setMethod(
              maxit = 5000
            ),
            method = "IFM") {
-    defaults <- list(hessian = FALSE, method = "Nelder-Mead")
+    defaults <- list(hessian = FALSE, method = "Nelder-Mead", changeatzero = FALSE)
     tsoptions <- setoptions(tsoptions, defaults)
     if (is(x, "tscmfit")) {
       tscopula <- x@tscopula
@@ -197,6 +197,12 @@ setMethod(
 #'
 fitEDF <- function(x, y, tsoptions, control) {
   U <- strank(as.numeric(y))
+  if (is(x@tscopula, "vtscopula") & tsoptions$changeatzero){
+    if (length(y[y == 0]) > 0)
+      stop("Remove zeros in dataset")
+    x@tscopula@Vtransform@pars["delta"] <-
+      as.numeric((length(y[y < 0]) + 0.5)/(length(y) + 1))
+  }
   copfit <- fit(x@tscopula, U, tsoptions, control)
   new("tscmfit",
     tscopula = copfit@tscopula,
@@ -221,6 +227,11 @@ fitEDF <- function(x, y, tsoptions, control) {
 fitSTEPS <- function(x, y, tsoptions, control) {
   margfit <- fit(x@margin, y, tsoptions = tsoptions, control = control)
   U <- pmarg(margfit, y)
+  if (is(x@tscopula, "vtscopula") & tsoptions$changeatzero){
+    if (length(y[y == 0]) > 0)
+      stop("Remove zeros in dataset")
+    x@tscopula@Vtransform@pars["delta"] <- as.numeric(pmarg(margfit, 0))
+  }
   copfit <- fit(x@tscopula, U, tsoptions = tsoptions, control = control)
   combinedfit <- list()
   names(margfit@fit$par) <- paste("margin.", names(margfit@fit$par), sep = "")
@@ -256,9 +267,8 @@ fitFULLa <- function(x, y, tsoptions, control) {
   cdf <- eval(parse(text = paste("p", x@margin@name, sep = "")))
   parlist <- x@tscopula@pars
   parlist$margin <- x@margin@pars
-  theta <- tsunlist(parlist, tsoptions$fulcrum)
   fit <- optim(
-    par = theta,
+    par = unlist(parlist),
     fn = tsc_objectivea,
     modelspec = x@tscopula@modelspec,
     modeltype = is(x@tscopula)[[1]],
@@ -269,7 +279,7 @@ fitFULLa <- function(x, y, tsoptions, control) {
     hessian = tsoptions$hessian,
     control = control
   )
-  newpars <- tsrelist(fit$par, fulcrum = tsoptions$fulcrum)
+  newpars <- relist(fit$par, parlist)
   x@margin@pars <- newpars$margin
   x@tscopula@pars <- newpars[names(newpars) != "margin"]
   new("tscmfit", tscopula = x@tscopula, margin = x@margin, data = y, fit = fit)
@@ -370,6 +380,8 @@ setMethod("logLik", "tscmfit", function(object) {
 #'
 setMethod("plot", c(x = "tscmfit", y = "missing"),
           function(x, plotoption = 1L, plottype = "copula", bw = FALSE, klimit = 30) {
+            if (x@margin@name == "edf")
+              stop("These plots require parametric margins")
             switch(plottype,
                    margin = plot(new("marginfit",
                                      margin = x@margin,

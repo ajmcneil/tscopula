@@ -73,27 +73,24 @@ setMethod("coef", "vtscopula", function(object) {
   c(coef(object@Vcopula), coef(object@Vtransform), coef(object@Wcopula))
 })
 
-#' Extract parameters of tscopula
+#' Extract parameters of vtscopula
 #'
-#' @param object an object of class \linkS4class{tscopula}.
+#' @param object an object of class \linkS4class{vtscopula}.
 #'
 #' @return A list of parameters.
 #' @keywords internal
 #'
-getparlist <- function(object) {
-  if (is(object, "tscopulaU")) {
-    return(object@pars)
-  } else if (is(object, "vtscopula")) {
+vtparlist <- function(object) {
     output <- object@Vcopula@pars
-    output$vt <- coef(object@Vtransform)
+    vpars <- coef(object@Vtransform)
+    if (length(vpars) > 1){
+      vpars <- vpars[-1]
+      output$vt <- vpars
+    }
     if (!is(object@Wcopula, "swncopula")) {
       output$wcopula <- object@Wcopula@pars[[1]]
     }
     output
-  }
-  else {
-    (stop("Unrecognized tscopula object"))
-  }
 }
 
 #' Simulation Method for vtscopula Class
@@ -144,10 +141,12 @@ setMethod(
     if (is(x, "tscopulafit")) {
       x <- x@tscopula
     }
-    parlist <- getparlist(x)
     fulcrum <- as.numeric(x@Vtransform@pars["delta"])
+    if (is.na(fulcrum))
+      stop("V-transform must contain a fulcrum value")
+    parlist <- vtparlist(x)
     fit <- optim(
-      par = tsunlist(parlist, 0.5),
+      par = unlist(parlist),
       fulcrum = fulcrum,
       fn = vtscopula_objective,
       modelspec = x@Vcopula@modelspec,
@@ -159,7 +158,8 @@ setMethod(
       hessian = tsoptions$hessian,
       control = control
     )
-    newpars <- tsrelist(fit$par, fulcrum)
+    newpars <- relist(fit$par, parlist)
+    newpars$vt <- c(delta = fulcrum, newpars$vt)
     x@Vtransform@pars <- newpars$vt
     if (!is(x@Wcopula, "swncopula")) {
       x@Wcopula@pars[[1]] <- newpars$wcopula
@@ -186,7 +186,7 @@ setwcopula <- function(x) {
   }
 }
 
-#' Objective function for gvtscopula fitting
+#' Objective function for vtscopula fitting
 #'
 #' @param theta vector of parameters
 #' @param fulcrum fixed value for fulcrum
@@ -348,12 +348,16 @@ profilefulcrum <- function(data,
 fitFULLb <- function(x, y, tsoptions, control) {
   dens <- eval(parse(text = paste("d", x@margin@name, sep = "")))
   cdf <- eval(parse(text = paste("p", x@margin@name, sep = "")))
-  parlist <- getparlist(x@tscopula)
+  parlist <- vtparlist(x@tscopula)
   parlist$margin <- x@margin@pars
-  theta <- tsunlist(parlist, 0.5)
   fulcrum <- as.numeric(x@tscopula@Vtransform@pars["delta"])
+  if (tsoptions$changeatzero){
+    if (length(y[y == 0]) > 0)
+      stop("Remove zeros in dataset")
+    fulcrum <- NA
+  }
   fit <- optim(
-    par = theta,
+    par = unlist(parlist),
     fulcrum = fulcrum,
     fn = tsc_objectiveb,
     modelspec = x@tscopula@Vcopula@modelspec,
@@ -367,9 +371,12 @@ fitFULLb <- function(x, y, tsoptions, control) {
     hessian = tsoptions$hessian,
     control = control
   )
-  newpars <- tsrelist(fit$par, fulcrum)
+  newpars <- relist(fit$par, parlist)
   x@margin@pars <- newpars$margin
   newpars <- newpars[names(newpars) != "margin"]
+  if (is.na(fulcrum))
+    fulcrum <- pmarg(x@margin, 0)
+  newpars$vt <- c(delta = fulcrum, newpars$vt)
   x@tscopula@Vtransform@pars <- newpars$vt
   newpars <- newpars[names(newpars) != "vt"]
   if (!is(x@tscopula@Wcopula, "swncopula")) {
@@ -406,6 +413,8 @@ tsc_objectiveb <-
       return(NA)
     }
     U <- do.call(cdf, append(margpars, list(q = y)))
+    if (is.na(fulcrum))
+      fulcrum <- do.call(cdf, append(margpars, list(q = 0)))
     termBC <-
       vtscopula_objective(nonmargpars, fulcrum, modelspec, modeltype, vt, wcopula, U)
     return(termA + termBC)

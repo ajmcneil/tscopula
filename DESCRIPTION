@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.1.3
-Date: 2021-01-07
+Version: 0.1.4
+Date: 2021-01-19
 Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
                   role = c("aut", "cre")),
                   person("Martin", "Bladt", email = "martinbladt@gmail.com", 
