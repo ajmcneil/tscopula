@@ -144,6 +144,8 @@ setMethod(
     fulcrum <- as.numeric(x@Vtransform@pars["delta"])
     if (is.na(fulcrum))
       stop("V-transform must contain a fulcrum value")
+    if (sum(y == fulcrum) > 0)
+      stop("Data point at fulcrum")
     parlist <- vtparlist(x)
     fit <- optim(
       par = unlist(parlist),
@@ -222,7 +224,7 @@ vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopul
     return(NA)
   V <- do.call(vt@Vtrans, append(theta_vt, list(u = y)))
   if (min(V) == 0)
-    stop("Fulcrum coincides with datapoint: change fulcrum value(s)")
+    return(NA)
   objective <- eval(parse(text = paste(modeltype, "_objective", sep = "")))
   value <- objective(theta_core, modelspec, V)
   if (!(is.null(wcopula))) {
