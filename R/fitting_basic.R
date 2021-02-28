@@ -339,7 +339,6 @@ setMethod("resid", "tscopulafit",
 #' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
-#' @examples
 setMethod("glag", c(x = "tscopulafit"), function(x, lagmax = 20, glagplot = FALSE) {
   data <- x@data
   copula <- x@tscopula
