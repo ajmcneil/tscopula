@@ -4,18 +4,16 @@
 \alias{plot,tscmfit,missing-method}
 \title{Plot Method for tscmfit Class}
 \usage{
-\S4method{plot}{tscmfit,missing}(x, plotoption = 1L, plottype = "copula", bw = FALSE, klimit = 30)
+\S4method{plot}{tscmfit,missing}(x, plottype = "residual", bw = FALSE, lagmax = 30)
 }
 \arguments{
 \item{x}{an object of class \linkS4class{tscmfit}.}
-
-\item{plotoption}{choice of plot within plottype.}
 
 \item{plottype}{type of plot required.}
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 
-\item{klimit}{maximum lag value for dvinecopula2 cplots}
+\item{lagmax}{maximum lag value for dvinecopula2 plots}
 }
 \description{
 Plot Method for tscmfit Class

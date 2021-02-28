@@ -421,3 +421,19 @@ tsc_objectiveb <-
       vtscopula_objective(nonmargpars, fulcrum, modelspec, modeltype, vt, wcopula, U)
     return(termA + termBC)
   }
+
+#' Calculate Kendall's tau values for vtscopula model
+#'
+#' @param x a \linkS4class{vtscopula} object
+#' @param maxlag maximum value of lag
+#'
+#' @return vector consisting of Kendall's tau values for each pair copula
+#' @export
+#'
+#' @examples
+#' mod <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)))
+#' kendall(mod)
+setMethod("kendall", c(x = "vtscopula"), function(x, lagmax = 20){
+kendall(x@Vcopula, lagmax)
+}
+)

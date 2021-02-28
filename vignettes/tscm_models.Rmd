@@ -47,11 +47,8 @@ modfit
 As well as the copula plots we can also plot the marginal fit.
 
 ```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(modfit, plotoption = 1)
-plot(modfit, plotoption = 2)
-plot(modfit, plotoption = 3)
-plot(modfit, plotoption = 4)
-plot(modfit, plotoption = 5)
+plot(modfit, plottype = "residual")
+plot(modfit, plottype = "kendall")
 plot(modfit, plottype = "margin")
 ```
 
@@ -120,8 +117,8 @@ We can plot the estimated v-transform and well as the goodness-of-fit plots for 
 The first plots relate to the fitted copula.
 
 ```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(tscmfit_full, plotoption = 1)
-plot(tscmfit_full, plotoption = 2)
+plot(tscmfit_full, plottype = "residual")
+plot(tscmfit_full, plottype = "kendall")
 ```
 
 The next plot is the QQplot of the marginal fit.
@@ -137,11 +134,10 @@ plot(tscmfit_full, plottype = "vtransform")
 plot(tscmfit_full, plottype = "volprofile")
 ```
 
-The final two plots show aspect of the fit of the v-transform to the data.
+The final plot shows the fitted volatility proxy function.
 
 ```{r, fig.show='hold', dev.args =list(pointsize=9)}
 plot(tscmfit_full, plottype = "volproxy")
-plot(tscmfit_full, plotoption = 2, plottype = "volproxy")
 ```
 
 

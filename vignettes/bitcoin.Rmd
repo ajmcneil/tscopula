@@ -77,8 +77,8 @@ AIC(fit_Gauss2, fit_mix)
 We provide plots for the model with Frank copula.
 
 ```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-plot(fit_mix, plotoption = 1)
-plot(fit_mix, plotoption = 2)
+plot(fit_mix)
+plot(fit_mix, plottype = "kendall")
 ```
 
 
@@ -115,13 +115,12 @@ AIC(marg_dw, fullmod)
 The plots show aspect of the fit.
 
 ```{r,fig.show='hold', dev.args =list(pointsize=9)}
-plot(fullmod, plotoption = 1)
-plot(fullmod, plotoption = 2)
+plot(fullmod, plottype = "residual")
+plot(fullmod, plottype = "kendall")
 plot(fullmod, plottype = "margin")
 plot(fullmod, plottype = "vtransform")
 plot(fullmod, plottype = "volprofile")
 plot(fullmod, plottype = "volproxy")
-plot(fullmod, plotoption = 2, plottype = "volproxy")
 ```
 
 

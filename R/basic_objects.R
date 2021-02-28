@@ -81,8 +81,36 @@ setMethod("show", "swncopula", function(object) {
   cat("SWN \n")
 })
 
+#' New Generic for Kendall correlations
+#'
+#' Methods are available for objects of class \linkS4class{armacopula}
+#'  and \linkS4class{dvinecopula}.
+#'
+#' @param x an object of the model class.
+#' @param ... further arguments to be passed on.
+#'
+#' @return A realization from the time series model.
+#' @export
+#'
+#'
+setGeneric("kendall", function(x, ...) {
+  standardGeneric("kendall")
+})
 
-
-
+#' New Generic for Generalized Lagging of Data
+#'
+#' Methods are available for objects of class \linkS4class{tscopulafit}
+#'  and \linkS4class{tscmfit}.
+#'
+#' @param x an object of the model class.
+#' @param ... further arguments to be passed on.
+#'
+#' @return A realization from the time series model.
+#' @export
+#'
+#'
+setGeneric("glag", function(x, ...) {
+  standardGeneric("glag")
+})
 
 

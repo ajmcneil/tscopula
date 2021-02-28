@@ -368,32 +368,49 @@ setMethod("logLik", "tscmfit", function(object) {
   ll
 })
 
+#' Residual Method for tscmfit Class
+#'
+#' @param object an object of class \linkS4class{tscmfit}.
+#' @param trace extract trace instead of residuals.
+#'
+#' @export
+#'
+setMethod("resid", "tscmfit",
+          function(object, trace = FALSE) {
+            object <- new("tscopulafit",
+                tscopula = object@tscopula,
+                data = pmarg(object@margin, object@data),
+                fit = object@fit)
+            resid(object, trace)
+          })
+
 #' Plot Method for tscmfit Class
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
-#' @param plotoption choice of plot within plottype.
 #' @param plottype type of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
-#' @param klimit maximum lag value for dvinecopula2 cplots
+#' @param lagmax maximum lag value for dvinecopula2 plots
 #'
 #' @export
 #'
 setMethod("plot", c(x = "tscmfit", y = "missing"),
-          function(x, plotoption = 1L, plottype = "copula", bw = FALSE, klimit = 30) {
+          function(x, plottype = "residual", bw = FALSE, lagmax = 30) {
             if (x@margin@name == "edf")
               stop("These plots require parametric margins")
-            switch(plottype,
-                   margin = plot(new("marginfit",
-                                     margin = x@margin,
-                                     data = x@data,
-                                     fit = x@fit), plotoption = plotoption, bw = bw),
-                   copula = plot(new("tscopulafit",
-                                     tscopula = x@tscopula,
-                                     data = pmarg(x@margin, x@data),
-                                     fit = x@fit), plotoption = plotoption, bw = bw, klimit = klimit),
-                   vtransform = plot(x@tscopula@Vtransform),
-                   volprofile = plot_volprofile(x, bw = bw),
-                   volproxy = plot_volproxy(x, plotoption = plotoption, bw = bw))
+            if (plottype == "margin"){
+              marginmod <- new("marginfit", margin = x@margin, data = x@data, fit = x@fit)
+              plot(marginmod, bw = bw)
+            }
+            else if (plottype == "volproxy")
+              plot_volproxy(x, bw = bw)
+            else if (plottype == "volprofile")
+              plot_volprofile(x, bw = bw)
+            else if (plottype %in% c("residual", "kendall", "glag", "vtransform")){
+              copmod <- new("tscopulafit", tscopula = x@tscopula, data = pmarg(x@margin, x@data), fit = list(NULL))
+              plot(copmod, plottype = plottype, bw = bw, lagmax = lagmax)
+            }
+            else
+              stop("Not a valid plot type")
           })
 
 
@@ -423,35 +440,17 @@ plot_volprofile <- function(x, bw) {
 #' Plot Function for Volatility Proxy Plot
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
-#' @param plotoption choice of plot.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
 #' @export
 #'
-plot_volproxy <- function(x, plotoption, bw){
+plot_volproxy <- function(x, bw){
   if (!(is(x@tscopula, "vtscopula")))
     stop("tscopula must be vtscopula")
   X <- x@data
   U <- pmarg(x@margin, X)
   V <- vtrans(x@tscopula@Vtransform, U)
   colchoice <- ifelse(bw, "gray50", "red")
-  switch(plotoption,
-         {
-           plot(strank(X),
-                strank(V),
-                xlab = "edf data",
-                ylab = "edf vol proxy",
-                col = colchoice
-           )
-           lines(sort(U), V[order(U)])
-         },
-         {
-           plot(X,
-                qnorm(strank(V)),
-                xlab = "data",
-                ylab = "std. vol proxy",
-                col = colchoice
-           )
-           lines(sort(X), qnorm(V[order(X)]))
-         })
+  plot(X, qnorm(strank(V)), xlab = "data", ylab = "std. vol proxy", col = colchoice)
+  lines(sort(X), qnorm(V[order(X)]))
 }

@@ -655,16 +655,13 @@ setMethod("logLik", "marginfit", function(object) {
 #' Plot Method for marginfit Class
 #'
 #' @param x an object of class \linkS4class{marginfit}.
-#' @param plotoption number of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
 #' @export
 #'
 setMethod("plot", c(x = "marginfit", y = "missing"),
-          function(x, plotoption = 1L, bw = FALSE) {
+          function(x, bw = FALSE) {
             colchoice <- ifelse(bw, "gray50", "red")
-            switch(plotoption,
-             {
               qus <- qmarg(x@margin, ppoints(x@data))
               plot(qus,
                    sort(as.numeric(x@data)),
@@ -672,10 +669,6 @@ setMethod("plot", c(x = "marginfit", y = "missing"),
                    ylab = "data"
               )
               abline(0, 1, col = colchoice)
-            },
-            zoo::plot.zoo(x@data, xlab = "", ylab = "data", type = "h"),
-            stop("Not a plot option")
-            )
             })
 
 

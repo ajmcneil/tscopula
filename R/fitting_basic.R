@@ -258,36 +258,97 @@ setMethod("logLik", "tscopulafit", function(object) {
 #' Plot Method for tscopulafit Class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
-#' @param plotoption number of plot required.
 #' @param plottype type of plot required.
 #' @param bw logical variable specifying whether black-white options should be chosen.
-#' @param klimit maximum lag value for dvinecopula2 cplots
+#' @param lagmax maximum lag value for Kendall plots
 #'
 #' @export
 #'
 #' @examples
 #' data <- sim(armacopula(list(ar = 0.5, ma = 0.4)), n = 1000)
 #' fit <- fit(armacopula(list(ar = 0.5, ma = 0.4)), data)
-#' plot(fit, plotoption = 1) # try plotoption 1 through 5
+#' plot(fit)
 setMethod("plot", c(x = "tscopulafit", y = "missing"),
-          function(x, plotoption = 1, plottype = "copula", bw = FALSE, klimit = 30) {
-            if (plottype == "vtransform")
+          function(x, plottype = "residual", bw = FALSE, lagmax = 30) {
+            colchoice <- ifelse(bw, "gray50", "red")
+            if ((plottype == "vtransform") & (is(x@tscopula, "vtscopula"))){
               plot(x@tscopula@Vtransform)
+              U <- x@data
+              V <- vtrans(x@tscopula@Vtransform, U)
+              points(strank(U), strank(V), col = colchoice)
+              lines(sort(U), V[order(U)])
+            }
+            else if (plottype == "residual"){
+              res <- resid(x)
+              qqnorm(res)
+              abline(0,1, col = colchoice)
+            }
+            else if (plottype == "kendall"){
+              tauE <- glag(x, lagmax)
+              tauT <- kendall(x@tscopula, lagmax)
+              k <- length(tauE)
+              plot(1:k, tauE, type = "h", xlim = c(1, min(max(k, 10), lagmax)),
+                   ylim = range(tauE,tauT,0), xlab = "lag", ylab = "tau")
+              lines(1:k, tauT, col = colchoice)
+              abline(h=0)
+            }
+            else if (plottype == "glag"){
+              ldata <- glag(x, lagmax, glagplot = TRUE)
+              nplots <- length(ldata)
+              lc <- ifelse(nplots > 4, 3, 2)
+              lr <- ceiling(nplots / lc)
+              default_par <- par(mfrow = c(lr, lc),
+                                 mar = c(2.1, 2.1, 1.5, 0.5),
+                                 oma = rep(2, 4),
+                                 pty = "s", cex = 0.5)
+              for (i in 1:nplots)
+                plot(ldata[[i]], main = paste("Lag ", i, sep = ""), asp = 1,
+                     xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+              par(default_par)
+            }
             else
-              switch(is(x@tscopula)[1],
-                     armacopula = plot_armacopula(x@tscopula, x@data, plotoption, bw),
-                     dvinecopula = plot_dvinecopula(x@tscopula, x@data, plotoption, bw),
-              #       dvinecopula2 = plot_dvinecopula2(x@tscopula, x@data, plotoption, bw, klimit),
-                     vtscopula = {
-                       Vdata <- vtrans(x@tscopula@Vtransform, x@data)
-                       plot(new("tscopulafit",
-                                tscopula = x@tscopula@Vcopula,
-                                data = Vdata,
-                                fit = x@fit
-                       ),
-                       plotoption = plotoption,
-                       bw = bw
-                       )
-                     })
+              stop("Not a valid plot type")
 })
 
+#' Residual Method for tscopulafit Class
+#'
+#' @param object an object of class \linkS4class{tscopulafit}.
+#' @param trace extract trace instead of residuals.
+#'
+#' @export
+#'
+setMethod("resid", "tscopulafit",
+          function(object, trace = FALSE) {
+            copula <- object@tscopula
+            data <- object@data
+            if (is(copula, "vtscopula")){
+              data <- vtrans(copula@Vtransform, data)
+              copula <- copula@Vcopula
+            }
+            switch(is(copula)[1],
+                     armacopula = resid_armacopula(copula, data, trace),
+                     dvinecopula = resid_dvinecopula(copula, data, trace))
+          })
+
+#' glag Method for tscopulafit Class
+#'
+#' @param x an object of class \linkS4class{tscopulafit}.
+#' @param maxlag maximum value for lag.
+#' @param glagplot logical value indicating generalized lag plot.
+#'
+#' @return vector consisting of Kendall's tau values for each pair copula
+#' @export
+#'
+#' @examples
+setMethod("glag", c(x = "tscopulafit"), function(x, lagmax = 20, glagplot = FALSE) {
+  data <- x@data
+  copula <- x@tscopula
+  if (is(copula, "vtscopula")){
+    data <- vtrans(copula@Vtransform, data)
+    copula <- copula@Vcopula
+  }
+  switch(is(copula)[1],
+         armacopula = glag_for_armafit(copula, data, lagmax, glagplot),
+         dvinecopula = glag_for_dvinefit(copula, data, glagplot))
+}
+)

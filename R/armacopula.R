@@ -300,29 +300,85 @@ kfilter <- function(x, y) {
   fseries
 }
 
-#' Plot Function for armacopula Objects
+#' Residual function for armacopula object
 #'
-#' @param copula a fitted armacopula object
-#' @param data the data to which copula is fitted
-#' @param plotoption number giving plot choice
-#' @param bw logical for black-white plot
+#' @param object a fitted armacopula object.
+#' @param data the data to which copula is fitted.
+#' @param trace extract trace instead of residuals.
 #'
+#' @return vector of model residuals
+#' @keywords internal
+#'
+resid_armacopula <- function(object, data = NA, trace = FALSE){
+  series <- kfilter(object, data)
+  if (trace)
+    output <- series[, "mu_t"]
+  else
+    output <- series[, "resid"]/sigmastarma(object)
+  output
+}
+
+#' Calculate Kendall's tau values for armacopula model
+#'
+#' @param x a \linkS4class{armacopula} object
+#' @param maxlag maximum value of lag
+#'
+#' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
-plot_armacopula <- function(copula, data, plotoption, bw){
-  series <- kfilter(copula, data)
-  resid <- series[, "resid"]
-  mu_t <- series[, "mu_t"]
-  colchoice <- ifelse(bw, "gray50", "red")
-  switch(plotoption,
-         zoo::plot.zoo(resid, xlab = "", type = "h"),
-         zoo::plot.zoo(mu_t, xlab = "", type = "l"),
-         {
-           qqnorm(resid / sigmastarma(copula), main = "", xlab = "Theoretical", ylab = "resid")
-           abline(0, 1, col = colchoice)
-         },
-         plot(acf(resid, plot = FALSE), ci.col = colchoice),
-         plot(acf(abs(resid), plot = FALSE), ci.col = colchoice),
-         stop("Not a plot option")
-  )
+#' @examples
+#' mod <- armacopula(list(ar = 0.95, ma = -0.85))
+#' kendall(mod)
+setMethod("kendall", c(x = "armacopula"), function(x, lagmax = 20){
+  ar <- 0
+  ma <- 0
+  if (x@modelspec[1] > 0)
+    ar <- x@pars$ar
+  if (x@modelspec[2] > 0)
+    ma <- x@pars$ma
+  pacf <- ARMAacf(ar = ar, ma = ma, lag.max = lagmax, pacf = TRUE)
+  tau <- (2/pi)*asin(pacf)
+  tau
+}
+)
+
+#' Generalized lagging for fitted armacopula objects
+#'
+#' @param copula an armacopula object.
+#' @param data the data to which copula is fitted.
+#' @param lagmax the maximum lag value.
+#'
+#' @keywords internal
+glag_for_armafit <- function(copula, data, lagmax, glagplot = FALSE) {
+  n <- length(data)
+  k <- lagmax
+  data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
+  if (glagplot){
+    k <- min(k, 9)
+    output <- vector(mode = "list", length = k)
+    output[[1]] <- data
+  }
+  else{
+  output <- rep(NA, k)
+  output[1] <- cor(data, method = "kendall")[1, 2]
+  }
+  ar <- 0
+  ma <- 0
+  if (copula@modelspec[1] > 0)
+    ar <- copula@pars$ar
+  if (copula@modelspec[2] > 0)
+    ma <- copula@pars$ma
+  pacf <- ARMAacf(ar = ar, ma = ma, lag.max = lagmax, pacf = TRUE)
+  for (i in 1:(k - 1)) {
+    n <- dim(data)[1]
+    model <- rvinecopulib::bicop_dist(family = "gauss", parameters = pacf[i])
+    data <-
+      cbind(rvinecopulib::hbicop(data[(1:(n - 1)), ], model, cond_var = 2),
+            rvinecopulib::hbicop(data[(2:n), ], model, cond_var = 1))
+    if (glagplot)
+      output[[i+1]] <- data
+    else
+      output[i+1] <- cor(data, method = "kendall")[1, 2]
+  }
+output
 }

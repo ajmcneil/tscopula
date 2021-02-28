@@ -4,12 +4,10 @@
 \alias{plot_volproxy}
 \title{Plot Function for Volatility Proxy Plot}
 \usage{
-plot_volproxy(x, plotoption, bw)
+plot_volproxy(x, bw)
 }
 \arguments{
 \item{x}{an object of class \linkS4class{tscmfit}.}
-
-\item{plotoption}{choice of plot.}
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }

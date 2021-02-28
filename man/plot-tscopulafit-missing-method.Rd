@@ -4,18 +4,16 @@
 \alias{plot,tscopulafit,missing-method}
 \title{Plot Method for tscopulafit Class}
 \usage{
-\S4method{plot}{tscopulafit,missing}(x, plotoption = 1, plottype = "copula", bw = FALSE, klimit = 30)
+\S4method{plot}{tscopulafit,missing}(x, plottype = "residual", bw = FALSE, lagmax = 30)
 }
 \arguments{
 \item{x}{an object of class \linkS4class{tscopulafit}.}
-
-\item{plotoption}{number of plot required.}
 
 \item{plottype}{type of plot required.}
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 
-\item{klimit}{maximum lag value for dvinecopula2 cplots}
+\item{lagmax}{maximum lag value for Kendall plots}
 }
 \description{
 Plot Method for tscopulafit Class
@@ -23,5 +21,5 @@ Plot Method for tscopulafit Class
 \examples{
 data <- sim(armacopula(list(ar = 0.5, ma = 0.4)), n = 1000)
 fit <- fit(armacopula(list(ar = 0.5, ma = 0.4)), data)
-plot(fit, plotoption = 1) # try plotoption 1 through 5
+plot(fit)
 }
