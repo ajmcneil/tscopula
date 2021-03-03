@@ -4,10 +4,12 @@
 \alias{kendall,dvinecopula-method}
 \title{Calculate Kendall's tau values for pair copulas in d-vine copula}
 \usage{
-\S4method{kendall}{dvinecopula}(x, lagmax = NA)
+\S4method{kendall}{dvinecopula}(x, lagmax = 20)
 }
 \arguments{
 \item{x}{a \linkS4class{dvinecopula} object}
+
+\item{lagmax}{maximum value of lag}
 }
 \value{
 vector consisting of Kendall's tau values for each pair copula

@@ -121,7 +121,7 @@ setMethod("show", "dvinecopula", function(object) {
 #' @examples
 #' sim(dvinecopula("gauss", 0.5))
 setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
-  # code from Thomas Nagler
+  # code template provided by Thomas Nagler
   k <- length(x@modelspec)
   pc_list <- vector("list", k)
   for (i in seq_along(x@modelspec)) {
@@ -131,23 +131,21 @@ setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
       parameters = x@pars[[i]][1:x@modelspec[[i]]$npars]
     )
   }
-  # bring pair-copulas in appropriate form for `rvinecopulib::vinecop_dist()`
   pcs <- lapply(seq_along(pc_list), function(i) {
     replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
   })
-  # set up k + 1 dimensional vine copula model
   vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
-  # initialize first steps of simulation
-  sim <- numeric(n)
-  u <- rvinecopulib::rvinecop(1, vc_short)
-  sim[1:(k + 1)] <- u
-  # conditional simulation for all future time points
+  Z <- runif(n)
+  U <- numeric(n)
+  U[1:(k + 1)] <- rvinecopulib::inverse_rosenblatt(t(Z[1:(k+1)]), vc_short)
   for (t in (k + 2):n) {
-    u_new <- c(sim[(t - k):(t - 1)], 0.5) # (0.5 is a dummy)
-    pit <- rvinecopulib::rosenblatt(t(u_new), vc_short)
-    sim[t] <- rvinecopulib::inverse_rosenblatt(t(c(pit[-(k + 1)], runif(1))), vc_short)[k + 1]
+    lastvals <- c(U[(t - k):(t - 1)], 0.5)
+    rt <- rvinecopulib::rosenblatt(t(lastvals), vc_short)
+    rt[k+1] <- Z[t]
+    irt <- rvinecopulib::inverse_rosenblatt(t(rt), vc_short)
+    U[t] <- irt[k + 1]
   }
-  sim
+  U
 })
 
 #' Objective Function for dvinecopula process
@@ -216,6 +214,7 @@ glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
   output <- rep(NA, k)
   output[1] <- cor(data, method = "kendall")[1, 2]
   }
+  if (k >1){
   for (i in 1:(k - 1)) {
     n <- dim(data)[1]
     model <- rvinecopulib::bicop_dist(
@@ -231,6 +230,7 @@ glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
     else
       output[i+1] <- cor(data, method = "kendall")[1, 2]
   }
+  }
   output
 }
 
@@ -238,6 +238,7 @@ glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
 #' Calculate Kendall's tau values for pair copulas in d-vine copula
 #'
 #' @param x a \linkS4class{dvinecopula} object
+#' @param lagmax maximum value of lag
 #'
 #' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
@@ -245,8 +246,10 @@ glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
 #' @examples
 #' mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
 #' kendall(mixmod)
-setMethod("kendall", c(x = "dvinecopula"), function(x, lagmax = NA) {
+setMethod("kendall", c(x = "dvinecopula"), function(x, lagmax = 20) {
   tau <- vector("numeric",length(x@modelspec))
+  if (length(tau) > lagmax)
+    tau <- tau[1:lagmax]
   for (i in seq_along(tau)){
     model <- rvinecopulib::bicop_dist(
       family = tolower(x@modelspec[[i]]$family),
@@ -286,6 +289,7 @@ resid_dvinecopula <- function(object, data = NA, trace = FALSE){
   }
   res <- rep(NA, n)
   res[1] <- target[1]
+  if (k >1){
   for (i in 2:k){
     pcs <- lapply(1:(i-1), function(j) {
       replicate(i - j, pc_list[[j]], simplify = FALSE)
@@ -293,6 +297,7 @@ resid_dvinecopula <- function(object, data = NA, trace = FALSE){
     vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure(i:1))
     vals <- c(data[1:(i-1)], target[i])
     res[i] <- rvinecopulib::rosenblatt(t(vals), vc_short)[i]
+  }
   }
   pcs <- lapply(1:k, function(j) {
     replicate(k + 1 - j, pc_list[[j]], simplify = FALSE)

@@ -9,9 +9,9 @@
 \arguments{
 \item{x}{an object of class \linkS4class{tscopulafit}.}
 
-\item{glagplot}{logical value indicating generalized lag plot.}
+\item{lagmax}{maximum value for lag.}
 
-\item{maxlag}{maximum value for lag.}
+\item{glagplot}{logical value indicating generalized lag plot.}
 }
 \value{
 vector consisting of Kendall's tau values for each pair copula

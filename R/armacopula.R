@@ -321,7 +321,7 @@ resid_armacopula <- function(object, data = NA, trace = FALSE){
 #' Calculate Kendall's tau values for armacopula model
 #'
 #' @param x a \linkS4class{armacopula} object
-#' @param maxlag maximum value of lag
+#' @param lagmax maximum value of lag
 #'
 #' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
@@ -369,7 +369,8 @@ glag_for_armafit <- function(copula, data, lagmax, glagplot = FALSE) {
   if (copula@modelspec[2] > 0)
     ma <- copula@pars$ma
   pacf <- ARMAacf(ar = ar, ma = ma, lag.max = lagmax, pacf = TRUE)
-  for (i in 1:(k - 1)) {
+  if (k >1){
+    for (i in 1:(k - 1)) {
     n <- dim(data)[1]
     model <- rvinecopulib::bicop_dist(family = "gauss", parameters = pacf[i])
     data <-
@@ -379,6 +380,7 @@ glag_for_armafit <- function(copula, data, lagmax, glagplot = FALSE) {
       output[[i+1]] <- data
     else
       output[i+1] <- cor(data, method = "kendall")[1, 2]
+    }
   }
 output
 }

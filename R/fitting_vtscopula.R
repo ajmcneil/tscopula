@@ -425,7 +425,7 @@ tsc_objectiveb <-
 #' Calculate Kendall's tau values for vtscopula model
 #'
 #' @param x a \linkS4class{vtscopula} object
-#' @param maxlag maximum value of lag
+#' @param lagmax maximum value of lag
 #'
 #' @return vector consisting of Kendall's tau values for each pair copula
 #' @export

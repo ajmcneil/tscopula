@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{a \linkS4class{armacopula} object}
 
-\item{maxlag}{maximum value of lag}
+\item{lagmax}{maximum value of lag}
 }
 \value{
 vector consisting of Kendall's tau values for each pair copula

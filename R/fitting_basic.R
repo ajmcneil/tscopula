@@ -289,7 +289,10 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
               k <- length(tauE)
               plot(1:k, tauE, type = "h", xlim = c(1, min(max(k, 10), lagmax)),
                    ylim = range(tauE,tauT,0), xlab = "lag", ylab = "tau")
-              lines(1:k, tauT, col = colchoice)
+              if (k >1)
+                lines(1:k, tauT, col = colchoice)
+              else
+                points(1, tauT, col = colchoice)
               abline(h=0)
             }
             else if (plottype == "glag"){
@@ -333,7 +336,7 @@ setMethod("resid", "tscopulafit",
 #' glag Method for tscopulafit Class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
-#' @param maxlag maximum value for lag.
+#' @param lagmax maximum value for lag.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
 #' @return vector consisting of Kendall's tau values for each pair copula
