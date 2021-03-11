@@ -447,7 +447,7 @@ plot_volprofile <- function(x, bw) {
 plot_volproxy <- function(x, bw){
   if (!(is(x@tscopula, "vtscopula")))
     stop("tscopula must be vtscopula")
-  X <- x@data
+  X <- as.numeric(x@data)
   U <- pmarg(x@margin, X)
   V <- vtrans(x@tscopula@Vtransform, U)
   colchoice <- ifelse(bw, "gray50", "red")

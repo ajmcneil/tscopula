@@ -273,7 +273,7 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
             colchoice <- ifelse(bw, "gray50", "red")
             if ((plottype == "vtransform") & (is(x@tscopula, "vtscopula"))){
               plot(x@tscopula@Vtransform)
-              U <- x@data
+              U <- as.numeric(x@data)
               V <- vtrans(x@tscopula@Vtransform, U)
               points(strank(U), strank(V), col = colchoice)
               lines(sort(U), V[order(U)])
