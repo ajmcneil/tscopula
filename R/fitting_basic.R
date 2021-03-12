@@ -328,9 +328,8 @@ setMethod("resid", "tscopulafit",
               data <- vtrans(copula@Vtransform, data)
               copula <- copula@Vcopula
             }
-            switch(is(copula)[1],
-                     armacopula = resid_armacopula(copula, data, trace),
-                     dvinecopula = resid_dvinecopula(copula, data, trace))
+            residfunc <- eval(parse(text=paste("resid_",is(copula)[1],sep="")))
+            residfunc(copula, data, trace)
           })
 
 #' glag Method for tscopulafit Class
@@ -349,8 +348,7 @@ setMethod("glag", c(x = "tscopulafit"), function(x, lagmax = 20, glagplot = FALS
     data <- vtrans(copula@Vtransform, data)
     copula <- copula@Vcopula
   }
-  switch(is(copula)[1],
-         armacopula = glag_for_armafit(copula, data, lagmax, glagplot),
-         dvinecopula = glag_for_dvinefit(copula, data, glagplot))
+  lagfunc <- eval(parse(text=paste("glag_for_",is(copula)[1],sep="")))
+  lagfunc(copula, data, lagmax, glagplot)
 }
 )

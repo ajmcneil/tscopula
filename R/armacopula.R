@@ -347,9 +347,10 @@ setMethod("kendall", c(x = "armacopula"), function(x, lagmax = 20){
 #' @param copula an armacopula object.
 #' @param data the data to which copula is fitted.
 #' @param lagmax the maximum lag value.
+#' @param glagplot logical value indicating generalized lag plot.
 #'
 #' @keywords internal
-glag_for_armafit <- function(copula, data, lagmax, glagplot = FALSE) {
+glag_for_armacopula <- function(copula, data, lagmax, glagplot = FALSE) {
   n <- length(data)
   k <- lagmax
   data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))

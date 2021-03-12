@@ -121,7 +121,18 @@ setMethod("show", "dvinecopula", function(object) {
 #' @examples
 #' sim(dvinecopula("gauss", 0.5))
 setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
-  # code template provided by Thomas Nagler
+  pc_list <- mklist_dvine(x)
+  simdvine(pc_list, n)
+})
+
+#' Make list of pair copulas for dvinecopula object
+#'
+#' @param x an object of class dvinecopula
+#'
+#' @return a list of pair copulas
+#' @keywords internal
+#'
+mklist_dvine <- function(x){
   k <- length(x@modelspec)
   pc_list <- vector("list", k)
   for (i in seq_along(x@modelspec)) {
@@ -131,6 +142,20 @@ setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
       parameters = x@pars[[i]][1:x@modelspec[[i]]$npars]
     )
   }
+  pc_list
+}
+
+#' D-vine simulation helper function
+#'
+#' @param pc_list a list of pair copulas.
+#' @param n number of data to be simulated.
+#'
+#' @return a vector of length n.
+#' @export
+#'
+simdvine <- function(pc_list, n){
+  # code template provided by Thomas Nagler
+  k <- length(pc_list)
   pcs <- lapply(seq_along(pc_list), function(i) {
     replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
   })
@@ -146,7 +171,8 @@ setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
     U[t] <- irt[k + 1]
   }
   U
-})
+}
+
 
 #' Objective Function for dvinecopula process
 #'
@@ -199,14 +225,18 @@ dvinecopula_objective <- function(theta, modelspec, u) {
 #'
 #' @param copula a dvinecopula object
 #' @param data the data to which copula is fitted
+#' @param lagmax the maximum lag value.
+#' @param glagplot logical value indicating generalized lag plot.
 #'
 #' @keywords internal
-glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
+glag_for_dvinecopula <- function(copula, data, lagmax, glagplot = FALSE) {
+  pc_list <- mklist_dvine(copula)
+  k <- min(length(pc_list), lagmax)
+  if (glagplot)
+    k <- min(k, 9)
   n <- length(data)
-  k <- length(copula@modelspec)
   data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
   if (glagplot){
-    k <- min(k, 9)
     output <- vector(mode = "list", length = k)
     output[[1]] <- data
   }
@@ -214,17 +244,12 @@ glag_for_dvinefit <- function(copula, data, glagplot = FALSE) {
   output <- rep(NA, k)
   output[1] <- cor(data, method = "kendall")[1, 2]
   }
-  if (k >1){
+  if (k > 1){
   for (i in 1:(k - 1)) {
     n <- dim(data)[1]
-    model <- rvinecopulib::bicop_dist(
-      family = tolower(copula@modelspec[[i]]$family),
-      rotation = copula@modelspec[[i]]$rotation,
-      parameters = copula@pars[[i]][1:copula@modelspec[[i]]$npars]
-    )
     data <-
-      cbind(rvinecopulib::hbicop(data[(1:(n - 1)), ], model, cond_var = 2),
-            rvinecopulib::hbicop(data[(2:n), ], model, cond_var = 1))
+      cbind(rvinecopulib::hbicop(data[(1:(n - 1)), ], pc_list[[i]], cond_var = 2),
+            rvinecopulib::hbicop(data[(2:n), ], pc_list[[i]], cond_var = 1))
     if (glagplot)
       output[[i+1]] <- data
     else
@@ -273,20 +298,13 @@ setMethod("kendall", c(x = "dvinecopula"), function(x, lagmax = 20) {
 #' @keywords internal
 #'
 resid_dvinecopula <- function(object, data = NA, trace = FALSE){
+  pc_list <- mklist_dvine(object)
+  k <- length(pc_list)
   n <- length(data)
   if (trace)
     target <- rep(0.5, n)
   else
     target <- data
-  k <- length(object@modelspec)
-  pc_list <- vector("list", k)
-  for (i in seq_along(object@modelspec)) {
-    pc_list[[i]] <- rvinecopulib::bicop_dist(
-      family = tolower(object@modelspec[[i]]$family),
-      rotation = object@modelspec[[i]]$rotation,
-      parameters = object@pars[[i]][1:object@modelspec[[i]]$npars]
-    )
-  }
   res <- rep(NA, n)
   res[1] <- target[1]
   if (k >1){
