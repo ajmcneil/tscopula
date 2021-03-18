@@ -4,12 +4,16 @@
 \alias{sim,dvinecopula-method}
 \title{Simulation Method for dvinecopula Class}
 \usage{
-\S4method{sim}{dvinecopula}(x, n = 1000)
+\S4method{sim}{dvinecopula}(x, n = 1000, innov = NA, start = NA)
 }
 \arguments{
 \item{x}{an object of class \linkS4class{dvinecopula}.}
 
 \item{n}{length of realization.}
+
+\item{innov}{vector of innovations of length n.}
+
+\item{start}{vector of start values with length equal to order of process.}
 }
 \value{
 A realization of a time series copula process.

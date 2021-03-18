@@ -114,15 +114,17 @@ setMethod("show", "dvinecopula", function(object) {
 #'
 #' @param x an object of class \linkS4class{dvinecopula}.
 #' @param n length of realization.
+#' @param innov vector of innovations of length n.
+#' @param start vector of start values with length equal to order of process.
 #'
 #' @return A realization of a time series copula process.
 #' @export
 #'
 #' @examples
 #' sim(dvinecopula("gauss", 0.5))
-setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000) {
+setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000, innov = NA, start = NA) {
   pc_list <- mklist_dvine(x)
-  simdvine(pc_list, n)
+  simdvine(pc_list, n, innov, start)
 })
 
 #' Make list of pair copulas for dvinecopula object
@@ -149,24 +151,40 @@ mklist_dvine <- function(x){
 #'
 #' @param pc_list a list of pair copulas.
 #' @param n number of data to be simulated.
+#' @param innov vector of innovations of length n.
+#' @param start vector of start values with length equal to order of process.
 #'
 #' @return a vector of length n.
 #' @export
 #'
-simdvine <- function(pc_list, n){
+simdvine <- function(pc_list, n, innov, start){
   # code template provided by Thomas Nagler
   k <- length(pc_list)
   pcs <- lapply(seq_along(pc_list), function(i) {
     replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
   })
   vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
-  Z <- runif(n)
+  if (is.na(innov[1]))
+    innov <- runif(n)
+  if (length(innov) != n)
+    stop("Innovation vector wrong length")
   U <- numeric(n)
-  U[1:(k + 1)] <- rvinecopulib::inverse_rosenblatt(t(Z[1:(k+1)]), vc_short)
+  if (is.na(start[1]))
+    U[1:(k + 1)] <- rvinecopulib::inverse_rosenblatt(t(innov[1:(k+1)]), vc_short)
+  else
+  {
+    if (length(start) != k)
+      stop("Start vector must be same length as order of d-vine")
+    lastvals <- c(start, 0.5)
+    rt <- rvinecopulib::rosenblatt(t(lastvals), vc_short)
+    rt[k+1] <- innov[k+1]
+    irt <- rvinecopulib::inverse_rosenblatt(t(rt), vc_short)
+    U[1:(k+1)] <- c(start, irt[k+1])
+  }
   for (t in (k + 2):n) {
     lastvals <- c(U[(t - k):(t - 1)], 0.5)
     rt <- rvinecopulib::rosenblatt(t(lastvals), vc_short)
-    rt[k+1] <- Z[t]
+    rt[k+1] <- innov[t]
     irt <- rvinecopulib::inverse_rosenblatt(t(rt), vc_short)
     U[t] <- irt[k + 1]
   }
