@@ -320,9 +320,12 @@ profilefulcrum <- function(data,
   }
   results <- numeric(length(locations))
   for (i in seq_along(locations)) {
-    tscopula@Vtransform@pars["delta"] <- locations[i]
+      coptofit <- tscopula
+    if (locations[i] %in% c(0,1))
+      coptofit@Vtransform <- Vlinear()
+    coptofit@Vtransform@pars["delta"] <- locations[i]
     fitted_model <- fit(
-      x = tscopula,
+      x = coptofit,
       y = data,
       tsoptions = list(
         hessian = FALSE
