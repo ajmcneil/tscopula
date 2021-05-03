@@ -181,12 +181,14 @@ simdvine <- function(pc_list, n, innov, start){
     irt <- rvinecopulib::inverse_rosenblatt(t(rt), vc_short)
     U[1:(k+1)] <- c(start, irt[k+1])
   }
+  if (n > (k+1)){
   for (t in (k + 2):n) {
     lastvals <- c(U[(t - k):(t - 1)], 0.5)
     rt <- rvinecopulib::rosenblatt(t(lastvals), vc_short)
     rt[k+1] <- innov[t]
     irt <- rvinecopulib::inverse_rosenblatt(t(rt), vc_short)
     U[t] <- irt[k + 1]
+  }
   }
   U
 }

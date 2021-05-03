@@ -107,9 +107,16 @@ Vlinear <- function(delta = 0.5) {
 #' V2p(delta = 0.45, kappa = 1.2)
 V2p <- function(delta = 0.5, kappa = 1) {
   new("Vtransform", name = "V2p", Vtrans = function(u, delta, kappa) {
+    if (delta == 0)
+      return(u)
+    else if (delta == 1)
+      return(1-u)
+    else {
     ifelse(u <= delta, 1 - u - (1 - delta) * exp(-kappa * log(delta / u)), u - delta *
       exp(-(-log((1 - u) / (1 - delta)) / kappa)))
-  }, pars = c(delta = delta, kappa = kappa), gradient = function(u, delta, kappa) {
+    }
+  }, pars = c(delta = delta, kappa = kappa),
+  gradient = function(u, delta, kappa) {
     slope <- rep(-1, length(u))
     arg1 <- log(delta / u[u <= delta])
     arg2 <- log((1 - delta) / (1 - u[u > delta]))
@@ -155,11 +162,18 @@ V2p <- function(delta = 0.5, kappa = 1) {
 #' V2b(delta = 0.45, kappa = 1.2)
 V2b <- function(delta = 0.5, kappa = 1) {
   new("Vtransform", name = "V2b", Vtrans = function(u, delta, kappa) {
+    if (delta == 0)
+      return(u)
+    else if (delta == 1)
+      return(1-u)
+    else {
     suppressWarnings(ifelse(u <= delta, 1 - u - (1 - delta) * pbeta(
       u / delta, kappa,
       1 / kappa
     ), u - delta * qbeta((1 - u) / (1 - delta), kappa, 1 / kappa)))
-  }, pars = c(delta = delta, kappa = kappa), gradient = function(u, delta, kappa) {
+    }
+  }, pars = c(delta = delta, kappa = kappa),
+  gradient = function(u, delta, kappa) {
     slope <- rep(-1, length(u))
     slope[u <= delta] <- -1 - (1 - delta) * dbeta(u[u <= delta] / delta, kappa, 1 / kappa) / delta
     slope[u > delta] <- 1 + delta / (dbeta(qbeta((1 - u[u > delta]) / (1 - delta), kappa, 1 / kappa), kappa, 1 / kappa) * (1 - delta))
@@ -180,10 +194,16 @@ V2b <- function(delta = 0.5, kappa = 1) {
 #' V3p(delta = 0.45, kappa = 0.8, xi = 1.1)
 V3p <- function(delta = 0.5, kappa = 1, xi = 1) {
   new("Vtransform", name = "V3p", Vtrans = function(u, delta, kappa, xi) {
+    if (delta == 0)
+      return(u)
+    else if (delta == 1)
+      return(1-u)
+    else {
     ifelse(u <= delta, 1 - u - (1 - delta) * exp(-kappa * (log(delta / u))^xi), u -
       delta * exp(-(-log((1 - u) / (1 - delta)) / kappa)^(1 / xi)))
-  }, pars = c(delta = delta, kappa = kappa, xi = xi), gradient = function(u, delta,
-                                                                          kappa, xi) {
+    }
+  }, pars = c(delta = delta, kappa = kappa, xi = xi),
+  gradient = function(u, delta, kappa, xi) {
     slope <- rep(-1, length(u))
     arg1 <- log(delta / u[u <= delta])
     arg2 <- log((1 - delta) / (1 - u[u > delta]))
@@ -232,12 +252,18 @@ V3p <- function(delta = 0.5, kappa = 1, xi = 1) {
 #' V3b(delta = 0.45, kappa = 1.2, xi = 1.2)
 V3b <- function(delta = 0.5, kappa = 1, xi = 1) {
   new("Vtransform", name = "V2b", Vtrans = function(u, delta, kappa, xi) {
+    if (delta == 0)
+      return(u)
+    else if (delta == 1)
+      return(1-u)
+    else {
     suppressWarnings(ifelse(u <= delta, 1 - u - (1 - delta) * pbeta(
       u / delta, kappa,
       xi
     ), u - delta * qbeta((1 - u) / (1 - delta), kappa, xi)))
-  }, pars = c(delta = delta, kappa = kappa, xi = xi), gradient = function(u, delta,
-                                                                          kappa, xi) {
+    }
+  }, pars = c(delta = delta, kappa = kappa, xi = xi),
+  gradient = function(u, delta, kappa, xi) {
     slope <- rep(-1, length(u))
     slope[u <= delta] <- -1 - (1 - delta) * dbeta(u[u <= delta] / delta, kappa, xi) / delta
     slope[u > delta] <- 1 + delta / (dbeta(qbeta((1 - u[u > delta]) / (1 - delta), kappa, xi), kappa, xi) * (1 - delta))
