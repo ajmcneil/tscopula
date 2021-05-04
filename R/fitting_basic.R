@@ -287,15 +287,15 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
             }
             else if (plottype == "kendall"){
               tauE <- glag(x, lagmax)
-              tauT <- kendall(x@tscopula, lagmax)
               k <- length(tauE)
+              tauT <- kendall(x@tscopula, k)
               plot(1:k, tauE, type = "h", xlim = c(1, min(max(k, 10), lagmax)),
                    ylim = range(tauE,tauT,0), xlab = "lag", ylab = "tau")
+              abline(h=0)
               if (k >1)
                 lines(1:k, tauT, col = colchoice)
               else
                 points(1, tauT, col = colchoice)
-              abline(h=0)
             }
             else if (plottype == "glag"){
               ldata <- glag(x, lagmax, glagplot = TRUE)
