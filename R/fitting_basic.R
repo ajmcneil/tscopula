@@ -126,7 +126,7 @@ setMethod("show", "tscopulafit", function(object) {
         famname <- paste(famname, "with rotation", modobject@modelspec$rotation)
       cat("copula family: ", famname, "\n", sep = "")
       if (modobject@modelspec$negtau != "none")
-        cat("negative tau treatment: ", object@modelspec$negtau, "\n", sep = "")
+        cat("negative tau treatment: ", modobject@modelspec$negtau, "\n", sep = "")
       kpacf  <- modobject@modelspec$kpacf
       if (modobject@modelspec$maxlag != Inf)
         kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
