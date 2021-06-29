@@ -3,7 +3,7 @@
 \docType{class}
 \name{tscopula-class}
 \alias{tscopula-class}
-\title{Time Series Copula Processes}
+\title{Time series copula processes}
 \description{
 Class of objects for time series copula processes.
 }

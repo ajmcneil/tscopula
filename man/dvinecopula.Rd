@@ -2,7 +2,7 @@
 % Please edit documentation in R/dvinecopula.R
 \name{dvinecopula}
 \alias{dvinecopula}
-\title{Constructor Function for dvinecopula process}
+\title{Constructor function for dvinecopula process}
 \usage{
 dvinecopula(family = "indep", pars = list(NULL), rotation = 0)
 }
@@ -17,7 +17,7 @@ dvinecopula(family = "indep", pars = list(NULL), rotation = 0)
 An object of class \linkS4class{dvinecopula}.
 }
 \description{
-Constructor Function for dvinecopula process
+Constructor function for dvinecopula process
 }
 \examples{
 dvinecopula(family = c("joe", "gauss", "t"), pars = list(3, .5, c(1, 2)), rotation = c(180, 0, 0))

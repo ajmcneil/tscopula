@@ -2,12 +2,12 @@
 % Please edit documentation in R/vtransforms.R
 \name{vinverse}
 \alias{vinverse}
-\title{Calculate Inverse of V-Transform}
+\title{Calculate inverse of v-transform}
 \usage{
 vinverse(x, v, tol = .Machine$double.eps^0.75)
 }
 \arguments{
-\item{x}{a \code{Vtransform} object.}
+\item{x}{an object ofc lass \linkS4class{Vtransform}.}
 
 \item{v}{a vector or time series with values in [0, 1].}
 
@@ -18,7 +18,7 @@ vinverse(x, v, tol = .Machine$double.eps^0.75)
 A vector or time series with values in [0, 1].
 }
 \description{
-If the \code{Vtransform} object is also a \code{VtransformI} object (an
+If the \linkS4class{Vtransform} object is also a \linkS4class{VtransformI} object (an
 invertible v-transform) then the analytical inverse is used. Otherwise
 an inverse is found by numerical root finding with \code{\link[stats]{uniroot}}.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{fit,margin-method}
 \alias{fit,margin-method}
-\title{Fit Method for margin Class}
+\title{Fit method for margin class}
 \usage{
 \S4method{fit}{margin}(x, y, tsoptions = list(), control = list(maxit = 1000))
 }
@@ -22,7 +22,7 @@ start is vector od named starting values}
 An object of class \linkS4class{marginfit}.
 }
 \description{
-Fit Method for margin Class
+Fit method for margin class
 }
 \examples{
 margmod <- margin("norm", pars = c(mean = 0, sd = 1))

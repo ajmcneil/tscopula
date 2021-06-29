@@ -2,14 +2,15 @@
 % Please edit documentation in R/helper_vtarma.R
 \name{dcondvtarma}
 \alias{dcondvtarma}
-\title{Conditional Density for vtarma Process}
+\title{Conditional density of VT-ARMA process}
 \usage{
 dcondvtarma(x, tscmmod, armamean, armasd)
 }
 \arguments{
 \item{x}{vector of points at which density should be calculated.}
 
-\item{tscmmod}{an object of class \linkS4class{tscmfit}.}
+\item{tscmmod}{an object of class \linkS4class{tscmfit} based on underlying copula
+of class \linkS4class{armacopula}.}
 
 \item{armamean}{conditional mean of underlying ARMA process.}
 
@@ -19,6 +20,6 @@ dcondvtarma(x, tscmmod, armamean, armasd)
 vector with same length as x.
 }
 \description{
-Conditional Density for vtarma Process
+Conditional density of VT-ARMA process
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{qmarg}
 \alias{qmarg}
-\title{Compute Quantiles of Marginal Model}
+\title{Compute quantiles of marginal model}
 \usage{
 qmarg(x, p)
 }

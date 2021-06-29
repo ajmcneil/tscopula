@@ -3,10 +3,46 @@
 \docType{class}
 \name{tscopulafit-class}
 \alias{tscopulafit-class}
-\title{Fitted Time Series Copula Processes}
-\description{
-Class of objects for time series copula processes.
+\alias{sim,tscopulafit-method}
+\alias{coef,tscopulafit-method}
+\alias{show,tscopulafit-method}
+\alias{logLik,tscopulafit-method}
+\alias{resid,tscopulafit-method}
+\title{Fitted time series copula processes}
+\usage{
+\S4method{sim}{tscopulafit}(object, n = 1000)
+
+\S4method{coef}{tscopulafit}(object)
+
+\S4method{show}{tscopulafit}(object)
+
+\S4method{logLik}{tscopulafit}(object)
+
+\S4method{resid}{tscopulafit}(object, trace = FALSE)
 }
+\arguments{
+\item{object}{an object of class \linkS4class{tscopulafit}.}
+
+\item{n}{length of realization.}
+
+\item{trace}{extract trace instead of residuals.}
+}
+\description{
+Class of objects for fitted time series copula processes.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{sim}: Simulation method for tscopulafit class
+
+\item \code{coef}: Coef method for tscopulafit class
+
+\item \code{show}: Show method for tscopulafit objects
+
+\item \code{logLik}: logLik method for tscopulafit class
+
+\item \code{resid}: Residual method for tscopulafit class
+}}
+
 \section{Slots}{
 
 \describe{
@@ -17,3 +53,9 @@ Class of objects for time series copula processes.
 \item{\code{fit}}{a list containing details of the fit.}
 }}
 
+\examples{
+ar1 <- armacopula(list(ar = 0.7))
+data <- sim(ar1, 1000)
+ar1fit <- fit(ar1, data)
+sim(ar1fit)
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{plot,Vtransform,missing-method}
 \alias{plot,Vtransform,missing-method}
-\title{Plot Method for Vtransform Class}
+\title{Plot method for Vtransform class}
 \usage{
 \S4method{plot}{Vtransform,missing}(
   x,
@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{x}{a \code{Vtransform} object.}
+\item{x}{an object of class \linkS4class{Vtransform}.}
 
 \item{type}{type of plot: 'transform' for plot of transform, 'inverse' for plot of inverse,
 'gradient' for plot of gradient or 'pdown' for plot of conditional probability.}

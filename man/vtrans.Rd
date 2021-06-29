@@ -2,12 +2,12 @@
 % Please edit documentation in R/vtransforms.R
 \name{vtrans}
 \alias{vtrans}
-\title{Evaluate a V-Transform}
+\title{Evaluate a v-transform}
 \usage{
 vtrans(x, u)
 }
 \arguments{
-\item{x}{a \code{Vtransform} object.}
+\item{x}{an object of class \linkS4class{Vtransform}.}
 
 \item{u}{a vector or time series with values in [0, 1].}
 }
@@ -15,7 +15,7 @@ vtrans(x, u)
 A vector or time series with values in [0, 1].
 }
 \description{
-Evaluate a V-Transform
+Evaluate a v-transform
 }
 \examples{
 vtrans(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))

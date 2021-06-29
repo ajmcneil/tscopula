@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{fit,tscopulaU-method}
 \alias{fit,tscopulaU-method}
-\title{Fit Method for tscopulaU Class}
+\title{Fit method for tscopulaU class}
 \usage{
 \S4method{fit}{tscopulaU}(x, y, tsoptions = list(), control = list(warn.1d.NelderMead = FALSE))
 }
@@ -20,7 +20,7 @@
 An object of class \linkS4class{tscopulafit}.
 }
 \description{
-Fit Method for tscopulaU Class
+Fit method for tscopulaU class
 }
 \examples{
 data <- sim(armacopula(list(ar = 0.5, ma = 0.4)), n = 1000)

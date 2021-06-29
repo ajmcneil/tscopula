@@ -1,10 +1,11 @@
-#' ARMA Copula Processes
+#' ARMA copula processes
 #'
 #' Class of objects for ARMA copula processes.
 #'
 #' @slot name name of ARMA copula process.
 #' @slot modelspec vector containing number of AR and MA parameters.
-#' @slot pars list comprising of the parameters.
+#' @slot pars list consisting of vector of AR parameters named `ar`
+#' and vector of MA parameters named `ma`.
 #'
 #' @export
 #'
@@ -14,8 +15,9 @@ setClass("armacopula", contains = "tscopula", slots = list(
   pars = "list"
 ))
 
-#' Constructor Function for ARMA copula process
-#' @param pars a list of length two containing AR and MA parameters.
+#' Constructor function for ARMA copula process
+#' @param pars list consisting of vector of AR parameters named `ar`
+#' and vector of MA parameters named `ma`.
 #'
 #' @return An object of class \linkS4class{armacopula}.
 #' @export
@@ -61,11 +63,10 @@ armacopula <- function(pars = list(ar = 0, ma = 0)) {
   )
 }
 
-#' Coef Method for ARMA copula Class
+#' @describeIn armacopula Coef method for ARMA copula class
 #'
-#' @param object an object of class \linkS4class{armacopula}.
+#' @param object an object of the class.
 #'
-#' @return parameters of ARMA copula model
 #' @export
 setMethod("coef", "armacopula", function(object) {
   p <- object@modelspec[1]
@@ -83,11 +84,10 @@ setMethod("coef", "armacopula", function(object) {
   c(arpars, mapars)
 })
 
-#' Show Method for ARMA copula process
+#' @describeIn armacopula Show method for ARMA copula process
 #'
-#' @param object an object of class \linkS4class{armacopula}.
+#' @param object an object of the class.
 #'
-#' @return summary of \linkS4class{armacopula}.
 #' @export
 #'
 setMethod("show", c(object = "armacopula"), function(object) {
@@ -97,7 +97,7 @@ setMethod("show", c(object = "armacopula"), function(object) {
   print(coef(object))
 })
 
-#' Check for Causality of ARMA Process
+#' Check for causality of ARMA process
 #'
 #' @param ar vector of autoregressive parameters
 #'
@@ -115,9 +115,9 @@ non_stat <- function(ar) {
   status
 }
 
-#' Check for Invertibility of ARMA Process
+#' Check for invertibility of ARMA process
 #'
-#' @param ma vector of moving average parameters
+#' @param ma vector of moving average parameters.
 #'
 #' @return A logical variable stating whether ARMA process is invertible.
 #' @export
@@ -133,26 +133,25 @@ non_invert <- function(ma) {
   status
 }
 
-#' Simulation Method for armacopula Class
+#' @describeIn armacopula Simulation method for armacopula class
 #'
-#' @param x an object of class \linkS4class{armacopula}.
+#' @param object an object of the class.
 #' @param n length of realization.
 #'
-#' @return A realization of a time series copula process.
 #' @export
 #'
 #' @examples
 #' sim(armacopula(list(ar = c(0.5, 0.4), ma = -0.8)), n = 1000)
-setMethod("sim", c(x = "armacopula"), function(x, n = 1000) {
+setMethod("sim", c(object = "armacopula"), function(object, n = 1000) {
   pnorm(arima.sim(
-    model = x@pars,
+    model = object@pars,
     n = n,
     n.start = 10,
-    sd = sigmastarma(x)
+    sd = sigmastarma(object)
   ))
 })
 
-#' Standard Deviation of Innovations for armacopula
+#' Standard deviation of innovations for armacopula
 #'
 #' Uses the function \code{\link[ltsa]{tacvfARMA}} in the ltsa library.
 #'
@@ -175,7 +174,7 @@ sigmastarma <- function(x) {
   1 / sqrt(ltsa::tacvfARMA(phi = ar, theta = -ma, maxLag = 0, sigma2 = 1))
 }
 
-#' Objective Function for ARMA copula process
+#' Objective function for ARMA copula process
 #'
 #' @param theta vector of parameters of ARMA process
 #' @param modelspec vector containing model order (p,q)
@@ -209,7 +208,7 @@ armacopula_objective <- function(theta, modelspec, u) {
   return(output)
 }
 
-#' State Space Representation for standardized ARMA model
+#' State space representation for standardized ARMA model
 #'
 #' @param ar vector of ar parameters
 #' @param ma vector of ma parameters
@@ -258,7 +257,7 @@ starmaStateSpace <- function(ar, ma, order) {
   return(list(a0 = a0, P0 = P0, ct = ct, dt = dt, Zt = Zt, Tt = Tt, GGt = GGt, HHt = HHt))
 }
 
-#' Kalman Filter for ARMA copula model
+#' Kalman filter for ARMA copula model
 #'
 #' @param x an object of class \linkS4class{armacopula}.
 #' @param y a vector of data.
@@ -318,24 +317,23 @@ resid_armacopula <- function(object, data = NA, trace = FALSE){
   output
 }
 
-#' Calculate Kendall's tau values for armacopula model
+#' @describeIn armacopula Calculate Kendall's tau values for armacopula model
 #'
-#' @param x a \linkS4class{armacopula} object
-#' @param lagmax maximum value of lag
+#' @param object an object of the class.
+#' @param lagmax maximum value of lag.
 #'
-#' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
 #' @examples
 #' mod <- armacopula(list(ar = 0.95, ma = -0.85))
 #' kendall(mod)
-setMethod("kendall", c(x = "armacopula"), function(x, lagmax = 20){
+setMethod("kendall", c(object = "armacopula"), function(object, lagmax = 20){
   ar <- 0
   ma <- 0
-  if (x@modelspec[1] > 0)
-    ar <- x@pars$ar
-  if (x@modelspec[2] > 0)
-    ma <- x@pars$ma
+  if (object@modelspec[1] > 0)
+    ar <- object@pars$ar
+  if (object@modelspec[2] > 0)
+    ma <- object@pars$ma
   pacf <- ARMAacf(ar = ar, ma = ma, lag.max = lagmax, pacf = TRUE)
   tau <- (2/pi)*asin(pacf)
   tau

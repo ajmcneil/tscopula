@@ -2,16 +2,16 @@
 % Please edit documentation in R/armacopula.R
 \name{non_invert}
 \alias{non_invert}
-\title{Check for Invertibility of ARMA Process}
+\title{Check for invertibility of ARMA process}
 \usage{
 non_invert(ma)
 }
 \arguments{
-\item{ma}{vector of moving average parameters}
+\item{ma}{vector of moving average parameters.}
 }
 \value{
 A logical variable stating whether ARMA process is invertible.
 }
 \description{
-Check for Invertibility of ARMA Process
+Check for invertibility of ARMA process
 }

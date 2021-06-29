@@ -2,19 +2,19 @@
 % Please edit documentation in R/basic_objects.R
 \name{kendall}
 \alias{kendall}
-\title{New Generic for Kendall correlations}
+\title{Generic for Kendall correlations}
 \usage{
-kendall(x, ...)
+kendall(object, ...)
 }
 \arguments{
-\item{x}{an object of the model class.}
+\item{object}{an object of the model class.}
 
-\item{...}{further arguments to be passed on.}
+\item{...}{further arguments to be passed to Kendall calculation.}
 }
 \value{
-A realization from the time series model.
+A vector of Kendall correlations.
 }
 \description{
-Methods are available for objects of class \linkS4class{armacopula}
- and \linkS4class{dvinecopula}.
+Methods are available for objects of class \linkS4class{armacopula},
+\linkS4class{dvinecopula}, \linkS4class{dvinecopula2} and \linkS4class{vtscopula}.
 }

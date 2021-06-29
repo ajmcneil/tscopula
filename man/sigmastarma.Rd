@@ -2,7 +2,7 @@
 % Please edit documentation in R/armacopula.R
 \name{sigmastarma}
 \alias{sigmastarma}
-\title{Standard Deviation of Innovations for armacopula}
+\title{Standard deviation of innovations for armacopula}
 \usage{
 sigmastarma(x)
 }

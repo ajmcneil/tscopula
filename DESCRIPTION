@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.1.8
-Date: 2021-01-19
+Version: 0.2.0
+Date: 2021-06-25
 Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
                   role = c("aut", "cre")),
                   person("Martin", "Bladt", email = "martinbladt@gmail.com", 
@@ -28,12 +28,15 @@ Imports:
     FKF,
     ltsa,
     rvinecopulib,
+    FitAR,
+    arfima,
     Matrix,
     copula
 Collate:
     'basic_objects.R'
     'armacopula.R'
     'dvinecopula.R'
+    'dvinecopula2.R'
     'fitting_basic.R'
     'margins.R'
     'full_models.R'

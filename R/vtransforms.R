@@ -1,4 +1,7 @@
-#' V-Transform Class
+#' Class of v-transforms
+#'
+#' This is the class of v-transforms. It contains the \linkS4class{VtransformI} subclass consisting of v-transforms
+#' with an analytical expression for the inverse.
 #'
 #' @slot name a name for the v-transform of class character.
 #' @slot Vtrans function to evaluate the v-transform.
@@ -14,7 +17,7 @@ setClass("Vtransform", slots = list(
   gradient = "function"
 ))
 
-#' Invertible V-Transform Class
+#' Class of invertible v-transforms
 #'
 #' This class inherits from the \linkS4class{Vtransform} class and contains v-transforms
 #' with an analytical expression for the inverse.
@@ -34,9 +37,9 @@ setClass("VtransformI", contains = "Vtransform", slots = list(
   pars = "numeric", gradient = "function", inverse = "function"
 ))
 
-#' Constructor Function for Symmetric V-Transform
+#' Constructor function for symmetric v-transform
 #'
-#' @return A \code{VtransformI} object.
+#' @return An object of class \linkS4class{VtransformI}.
 #' @export
 #'
 #' @examples
@@ -53,9 +56,9 @@ Vsymmetric <- function() {
   })
 }
 
-#' Constructor Function for Degenerate V-Transform
+#' Constructor function for degenerate v-transform
 #'
-#' @return A \code{VtransformI} object.
+#' @return An object of class \linkS4class{VtransformI}.
 #' @export
 #'
 #' @examples
@@ -70,11 +73,11 @@ Vdegenerate <- function() {
   })
 }
 
-#' Constructor Function for Linear V-Transform
+#' Constructor function for linear v-transform
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #'
-#' @return A \code{VtransformI} object.
+#' @return An o bject of class \linkS4class{VtransformI}.
 #' @export
 #'
 #' @examples
@@ -95,12 +98,12 @@ Vlinear <- function(delta = 0.5) {
   })
 }
 
-#' Constructor Function for 2-Parameter V-Transform
+#' Constructor function for 2-parameter v-transform
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #' @param kappa additional positive parameter of v-transform.
 #'
-#' @return A \code{Vtransform} object.
+#' @return An object of class \linkS4class{Vtransform}.
 #' @export
 #'
 #' @examples
@@ -150,12 +153,12 @@ V2p <- function(delta = 0.5, kappa = 1) {
   })
 }
 
-#' Constructor Function for 2-Parameter Beta V-Transform
+#' Constructor function for 2-parameter beta v-transform
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #' @param kappa additional positive parameter of v-transform.
 #'
-#' @return A \code{Vtransform} object.
+#' @return An object of class \linkS4class{Vtransform}.
 #' @export
 #'
 #' @examples
@@ -181,13 +184,13 @@ V2b <- function(delta = 0.5, kappa = 1) {
   })
 }
 
-#' Constructor Function for 3-Parameter V-Transform
+#' Constructor function for 3-parameter v-transform
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #' @param kappa additional positive parameter of v-transform.
 #' @param xi additional positive parameter of v-transform.
 #'
-#' @return A \code{Vtransform} object.
+#' @return An object of class \linkS4class{Vtransform}.
 #' @export
 #'
 #' @examples
@@ -239,13 +242,13 @@ V3p <- function(delta = 0.5, kappa = 1, xi = 1) {
   })
 }
 
-#' Constructor Function for 3-Parameter Beta V-Transform
+#' Constructor function for 3-parameter beta v-transform
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #' @param kappa additional positive parameter of v-transform.
 #' @param xi additional positive parameter of v-transform.
 #'
-#' @return A \code{Vtransform} object.
+#' @return An object of class \linkS4class{Vtransform}.
 #' @export
 #'
 #' @examples
@@ -271,9 +274,9 @@ V3b <- function(delta = 0.5, kappa = 1, xi = 1) {
   })
 }
 
-#' Evaluate a V-Transform
+#' Evaluate a v-transform
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object of class \linkS4class{Vtransform}.
 #' @param u a vector or time series with values in [0, 1].
 #'
 #'
@@ -286,9 +289,9 @@ vtrans <- function(x, u) {
   do.call(x@Vtrans, append(x@pars, list(u = u)))
 }
 
-#' Calculate Gradient of V-Transform
+#' Calculate gradient of v-transform
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object of class \linkS4class{Vtransform}.
 #' @param u a vector or time series with values in [0, 1].
 #'
 #' @return A vector or time series of values of gradient.
@@ -300,13 +303,13 @@ vgradient <- function(x, u) {
   do.call(x@gradient, append(x@pars, list(u = u)))
 }
 
-#' Calculate Inverse of V-Transform
+#' Calculate inverse of v-transform
 #'
-#' If the \code{Vtransform} object is also a \code{VtransformI} object (an
+#' If the \linkS4class{Vtransform} object is also a \linkS4class{VtransformI} object (an
 #' invertible v-transform) then the analytical inverse is used. Otherwise
 #' an inverse is found by numerical root finding with \code{\link[stats]{uniroot}}.
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object ofc lass \linkS4class{Vtransform}.
 #' @param v a vector or time series with values in [0, 1].
 #' @param tol the desired accuracy (convergence tolerance) that is passed to
 #' \code{uniroot} if numerical inversion is used.
@@ -329,9 +332,9 @@ vinverse <- function(x, v, tol = .Machine$double.eps^0.75) {
   }
 }
 
-#' Calculate Conditional Down Probability of V-Transform
+#' Calculate conditional down probability of v-transform
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object of class \linkS4class{Vtransform}.
 #' @param v a vector or time series with values in [0, 1].
 #'
 #' @return A vector or time series of values of gradient.
@@ -343,9 +346,9 @@ vdownprob <- function(x, v) {
   -1 / vgradient(x, vinverse(x, v))
 }
 
-#' Stochastic Inverse of a V-Transform
+#' Stochastic inverse of a v-transform
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object of class \linkS4class{Vtransform}.
 #' @param v a vector, matrix or time series with values in [0, 1].
 #' @param tscopula a time series copula object.
 #' @param tol the desired accuracy (convergence tolerance) that is passed to
@@ -376,13 +379,13 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
   output
 }
 
-#' Plot Method for Vtransform Class
+#' Plot method for Vtransform class
 #'
 #' Plots the v-transform as well as its gradient or inverse. Can also plot the
 #' conditional probability that a series PIT falls below the fulcrum for a
 #' given volatility PIT value v.
 #'
-#' @param x a \code{Vtransform} object.
+#' @param x an object of class \linkS4class{Vtransform}.
 #' @param type type of plot: 'transform' for plot of transform, 'inverse' for plot of inverse,
 #' 'gradient' for plot of gradient or 'pdown' for plot of conditional probability.
 #' @param shading logical variable specifying whether inadmissible zone for v-transform
@@ -425,7 +428,7 @@ setMethod("plot", c(x = "Vtransform", y = "missing"), function(x, type = "transf
   }, stop("Not a plot method for v-transform."))
 })
 
-#' Compute Coincidence Probability for V-Transform
+#' Compute coincidence probability for v-transform
 #'
 #' Computes the probability that if we v-transform a uniform
 #' random variable and then stochastically invert the
@@ -449,11 +452,10 @@ pcoincide <- function(x) {
   unname(delta^2 + (1 - delta)^2 + 2 * varDelta)
 }
 
-#' Show Method for Vtransform Class
+#' @describeIn Vtransform Show method for Vtransform class
 #'
-#' @param object an object of class \linkS4class{Vtransform}.
+#' @param object an object of the class.
 #'
-#' @return Summary of object of class \linkS4class{Vtransform}.
 #' @export
 #'
 setMethod("show", "Vtransform", function(object) {
@@ -464,11 +466,10 @@ setMethod("show", "Vtransform", function(object) {
   print(object@pars)
 })
 
-#' Coef Method for Vtransform Class
+#' @describeIn Vtransform Coef method for Vtransform class
 #'
-#' @param object an object of class \linkS4class{Vtransform}.
+#' @param object an object of the class.
 #'
-#' @return Parameters of Vtransform model.
 #' @export
 #'
 setMethod("coef", "Vtransform", function(object) {

@@ -3,10 +3,22 @@
 \docType{class}
 \name{marginfit-class}
 \alias{marginfit-class}
-\title{Fitted Marginal Model for Time Series}
-\description{
-Fitted Marginal Model for Time Series
+\alias{logLik,marginfit-method}
+\title{Fitted marginal model for time series}
+\usage{
+\S4method{logLik}{marginfit}(object)
 }
+\arguments{
+\item{object}{an object of the class.}
+}
+\description{
+Fitted marginal model for time series
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{logLik}: logLik method for marginfit class
+}}
+
 \section{Slots}{
 
 \describe{

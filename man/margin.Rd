@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{margin}
 \alias{margin}
-\title{Constructor Function for margin}
+\title{Constructor function for margin}
 \usage{
 margin(name, pars = NULL)
 }
@@ -15,7 +15,7 @@ margin(name, pars = NULL)
 An object of class \linkS4class{margin}.
 }
 \description{
-Constructor Function for margin
+Constructor function for margin
 }
 \examples{
 margin("sst")

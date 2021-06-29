@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{tsc_objectivea}
 \alias{tsc_objectivea}
-\title{Objective Function for Full of tscopula plus margin Model}
+\title{Objective function for full of tscopula plus margin model}
 \usage{
 tsc_objectivea(theta, modelspec, modeltype, dens, cdf, y)
 }
@@ -23,6 +23,6 @@ tsc_objectivea(theta, modelspec, modeltype, dens, cdf, y)
 Value of objective function at parameters.
 }
 \description{
-Objective Function for Full of tscopula plus margin Model
+Objective function for full of tscopula plus margin model
 }
 \keyword{internal}

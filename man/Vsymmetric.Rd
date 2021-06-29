@@ -2,15 +2,15 @@
 % Please edit documentation in R/vtransforms.R
 \name{Vsymmetric}
 \alias{Vsymmetric}
-\title{Constructor Function for Symmetric V-Transform}
+\title{Constructor function for symmetric v-transform}
 \usage{
 Vsymmetric()
 }
 \value{
-A \code{VtransformI} object.
+An object of class \linkS4class{VtransformI}.
 }
 \description{
-Constructor Function for Symmetric V-Transform
+Constructor function for symmetric v-transform
 }
 \examples{
 Vsymmetric()

@@ -1,12 +1,13 @@
-#' @title Time Series Copulas of Class tscopulaU
+#' @title Time series copulas of class tscopulaU
 #'
-#' @description S4 Class union for basic time series copula types
+#' @description S4 Class union for basic time series copula types. These are
+#' \linkS4class{armacopula}, \linkS4class{dvinecopula} and \linkS4class{dvinecopula2},
 #'
 #' @exportClass tscopulaU
 #'
-setClassUnion("tscopulaU", c("armacopula", "dvinecopula"))
+setClassUnion("tscopulaU", c("armacopula", "dvinecopula", "dvinecopula2"))
 
-#' Calculate Standardized Ranks of Data
+#' Calculate standardized ranks of data
 #'
 #' @param x a vector or time series of data.
 #'
@@ -23,10 +24,10 @@ strank <- function(x) {
   U
 }
 
-#' New Generic for Estimating Time Series Models
+#' Generic for estimating time series models
 #'
-#' Methods are available for objects of class \linkS4class{tscopula},
-#' \linkS4class{vtscopula}, \linkS4class{margin} and
+#' Methods are available for objects of class \linkS4class{tscopulaU},
+#' \linkS4class{vtscopula}, \linkS4class{tscopulafit}, \linkS4class{margin} and
 #' \linkS4class{tscm}.
 #'
 #' @param x an object of the model class.
@@ -41,9 +42,9 @@ setGeneric("fit", function(x, y, ...) {
   standardGeneric("fit")
 })
 
-#' Fitted Time Series Copula Processes
+#' Fitted time series copula processes
 #'
-#' Class of objects for time series copula processes.
+#' Class of objects for fitted time series copula processes.
 #'
 #' @slot tscopula an object of class \linkS4class{tscopula}.
 #' @slot data a vector or time series of data.
@@ -60,12 +61,11 @@ setClass("tscopulafit",
   )
 )
 
-#' Simulation Method for tscopulafit Class
+#' @describeIn tscopulafit Simulation method for tscopulafit class
 #'
-#' @param x an object of class \linkS4class{tscopulafit}.
+#' @param object an object of class \linkS4class{tscopulafit}.
 #' @param n length of realization.
 #'
-#' @return A realization of a time series copula process.
 #' @export
 #'
 #' @examples
@@ -73,26 +73,24 @@ setClass("tscopulafit",
 #' data <- sim(ar1, 1000)
 #' ar1fit <- fit(ar1, data)
 #' sim(ar1fit)
-setMethod("sim", c(x = "tscopulafit"), function(x, n = 1000) {
-  sim(x@tscopula, n)
+setMethod("sim", c(object = "tscopulafit"), function(object, n = 1000) {
+  sim(object@tscopula, n)
 })
 
-#' Coefficients for tscopulafit Class
+#' @describeIn tscopulafit Coef method for tscopulafit class
 #'
 #' @param object an object of class \linkS4class{tscopulafit}.
 #'
-#' @return Coefficients of fitted model.
 #' @export
 #'
 setMethod("coef", c(object = "tscopulafit"), function(object) {
   coef(object@tscopula)
 })
 
-#' Show method for tscopulafit objects
+#' @describeIn tscopulafit Show method for tscopulafit objects
 #'
 #' @param object an object of class \linkS4class{tscopulafit}.
 #'
-#' @return parameters of tscopulafit model
 #' @export
 #'
 setMethod("show", "tscopulafit", function(object) {
@@ -152,7 +150,7 @@ setMethod("show", "tscopulafit", function(object) {
   )
 })
 
-#' Calculate Standard Errors Safely
+#' Calculate standard errors safely
 #'
 #' @param hess a Hessian matrix from a model fit.
 #'
@@ -167,7 +165,7 @@ safe_ses <- function(hess) {
   sqrt(abs(diag(hessinverse)))
 }
 
-#' Fit Method for tscopulafit Class
+#' Fit method for tscopulafit class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
 #' @param y vector or time series of data to which the copula process is to be fitted.
@@ -192,7 +190,7 @@ setMethod(
   }
 )
 
-#' Fit Method for tscopulaU Class
+#' Fit method for tscopulaU class
 #'
 #' @param x an object of class \linkS4class{tscopulaU}.
 #' @param y vector or time series of data to which the copula process is to be fitted.
@@ -232,7 +230,7 @@ setMethod(
   }
 )
 
-#' Set Optional Choices for tscopula Fitting
+#' Set optional choices for tscopula fitting
 #'
 #' @param tsoptions a list of options chosen by user.
 #' @param defaults a list of defaults specified in function.
@@ -246,18 +244,17 @@ setoptions <- function(tsoptions, defaults) {
   defaults
 }
 
-#' logLik Method for tscopulafit Class
+#' @describeIn tscopulafit logLik method for tscopulafit class
 #'
 #' @param object an object of class \linkS4class{tscopulafit}.
 #'
-#' @return an object of class logLik
 #' @export
 #'
 setMethod("logLik", "tscopulafit", function(object) {
   logLik(as(object, "tscmfit"))
 })
 
-#' Plot Method for tscopulafit Class
+#' Plot method for tscopulafit class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
 #' @param plottype type of plot required.
@@ -315,7 +312,7 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
               stop("Not a valid plot type")
 })
 
-#' Residual Method for tscopulafit Class
+#' @describeIn tscopulafit Residual method for tscopulafit class
 #'
 #' @param object an object of class \linkS4class{tscopulafit}.
 #' @param trace extract trace instead of residuals.
@@ -334,23 +331,22 @@ setMethod("resid", "tscopulafit",
             residfunc(copula, data, trace)
           })
 
-#' glag Method for tscopulafit Class
+#' Generalized lagging function
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.
 #' @param lagmax maximum value for lag.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
-#' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
-setMethod("glag", c(x = "tscopulafit"), function(x, lagmax = 20, glagplot = FALSE) {
+glag <- function(x, lagmax = 20, glagplot = FALSE) {
   data <- x@data
   copula <- x@tscopula
   if (is(copula, "vtscopula")){
     data <- vtrans(copula@Vtransform, data)
     copula <- copula@Vcopula
   }
-  lagfunc <- eval(parse(text=paste("glag_for_",is(copula)[1],sep="")))
+  coptype <- is(copula)[1]
+  lagfunc <- eval(parse(text=paste("glag_for_", coptype, sep="")))
   lagfunc(copula, data, lagmax, glagplot)
 }
-)

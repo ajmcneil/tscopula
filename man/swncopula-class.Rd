@@ -3,7 +3,34 @@
 \docType{class}
 \name{swncopula-class}
 \alias{swncopula-class}
-\title{Strict White Noise Copula Process}
+\alias{sim,swncopula-method}
+\alias{coef,swncopula-method}
+\alias{show,swncopula-method}
+\title{Strict white noise copula process}
+\usage{
+\S4method{sim}{swncopula}(object, n = 1000)
+
+\S4method{coef}{swncopula}(object)
+
+\S4method{show}{swncopula}(object)
+}
+\arguments{
+\item{object}{an object of class \linkS4class{swncopula}.}
+
+\item{n}{numeric value for length of simulated realisation.}
+}
 \description{
-Strict White Noise Copula Process
+Strict white noise copula process
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{sim}: Simulation method for strict white noise copula
+
+\item \code{coef}: Coef method for strict white noise copula
+
+\item \code{show}: Show method for strict white noise copula
+}}
+
+\examples{
+sim(swncopula())
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{fit}
 \alias{fit}
-\title{New Generic for Estimating Time Series Models}
+\title{Generic for estimating time series models}
 \usage{
 fit(x, y, ...)
 }
@@ -17,7 +17,7 @@ fit(x, y, ...)
 An object of the fitted model class.
 }
 \description{
-Methods are available for objects of class \linkS4class{tscopula},
-\linkS4class{vtscopula}, \linkS4class{margin} and
+Methods are available for objects of class \linkS4class{tscopulaU},
+\linkS4class{vtscopula}, \linkS4class{tscopulafit}, \linkS4class{margin} and
 \linkS4class{tscm}.
 }

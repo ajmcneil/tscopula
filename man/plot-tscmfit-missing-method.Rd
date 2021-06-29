@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{plot,tscmfit,missing-method}
 \alias{plot,tscmfit,missing-method}
-\title{Plot Method for tscmfit Class}
+\title{Plot method for tscmfit class}
 \usage{
 \S4method{plot}{tscmfit,missing}(x, plottype = "residual", bw = FALSE, lagmax = 30)
 }
@@ -16,5 +16,5 @@
 \item{lagmax}{maximum lag value for dvinecopula2 plots}
 }
 \description{
-Plot Method for tscmfit Class
+Plot method for tscmfit class
 }

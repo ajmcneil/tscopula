@@ -2,7 +2,7 @@
 % Please edit documentation in R/dvinecopula.R
 \name{dvinecopula_objective}
 \alias{dvinecopula_objective}
-\title{Objective Function for dvinecopula process}
+\title{Objective function for dvinecopula process}
 \usage{
 dvinecopula_objective(theta, modelspec, u)
 }
@@ -17,6 +17,6 @@ dvinecopula_objective(theta, modelspec, u)
 Value of objective function at parameters.
 }
 \description{
-Objective Function for dvinecopula process
+Objective function for dvinecopula process
 }
 \keyword{internal}

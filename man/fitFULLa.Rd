@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{fitFULLa}
 \alias{fitFULLa}
-\title{Fit tscm Jointly}
+\title{Fit tscm jointly}
 \usage{
 fitFULLa(x, y, tsoptions, control)
 }
@@ -20,6 +20,6 @@ fitFULLa(x, y, tsoptions, control)
 An object of class \linkS4class{tscmfit}.
 }
 \description{
-Fit tscm Jointly
+Fit tscm jointly
 }
 \keyword{internal}

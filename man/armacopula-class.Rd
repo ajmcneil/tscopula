@@ -3,10 +3,41 @@
 \docType{class}
 \name{armacopula-class}
 \alias{armacopula-class}
-\title{ARMA Copula Processes}
+\alias{coef,armacopula-method}
+\alias{show,armacopula-method}
+\alias{sim,armacopula-method}
+\alias{kendall,armacopula-method}
+\title{ARMA copula processes}
+\usage{
+\S4method{coef}{armacopula}(object)
+
+\S4method{show}{armacopula}(object)
+
+\S4method{sim}{armacopula}(object, n = 1000)
+
+\S4method{kendall}{armacopula}(object, lagmax = 20)
+}
+\arguments{
+\item{object}{an object of the class.}
+
+\item{n}{length of realization.}
+
+\item{lagmax}{maximum value of lag.}
+}
 \description{
 Class of objects for ARMA copula processes.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{coef}: Coef method for ARMA copula class
+
+\item \code{show}: Show method for ARMA copula process
+
+\item \code{sim}: Simulation method for armacopula class
+
+\item \code{kendall}: Calculate Kendall's tau values for armacopula model
+}}
+
 \section{Slots}{
 
 \describe{
@@ -14,6 +45,12 @@ Class of objects for ARMA copula processes.
 
 \item{\code{modelspec}}{vector containing number of AR and MA parameters.}
 
-\item{\code{pars}}{list comprising of the parameters.}
+\item{\code{pars}}{list consisting of vector of AR parameters named `ar`
+and vector of MA parameters named `ma`.}
 }}
 
+\examples{
+sim(armacopula(list(ar = c(0.5, 0.4), ma = -0.8)), n = 1000)
+mod <- armacopula(list(ar = 0.95, ma = -0.85))
+kendall(mod)
+}

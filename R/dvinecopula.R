@@ -1,4 +1,4 @@
-#' D-vine Copula Processes
+#' D-vine copula processes
 #'
 #' Class of objects for d-vine copula processes.
 #'
@@ -14,7 +14,7 @@ setClass("dvinecopula", contains = "tscopula", slots = list(
   pars = "list"
 ))
 
-#' Constructor Function for dvinecopula process
+#' Constructor function for dvinecopula process
 #'
 #' @param family a vector of family names
 #' @param pars a list containing the parameters of each lag
@@ -65,11 +65,10 @@ dvinecopula <- function(family = "indep", pars = list(NULL), rotation = 0) {
   )
 }
 
-#' Coef Method for dvinecopula Class
+#' @describeIn dvinecopula Coef method for dvinecopula class
 #'
-#' @param object an object of class \linkS4class{dvinecopula}.
+#' @param object an object of the class.
 #'
-#' @return parameters of tscopula model
 #' @export
 #'
 setMethod("coef", c(object = "dvinecopula"), function(object) {
@@ -80,11 +79,10 @@ setMethod("coef", c(object = "dvinecopula"), function(object) {
   }
 })
 
-#' Show Method for dvinecopula Class
+#' @describeIn dvinecopula Show method for dvinecopula class
 #'
-#' @param object an object of class \linkS4class{dvinecopula}.
+#' @param object an object of the class.
 #'
-#' @return A summary of an object of class \linkS4class{dvinecopula}.
 #' @export
 #'
 setMethod("show", "dvinecopula", function(object) {
@@ -110,20 +108,19 @@ setMethod("show", "dvinecopula", function(object) {
   print(coef(object))
 })
 
-#' Simulation Method for dvinecopula Class
+#' @describeIn dvinecopula Simulation method for dvinecopula class
 #'
-#' @param x an object of class \linkS4class{dvinecopula}.
+#' @param object an object of class the class.
 #' @param n length of realization.
 #' @param innov vector of innovations of length n.
 #' @param start vector of start values with length equal to order of process.
 #'
-#' @return A realization of a time series copula process.
 #' @export
 #'
 #' @examples
 #' sim(dvinecopula("gauss", 0.5))
-setMethod("sim", c(x = "dvinecopula"), function(x, n = 1000, innov = NA, start = NA) {
-  pc_list <- mklist_dvine(x)
+setMethod("sim", c(object = "dvinecopula"), function(object, n = 1000, innov = NA, start = NA) {
+  pc_list <- mklist_dvine(object)
   simdvine(pc_list, n, innov, start)
 })
 
@@ -193,8 +190,7 @@ simdvine <- function(pc_list, n, innov, start){
   U
 }
 
-
-#' Objective Function for dvinecopula process
+#' Objective function for dvinecopula process
 #'
 #' @param theta parameters of copulas
 #' @param modelspec list of families of copulas
@@ -280,30 +276,29 @@ glag_for_dvinecopula <- function(copula, data, lagmax, glagplot = FALSE) {
 }
 
 
-#' Calculate Kendall's tau values for pair copulas in d-vine copula
+#' @describeIn dvinecopula Calculate Kendall's tau values for pair copulas in d-vine copula
 #'
-#' @param x a \linkS4class{dvinecopula} object
-#' @param lagmax maximum value of lag
+#' @param object an object of the class.
+#' @param lagmax maximum value of lag.
 #'
-#' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
 #' @examples
 #' mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
 #' kendall(mixmod)
-setMethod("kendall", c(x = "dvinecopula"), function(x, lagmax = 20) {
-  tau <- vector("numeric",length(x@modelspec))
+setMethod("kendall", c(object = "dvinecopula"), function(object, lagmax = 20) {
+  tau <- vector("numeric",length(object@modelspec))
   if (length(tau) > lagmax)
     tau <- tau[1:lagmax]
   for (i in seq_along(tau)){
     model <- rvinecopulib::bicop_dist(
-      family = tolower(x@modelspec[[i]]$family),
-      rotation = x@modelspec[[i]]$rotation,
-      parameters = x@pars[[i]][1:x@modelspec[[i]]$npars]
+      family = tolower(object@modelspec[[i]]$family),
+      rotation = object@modelspec[[i]]$rotation,
+      parameters = object@pars[[i]][1:object@modelspec[[i]]$npars]
     )
     tau[i] <- rvinecopulib::par_to_ktau(model)
   }
-  names(tau) <- sapply(x@modelspec, function(v){v$family})
+  names(tau) <- sapply(object@modelspec, function(v){v$family})
   tau
 }
 )

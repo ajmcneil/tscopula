@@ -3,11 +3,35 @@
 \docType{class}
 \name{tscm-class}
 \alias{tscm-class}
+\alias{show,tscm-method}
+\alias{coef,tscm-method}
+\alias{sim,tscm-method}
 \title{Full models}
+\usage{
+\S4method{show}{tscm}(object)
+
+\S4method{coef}{tscm}(object)
+
+\S4method{sim}{tscm}(object, n = 1000)
+}
+\arguments{
+\item{object}{an object of the class.}
+
+\item{n}{length of realization.}
+}
 \description{
 Class of objects for composite time series models consisting
 of stationary copula processes and marginal distributions.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{show}: Show method for tscm class
+
+\item \code{coef}: Coefficient method for tscm class
+
+\item \code{sim}: Simulation method for tscm class
+}}
+
 \section{Slots}{
 
 \describe{
@@ -16,3 +40,7 @@ of stationary copula processes and marginal distributions.
 \item{\code{margin}}{an object of class \linkS4class{margin}.}
 }}
 
+\examples{
+mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))
+sim(mod)
+}

@@ -3,10 +3,29 @@
 \docType{class}
 \name{tscmfit-class}
 \alias{tscmfit-class}
-\title{Fitted tscm Model}
+\alias{logLik,tscmfit-method}
+\alias{resid,tscmfit-method}
+\title{Fitted tscm model}
+\usage{
+\S4method{logLik}{tscmfit}(object)
+
+\S4method{resid}{tscmfit}(object, trace = FALSE)
+}
+\arguments{
+\item{object}{an object of the class.}
+
+\item{trace}{extract trace instead of residuals.}
+}
 \description{
 Class of objects for fitted \linkS4class{tscm} models.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{logLik}: method for tscmfit class
+
+\item \code{resid}: Residual method for tscmfit class
+}}
+
 \section{Slots}{
 
 \describe{

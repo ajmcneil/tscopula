@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{tscm}
 \alias{tscm}
-\title{Constructor Function for time series}
+\title{Constructor function for time series}
 \usage{
 tscm(tscopula, margin = new("margin", name = "unif"))
 }
@@ -15,7 +15,7 @@ tscm(tscopula, margin = new("margin", name = "unif"))
 An object of class \linkS4class{tscm}.
 }
 \description{
-Constructor Function for time series
+Constructor function for time series
 }
 \examples{
 tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))

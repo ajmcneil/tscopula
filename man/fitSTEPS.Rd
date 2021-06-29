@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{fitSTEPS}
 \alias{fitSTEPS}
-\title{Fit tscm in Two Steps}
+\title{Fit tscm in two steps}
 \usage{
 fitSTEPS(x, y, tsoptions, control)
 }
@@ -21,6 +21,6 @@ This differs according to the class of x.}
 An object of class \linkS4class{tscmfit}.
 }
 \description{
-Fit tscm in Two Steps
+Fit tscm in two steps
 }
 \keyword{internal}

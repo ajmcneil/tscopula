@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{dmarg}
 \alias{dmarg}
-\title{Compute Density of Marginal Model}
+\title{Compute density of marginal model}
 \usage{
 dmarg(x, y, log = FALSE)
 }

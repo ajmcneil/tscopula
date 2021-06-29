@@ -3,7 +3,8 @@
 \docType{class}
 \name{tscopulaU-class}
 \alias{tscopulaU-class}
-\title{Time Series Copulas of Class tscopulaU}
+\title{Time series copulas of class tscopulaU}
 \description{
-S4 Class union for basic time series copula types
+S4 Class union for basic time series copula types. These are
+\linkS4class{armacopula}, \linkS4class{dvinecopula} and \linkS4class{dvinecopula2},
 }

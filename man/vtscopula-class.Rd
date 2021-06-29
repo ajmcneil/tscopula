@@ -3,10 +3,41 @@
 \docType{class}
 \name{vtscopula-class}
 \alias{vtscopula-class}
-\title{VT Time Series Copula Processes}
-\description{
-Class of objects for V-transformed time series copula processes.
+\alias{show,vtscopula-method}
+\alias{coef,vtscopula-method}
+\alias{sim,vtscopula-method}
+\alias{kendall,vtscopula-method}
+\title{Time series copula processes with v-transforms}
+\usage{
+\S4method{show}{vtscopula}(object)
+
+\S4method{coef}{vtscopula}(object)
+
+\S4method{sim}{vtscopula}(object, n = 1000)
+
+\S4method{kendall}{vtscopula}(object, lagmax = 20)
 }
+\arguments{
+\item{object}{an object of the class.}
+
+\item{n}{length of realization.}
+
+\item{lagmax}{maximum value of lag.}
+}
+\description{
+Class of objects for v-transformed time series copula processes.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{show}: Show method for vtscopula objects
+
+\item \code{coef}: Coef method for vtscopula class
+
+\item \code{sim}: Simulation method for vtscopula class
+
+\item \code{kendall}: Calculate Kendall's tau values for vtscopula model
+}}
+
 \section{Slots}{
 
 \describe{
@@ -17,3 +48,9 @@ Class of objects for V-transformed time series copula processes.
 \item{\code{Wcopula}}{object of class \linkS4class{tscopula}.}
 }}
 
+\examples{
+copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
+sim(vtscopula(copobject, Vtransform = V2p()))
+mod <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)))
+kendall(mod)
+}

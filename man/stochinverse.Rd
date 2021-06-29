@@ -2,12 +2,12 @@
 % Please edit documentation in R/vtransforms.R
 \name{stochinverse}
 \alias{stochinverse}
-\title{Stochastic Inverse of a V-Transform}
+\title{Stochastic inverse of a v-transform}
 \usage{
 stochinverse(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75)
 }
 \arguments{
-\item{x}{a \code{Vtransform} object.}
+\item{x}{an object of class \linkS4class{Vtransform}.}
 
 \item{v}{a vector, matrix or time series with values in [0, 1].}
 
@@ -20,7 +20,7 @@ stochinverse(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75)
 A vector, matrix or time series with values in [0, 1].
 }
 \description{
-Stochastic Inverse of a V-Transform
+Stochastic inverse of a v-transform
 }
 \examples{
 stochinverse(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))

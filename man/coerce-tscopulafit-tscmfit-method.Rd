@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{coerce,tscopulafit,tscmfit-method}
 \alias{coerce,tscopulafit,tscmfit-method}
-\title{Convert tscopulafit Object to be tscmfit Object}
+\title{Convert tscopulafit object to be tscmfit object}
 \usage{
 \S4method{coerce}{tscopulafit,tscmfit}(from, to = "tscmfit", strict = TRUE)
 }
@@ -17,5 +17,5 @@
 A \linkS4class{tscmfit} object.
 }
 \description{
-Convert tscopulafit Object to be tscmfit Object
+Convert tscopulafit object to be tscmfit object
 }

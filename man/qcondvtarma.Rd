@@ -2,14 +2,15 @@
 % Please edit documentation in R/helper_vtarma.R
 \name{qcondvtarma}
 \alias{qcondvtarma}
-\title{Conditional Quantiles for vtarma Process}
+\title{Conditional quantiles of VT-ARMA process}
 \usage{
 qcondvtarma(p, tscmmod, armamean, armasd)
 }
 \arguments{
 \item{p}{point at which quantile should be calculated.}
 
-\item{tscmmod}{an object of class \linkS4class{tscmfit}.}
+\item{tscmmod}{an object of class \linkS4class{tscmfit} based on underlying copula
+of class \linkS4class{armacopula}.}
 
 \item{armamean}{conditional mean of underlying ARMA process.}
 
@@ -19,6 +20,6 @@ qcondvtarma(p, tscmmod, armamean, armasd)
 a scalar value.
 }
 \description{
-Conditional Quantiles for vtarma Process
+Conditional quantiles of VT-ARMA process
 }
 \keyword{internal}

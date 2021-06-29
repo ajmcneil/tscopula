@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{fitEDF}
 \alias{fitEDF}
-\title{Fit tscm Using Empirical Distribution Function}
+\title{Fit tscm using empirical distribution function}
 \usage{
 fitEDF(x, y, tsoptions, control)
 }
@@ -21,6 +21,6 @@ This differs according to the class of x.}
 An object of class \linkS4class{tscmfit}.
 }
 \description{
-Fit tscm Using Empirical Distribution Function
+Fit tscm using empirical distribution function
 }
 \keyword{internal}

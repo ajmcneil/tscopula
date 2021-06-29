@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{pcoincide}
 \alias{pcoincide}
-\title{Compute Coincidence Probability for V-Transform}
+\title{Compute coincidence probability for v-transform}
 \usage{
 pcoincide(x)
 }

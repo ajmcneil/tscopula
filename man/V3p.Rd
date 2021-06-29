@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{V3p}
 \alias{V3p}
-\title{Constructor Function for 3-Parameter V-Transform}
+\title{Constructor function for 3-parameter v-transform}
 \usage{
 V3p(delta = 0.5, kappa = 1, xi = 1)
 }
@@ -14,10 +14,10 @@ V3p(delta = 0.5, kappa = 1, xi = 1)
 \item{xi}{additional positive parameter of v-transform.}
 }
 \value{
-A \code{Vtransform} object.
+An object of class \linkS4class{Vtransform}.
 }
 \description{
-Constructor Function for 3-Parameter V-Transform
+Constructor function for 3-parameter v-transform
 }
 \examples{
 V3p(delta = 0.45, kappa = 0.8, xi = 1.1)

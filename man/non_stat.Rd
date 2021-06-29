@@ -2,7 +2,7 @@
 % Please edit documentation in R/armacopula.R
 \name{non_stat}
 \alias{non_stat}
-\title{Check for Causality of ARMA Process}
+\title{Check for causality of ARMA process}
 \usage{
 non_stat(ar)
 }
@@ -13,5 +13,5 @@ non_stat(ar)
 A logical variable stating whether ARMA process is causal.
 }
 \description{
-Check for Causality of ARMA Process
+Check for causality of ARMA process
 }

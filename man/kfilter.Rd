@@ -2,7 +2,7 @@
 % Please edit documentation in R/armacopula.R
 \name{kfilter}
 \alias{kfilter}
-\title{Kalman Filter for ARMA copula model}
+\title{Kalman filter for ARMA copula model}
 \usage{
 kfilter(x, y)
 }
@@ -16,7 +16,7 @@ A matrix or multivariate time series with columns consisting of
 conditional mean, standard deviation and residuals.
 }
 \description{
-Kalman Filter for ARMA copula model
+Kalman filter for ARMA copula model
 }
 \examples{
 data <- sim(armacopula(list(ar = c(0.5, 0.4), ma = -0.8)), n = 1000)

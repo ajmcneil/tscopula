@@ -2,15 +2,15 @@
 % Please edit documentation in R/vtransforms.R
 \name{Vdegenerate}
 \alias{Vdegenerate}
-\title{Constructor Function for Degenerate V-Transform}
+\title{Constructor function for degenerate v-transform}
 \usage{
 Vdegenerate()
 }
 \value{
-A \code{VtransformI} object.
+An object of class \linkS4class{VtransformI}.
 }
 \description{
-Constructor Function for Degenerate V-Transform
+Constructor function for degenerate v-transform
 }
 \examples{
 Vdegenerate()

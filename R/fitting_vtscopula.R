@@ -1,6 +1,6 @@
-#' VT Time Series Copula Processes
+#' Time series copula processes with v-transforms
 #'
-#' Class of objects for V-transformed time series copula processes.
+#' Class of objects for v-transformed time series copula processes.
 #'
 #' @slot Vcopula object of class \linkS4class{tscopulaU}.
 #' @slot Vtransform object of class \linkS4class{Vtransform}.
@@ -17,10 +17,10 @@ setClass("vtscopula",
   )
 )
 
-#' Constructor Function for vtscopula Object
+#' Constructor function for vtscopula object
 #'
 #' @param tscopulaU an object of class
-#' \linkS4class{armacopula} or \linkS4class{dvinecopula}.
+#' \linkS4class{armacopula}, \linkS4class{dvinecopula} or \linkS4class{dvinecopula2}.
 #' @param Vtransform an object of class \linkS4class{Vtransform}.
 #' @param Wcopula an object of class \linkS4class{tscopula}.
 #'
@@ -40,11 +40,10 @@ vtscopula <- function(tscopulaU,
   )
 }
 
-#' Show Method for vtscopula objects
+#' @describeIn vtscopula Show method for vtscopula objects
 #'
-#' @param object an object of class \linkS4class{vtscopula}.
+#' @param object an object of the class.
 #'
-#' @return Summary of object of class \linkS4class{vtscopula}.
 #' @export
 #'
 setMethod("show", "vtscopula", function(object) {
@@ -62,11 +61,10 @@ setMethod("show", "vtscopula", function(object) {
   }
 })
 
-#' Coef Method for vtscopula Class
+#' @describeIn vtscopula Coef method for vtscopula class
 #'
-#' @param object an object of class \linkS4class{vtscopula}.
+#' @param object an object of the class.
 #'
-#' @return Parameters of vtscopula model.
 #' @export
 #'
 setMethod("coef", "vtscopula", function(object) {
@@ -93,23 +91,22 @@ vtparlist <- function(object) {
     output
 }
 
-#' Simulation Method for vtscopula Class
+#' @describeIn vtscopula Simulation method for vtscopula class
 #'
-#' @param x an object of class \linkS4class{vtscopula}.
+#' @param object an object of the class.
 #' @param n length of realization.
 #'
-#' @return A realization of a time series copula process.
 #' @export
 #'
 #' @examples
 #' copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))
 #' sim(vtscopula(copobject, Vtransform = V2p()))
-setMethod("sim", c(x = "vtscopula"), function(x, n = 1000) {
-  U <- sim(x@Vcopula, n)
-  stochinverse(x@Vtransform, U, x@Wcopula)
+setMethod("sim", c(object = "vtscopula"), function(object, n = 1000) {
+  U <- sim(object@Vcopula, n)
+  stochinverse(object@Vtransform, U, object@Wcopula)
 })
 
-#' Fit Method for vtscopula Class
+#' Fit method for vtscopula class
 #'
 #' Fit object of class \linkS4class{vtscopula}
 #' to data using maximum likelihood.
@@ -171,7 +168,7 @@ setMethod(
   }
 )
 
-#' Extract W-Copula
+#' Extract W-copula
 #'
 #' @param x an object of class \linkS4class{tscopula}.
 #'
@@ -392,7 +389,7 @@ fitFULLb <- function(x, y, tsoptions, control) {
   new("tscmfit", tscopula = x@tscopula, margin = x@margin, data = y, fit = fit)
 }
 
-#' Objective Function for Full Fit With V-Tranform
+#' Objective function for full fit with v-transform
 #'
 #' @param theta vector of parameters
 #' @param fulcrum value for fulcrum
@@ -425,18 +422,17 @@ tsc_objectiveb <-
     return(termA + termBC)
   }
 
-#' Calculate Kendall's tau values for vtscopula model
+#' @describeIn vtscopula Calculate Kendall's tau values for vtscopula model
 #'
-#' @param x a \linkS4class{vtscopula} object
-#' @param lagmax maximum value of lag
+#' @param object an object of the class.
+#' @param lagmax maximum value of lag.
 #'
-#' @return vector consisting of Kendall's tau values for each pair copula
 #' @export
 #'
 #' @examples
 #' mod <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)))
 #' kendall(mod)
-setMethod("kendall", c(x = "vtscopula"), function(x, lagmax = 20){
-kendall(x@Vcopula, lagmax)
+setMethod("kendall", c(object = "vtscopula"), function(object, lagmax = 20){
+kendall(object@Vcopula, lagmax)
 }
 )

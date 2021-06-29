@@ -3,7 +3,7 @@
 \docType{data}
 \name{bitcoin}
 \alias{bitcoin}
-\title{Bitcoin Price Data 2016-19}
+\title{Bitcoin price data 2016-19}
 \format{
 An object of class \code{"xts"}.
 }

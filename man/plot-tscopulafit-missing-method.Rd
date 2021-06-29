@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{plot,tscopulafit,missing-method}
 \alias{plot,tscopulafit,missing-method}
-\title{Plot Method for tscopulafit Class}
+\title{Plot method for tscopulafit class}
 \usage{
 \S4method{plot}{tscopulafit,missing}(x, plottype = "residual", bw = FALSE, lagmax = 30)
 }
@@ -16,7 +16,7 @@
 \item{lagmax}{maximum lag value for Kendall plots}
 }
 \description{
-Plot Method for tscopulafit Class
+Plot method for tscopulafit class
 }
 \examples{
 data <- sim(armacopula(list(ar = 0.5, ma = 0.4)), n = 1000)

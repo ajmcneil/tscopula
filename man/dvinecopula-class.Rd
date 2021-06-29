@@ -3,10 +3,45 @@
 \docType{class}
 \name{dvinecopula-class}
 \alias{dvinecopula-class}
-\title{D-vine Copula Processes}
+\alias{coef,dvinecopula-method}
+\alias{show,dvinecopula-method}
+\alias{sim,dvinecopula-method}
+\alias{kendall,dvinecopula-method}
+\title{D-vine copula processes}
+\usage{
+\S4method{coef}{dvinecopula}(object)
+
+\S4method{show}{dvinecopula}(object)
+
+\S4method{sim}{dvinecopula}(object, n = 1000, innov = NA, start = NA)
+
+\S4method{kendall}{dvinecopula}(object, lagmax = 20)
+}
+\arguments{
+\item{object}{an object of the class.}
+
+\item{n}{length of realization.}
+
+\item{innov}{vector of innovations of length n.}
+
+\item{start}{vector of start values with length equal to order of process.}
+
+\item{lagmax}{maximum value of lag.}
+}
 \description{
 Class of objects for d-vine copula processes.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{coef}: Coef method for dvinecopula class
+
+\item \code{show}: Show method for dvinecopula class
+
+\item \code{sim}: Simulation method for dvinecopula class
+
+\item \code{kendall}: Calculate Kendall's tau values for pair copulas in d-vine copula
+}}
+
 \section{Slots}{
 
 \describe{
@@ -17,3 +52,8 @@ Class of objects for d-vine copula processes.
 \item{\code{pars}}{list comprising of the parameters.}
 }}
 
+\examples{
+sim(dvinecopula("gauss", 0.5))
+mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
+kendall(mixmod)
+}

@@ -1,4 +1,4 @@
-#' Time Series Copula Processes
+#' Time series copula processes
 #'
 #' Class of objects for time series copula processes.
 #'
@@ -12,31 +12,33 @@
 #'
 setClass("tscopula", contains = c("VIRTUAL"))
 
-#' New Generic for Simulating Time Series Models
+#' Generic for simulating time series copula models
 #'
-#' Methods are available for objects of class \linkS4class{tscopula},
+#' Methods are available for objects of class \linkS4class{swncopula},
+#' \linkS4class{armacopula},
+#' \linkS4class{dvinecopula}, \linkS4class{dvinecopula2},
 #' \linkS4class{margin} and \linkS4class{tscm}.
 #'
-#' @param x an object of the model class.
-#' @param ... further arguments to be passed on.
+#' @param object an object of the model class.
+#' @param ... further arguments to be passed to the simulation.
 #'
-#' @return A realization from the time series model.
+#' @return A simulated realization from the time series model.
 #' @export
 #'
 #'
-setGeneric("sim", function(x, ...) {
+setGeneric("sim", function(object, ...) {
   standardGeneric("sim")
 })
 
-#' Strict White Noise Copula Process
+#' Strict white noise copula process
 #'
 #' @export
 #'
 setClass("swncopula", contains = "tscopula")
 
-#' Constructor Function for Strict White Noise Copula
+#' Constructor function for strict white noise copula process
 #'
-#' @return The strict white noise copula process.
+#' @return Object of class \linkS4class{swncopula}.
 #' @export
 #'
 #' @examples
@@ -45,72 +47,54 @@ swncopula <- function() {
   new("swncopula")
 }
 
-#' Simulation Method for Strict White Noise Copula
+#' @describeIn swncopula Simulation method for strict white noise copula
 #'
-#' @param x an object of class \linkS4class{swncopula}.
+#' @param object an object of the class.
 #' @param n numeric value for length of simulated realisation.
 #'
-#' @return A realisation of strict white noise of length n.
 #' @export
 #'
 #' @examples
 #' sim(swncopula())
-setMethod("sim", "swncopula", function(x, n = 1000) {
+setMethod("sim", "swncopula", function(object, n = 1000) {
   runif(n)
 })
 
-#' Coef Method for Strict White Noise Copula
+#' @describeIn swncopula Coef method for strict white noise copula
 #'
-#' @param object an object of class \linkS4class{swncopula}.
+#' @param object an object of the class.
 #'
-#' @return Null object
 #' @export
 #'
 setMethod("coef", "swncopula", function(object) {
   NULL
 })
 
-#' Show Method for Strict White Noise Copula
+#' @describeIn swncopula Show method for strict white noise copula
 #'
 #' @param object an object of class \linkS4class{swncopula}.
 #'
-#' @return A summary of a \linkS4class{swncopula}.
 #' @export
 #'
 setMethod("show", "swncopula", function(object) {
   cat("SWN \n")
 })
 
-#' New Generic for Kendall correlations
+#' Generic for Kendall correlations
 #'
-#' Methods are available for objects of class \linkS4class{armacopula}
-#'  and \linkS4class{dvinecopula}.
+#' Methods are available for objects of class \linkS4class{armacopula},
+#' \linkS4class{dvinecopula}, \linkS4class{dvinecopula2} and \linkS4class{vtscopula}.
 #'
-#' @param x an object of the model class.
-#' @param ... further arguments to be passed on.
+#' @param object an object of the model class.
+#' @param ... further arguments to be passed to Kendall calculation.
 #'
-#' @return A realization from the time series model.
+#' @return A vector of Kendall correlations.
 #' @export
 #'
 #'
-setGeneric("kendall", function(x, ...) {
+setGeneric("kendall", function(object, ...) {
   standardGeneric("kendall")
 })
 
-#' New Generic for Generalized Lagging of Data
-#'
-#' Methods are available for objects of class \linkS4class{tscopulafit}
-#'  and \linkS4class{tscmfit}.
-#'
-#' @param x an object of the model class.
-#' @param ... further arguments to be passed on.
-#'
-#' @return A realization from the time series model.
-#' @export
-#'
-#'
-setGeneric("glag", function(x, ...) {
-  standardGeneric("glag")
-})
 
 

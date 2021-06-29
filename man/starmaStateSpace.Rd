@@ -2,7 +2,7 @@
 % Please edit documentation in R/armacopula.R
 \name{starmaStateSpace}
 \alias{starmaStateSpace}
-\title{State Space Representation for standardized ARMA model}
+\title{State space representation for standardized ARMA model}
 \usage{
 starmaStateSpace(ar, ma, order)
 }
@@ -17,6 +17,6 @@ starmaStateSpace(ar, ma, order)
 State space representation of ARMA process.
 }
 \description{
-State Space Representation for standardized ARMA model
+State space representation for standardized ARMA model
 }
 \keyword{internal}

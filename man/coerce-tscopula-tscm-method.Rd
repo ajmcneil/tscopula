@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{coerce,tscopula,tscm-method}
 \alias{coerce,tscopula,tscm-method}
-\title{Convert tscopula Object to tscm Object}
+\title{Convert tscopula object to tscm object}
 \usage{
 \S4method{coerce}{tscopula,tscm}(from, to = "tsc", strict = TRUE)
 }
@@ -17,5 +17,5 @@
 A \linkS4class{tscm} object.
 }
 \description{
-Convert tscopula Object to tscm Object
+Convert tscopula object to tscm object
 }

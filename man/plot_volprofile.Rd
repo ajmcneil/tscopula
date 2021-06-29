@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{plot_volprofile}
 \alias{plot_volprofile}
-\title{Plot Function for Volatility Profile Plot}
+\title{Plot function for volatility profile plot}
 \usage{
 plot_volprofile(x, bw)
 }
@@ -12,5 +12,5 @@ plot_volprofile(x, bw)
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
 \description{
-Plot Function for Volatility Profile Plot
+Plot function for volatility profile plot
 }

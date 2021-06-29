@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_vtscopula.R
 \name{fit,vtscopula-method}
 \alias{fit,vtscopula-method}
-\title{Fit Method for vtscopula Class}
+\title{Fit method for vtscopula class}
 \usage{
 \S4method{fit}{vtscopula}(
   x,

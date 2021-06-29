@@ -2,19 +2,21 @@
 % Please edit documentation in R/basic_objects.R
 \name{sim}
 \alias{sim}
-\title{New Generic for Simulating Time Series Models}
+\title{Generic for simulating time series copula models}
 \usage{
-sim(x, ...)
+sim(object, ...)
 }
 \arguments{
-\item{x}{an object of the model class.}
+\item{object}{an object of the model class.}
 
-\item{...}{further arguments to be passed on.}
+\item{...}{further arguments to be passed to the simulation.}
 }
 \value{
-A realization from the time series model.
+A simulated realization from the time series model.
 }
 \description{
-Methods are available for objects of class \linkS4class{tscopula},
+Methods are available for objects of class \linkS4class{swncopula},
+\linkS4class{armacopula},
+\linkS4class{dvinecopula}, \linkS4class{dvinecopula2},
 \linkS4class{margin} and \linkS4class{tscm}.
 }

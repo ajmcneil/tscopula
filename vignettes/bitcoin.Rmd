@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Bitcoin Analysis}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -17,7 +19,7 @@ knitr::opts_chunk$set(
 library(tscopula)
 library(stats4)
 library(xts)
-tsoptions <- list(hessian = TRUE, method = "Nelder-Mead")
+tsoptions <- list(hessian = TRUE, method = "Nelder-Mead", avoidzero= FALSE)
 
 ```
 
@@ -42,45 +44,59 @@ We start with the fulcrum profile-likelihood plot which indicates that a value $
 U <- strank(X)
 
 copmod_Gauss <- armacopula(pars = list(ar = 0.95, ma = -0.85))
-profilefulcrum(U, copmod_Gauss, locations = seq(from = 0, to = 1, length = 20))
+pts <- seq(from=0.01, to=0.99, length=51) + 0.005
+profilefulcrum(U, copmod_Gauss, locations = pts)
 abline(v = 0.45)
 ```
 
-We fit both the linear v-transform and the 2-parameter v-transform, starting the latter analysis close to the optimum of the first. The 2-parameter transform gives a superior fit.
+Our baseline model is a model with ARMA(1,1) copula and v-transform with fulcrum at $\delta=0.45$.
 
 ```{r}
 mod_Gauss <- vtscopula(copmod_Gauss, Vlinear(0.45))
 fit_Gauss <- fit(mod_Gauss, U, tsoptions = tsoptions)
 fit_Gauss
-
-copmod_Gauss2 <- armacopula(pars = list(ar = 0.96, ma = -0.84))
-mod_Gauss2 <- vtscopula(copmod_Gauss2, V2p(delta = 0.42))
-fit_Gauss2 <- fit(mod_Gauss2, U, tsoptions = tsoptions)
-fit_Gauss2
-AIC(fit_Gauss, fit_Gauss2)
 ```
 
 ### D-Vine Copula 
 
-Some preliminary analysis suggests that Frank copulas can work well.
+Some preliminary analysis suggests that Frank copulas can work well. The model gives a higher log-likelihood, but has quite a lot of parameters.
 
 ```{r}
 copmod <- dvinecopula(family = rep("frank", 10),
                       pars= as.list(rep(1, 10)))
 mod_mix <- vtscopula(copmod, Vlinear(0.45))
-tsoptions <- list(hessian = FALSE, method = "Nelder-Mead", fulcrum = 0.45)
+tsoptions <- list(hessian = FALSE, method = "Nelder-Mead")
 fit_mix <- fit(mod_mix, U, tsoptions = tsoptions, control = list(maxit = 4000))
 fit_mix
-AIC(fit_Gauss2, fit_mix)
+AIC(fit_Gauss, fit_mix)
 ```
 
-We provide plots for the model with Frank copula.
+The following plot shows that the fitted model is able to match the form of the Kendall partial autocorrelation function.
 
 ```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-plot(fit_mix)
 plot(fit_mix, plottype = "kendall")
 ```
 
+### D-Vine Copula (second kind)
+
+In this next section we try a d-vine copula model of the second kind with a finite value for `maxlag` and a linear v-transform. We continue to use the Frank copula. The resulting model is superior to the ARMA copula model and has the same number of parameters. Note that an infinite value for `maxlag` makes next to no difference in the fit.
+
+```{r}
+copmod_Frank <- dvinecopula2(family = "frank",
+                             pars = list(ar = 0.95, ma = -0.85),
+                             maxlag = 30)
+mod_Frank <- vtscopula(copmod_Frank, Vlinear(0.45))
+fit_Frank <- fit(mod_Frank, U, tsoptions = tsoptions)
+
+AIC(fit_Gauss, fit_Frank)
+```
+
+We provide plots for the model with Frank copula to show aspects of the fit.
+
+```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+plot(fit_Frank, plottype = "residual")
+plot(fit_Frank, plottype = "kendall")
+```
 
 ## Marginal Models
 
@@ -102,17 +118,19 @@ AIC(marg_st, marg_sst, marg_slp, marg_lp, marg_dw, marg_sdw)
 
 ## Full Models
 
-We fit a full model combining the double Weibull margin with the VT-d-vine model.
+### D-Vine Copula
+
+We fit a full model combining the double Weibull margin with the VT-d-vine model of the second kind.
 
 ```{r,fig.show='hold', dev.args =list(pointsize=9)}
-fullmod <- tscm(fit_mix, margin = marg_dw)
+fullmod <- tscm(fit_Frank, margin = marg_dw)
 fullmod <- fit(fullmod, as.numeric(X), 
-               method = "full", tsoptions = tsoptions, control = list(maxit = 4000))
+               method = "full", tsoptions = tsoptions)
 fullmod
 AIC(marg_dw, fullmod)
 ```
 
-The plots show aspect of the fit.
+We show all the possible plots for the full model.
 
 ```{r,fig.show='hold', dev.args =list(pointsize=9)}
 plot(fullmod, plottype = "residual")
@@ -121,6 +139,8 @@ plot(fullmod, plottype = "margin")
 plot(fullmod, plottype = "vtransform")
 plot(fullmod, plottype = "volprofile")
 plot(fullmod, plottype = "volproxy")
+plot(fullmod, plottype = "glag")
 ```
+
 
 

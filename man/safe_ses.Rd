@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{safe_ses}
 \alias{safe_ses}
-\title{Calculate Standard Errors Safely}
+\title{Calculate standard errors safely}
 \usage{
 safe_ses(hess)
 }
@@ -13,5 +13,5 @@ safe_ses(hess)
 a vector of standard errors.
 }
 \description{
-Calculate Standard Errors Safely
+Calculate standard errors safely
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{V2p}
 \alias{V2p}
-\title{Constructor Function for 2-Parameter V-Transform}
+\title{Constructor function for 2-parameter v-transform}
 \usage{
 V2p(delta = 0.5, kappa = 1)
 }
@@ -12,10 +12,10 @@ V2p(delta = 0.5, kappa = 1)
 \item{kappa}{additional positive parameter of v-transform.}
 }
 \value{
-A \code{Vtransform} object.
+An object of class \linkS4class{Vtransform}.
 }
 \description{
-Constructor Function for 2-Parameter V-Transform
+Constructor function for 2-parameter v-transform
 }
 \examples{
 V2p(delta = 0.45, kappa = 1.2)

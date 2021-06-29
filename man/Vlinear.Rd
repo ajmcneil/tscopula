@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{Vlinear}
 \alias{Vlinear}
-\title{Constructor Function for Linear V-Transform}
+\title{Constructor function for linear v-transform}
 \usage{
 Vlinear(delta = 0.5)
 }
@@ -10,10 +10,10 @@ Vlinear(delta = 0.5)
 \item{delta}{a value in (0, 1) specifying the fulcrum of the v-transform.}
 }
 \value{
-A \code{VtransformI} object.
+An o bject of class \linkS4class{VtransformI}.
 }
 \description{
-Constructor Function for Linear V-Transform
+Constructor function for linear v-transform
 }
 \examples{
 Vlinear(delta = 0.45)

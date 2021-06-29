@@ -2,7 +2,7 @@
 % Please edit documentation in R/vtransforms.R
 \name{V3b}
 \alias{V3b}
-\title{Constructor Function for 3-Parameter Beta V-Transform}
+\title{Constructor function for 3-parameter beta v-transform}
 \usage{
 V3b(delta = 0.5, kappa = 1, xi = 1)
 }
@@ -14,10 +14,10 @@ V3b(delta = 0.5, kappa = 1, xi = 1)
 \item{xi}{additional positive parameter of v-transform.}
 }
 \value{
-A \code{Vtransform} object.
+An object of class \linkS4class{Vtransform}.
 }
 \description{
-Constructor Function for 3-Parameter Beta V-Transform
+Constructor function for 3-parameter beta v-transform
 }
 \examples{
 V3b(delta = 0.45, kappa = 1.2, xi = 1.2)

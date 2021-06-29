@@ -2,15 +2,15 @@
 % Please edit documentation in R/basic_objects.R
 \name{swncopula}
 \alias{swncopula}
-\title{Constructor Function for Strict White Noise Copula}
+\title{Constructor function for strict white noise copula process}
 \usage{
 swncopula()
 }
 \value{
-The strict white noise copula process.
+Object of class \linkS4class{swncopula}.
 }
 \description{
-Constructor Function for Strict White Noise Copula
+Constructor function for strict white noise copula process
 }
 \examples{
 swncopula()

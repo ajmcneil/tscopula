@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{fit,tscm-method}
 \alias{fit,tscm-method}
-\title{Fit Method for tscm Class}
+\title{Fit method for tscm class}
 \usage{
 \S4method{fit}{tscm}(
   x,
@@ -28,7 +28,7 @@
 An object of class \linkS4class{tscmfit}.
 }
 \description{
-Fit Method for tscm Class
+Fit method for tscm class
 }
 \examples{
 mod <- tscm(dvinecopula(family = "gauss", pars = 0.5), margin("doubleweibull"))

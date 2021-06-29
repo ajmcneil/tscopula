@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{setoptions}
 \alias{setoptions}
-\title{Set Optional Choices for tscopula Fitting}
+\title{Set optional choices for tscopula fitting}
 \usage{
 setoptions(tsoptions, defaults)
 }
@@ -15,6 +15,6 @@ setoptions(tsoptions, defaults)
 the definitive list of options to be used in function.
 }
 \description{
-Set Optional Choices for tscopula Fitting
+Set optional choices for tscopula fitting
 }
 \keyword{internal}

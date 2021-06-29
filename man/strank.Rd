@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_basic.R
 \name{strank}
 \alias{strank}
-\title{Calculate Standardized Ranks of Data}
+\title{Calculate standardized ranks of data}
 \usage{
 strank(x)
 }
@@ -13,7 +13,7 @@ strank(x)
 A vector or time series of standardized ranks in the interval (0,1)
 }
 \description{
-Calculate Standardized Ranks of Data
+Calculate standardized ranks of data
 }
 \examples{
 strank(rnorm(100))

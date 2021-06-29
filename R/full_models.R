@@ -15,11 +15,10 @@ setClass("tscm",
   )
 )
 
-#' Show Method for tscm Class
+#' @describeIn tscm Show method for tscm class
 #'
-#' @param object an object of class \linkS4class{tscm}.
+#' @param object an object of the class.
 #'
-#' @return A summary of an object of class \linkS4class{tscm}.
 #' @export
 #'
 setMethod("show", "tscm", function(object) {
@@ -50,18 +49,17 @@ setMethod("show", "tscm", function(object) {
   }
 })
 
-#' Coefficient Method for tscm Class
+#' @describeIn tscm Coefficient method for tscm class
 #'
-#' @param object an object of class \linkS4class{tscm}.
+#' @param object an object of the class.
 #'
-#' @return Vector of coefficients of model.
 #' @export
 #'
 setMethod("coef", "tscm", function(object) {
   c(coef(object@tscopula), coef(object@margin))
 })
 
-#' Constructor Function for time series
+#' Constructor function for time series
 #'
 #' @param tscopula an object of class \linkS4class{tscopula}.
 #' @param margin an object of class \linkS4class{margin}.
@@ -84,12 +82,11 @@ tscm <- function(tscopula, margin = new("margin", name = "unif")) {
   )
 }
 
-#' Simulation Method for tscm class
+#' @describeIn tscm Simulation method for tscm class
 #'
-#' @param x an object of class \linkS4class{tscm}.
+#' @param object an object of the class.
 #' @param n length of realization.
 #'
-#' @return A realization of the time series of length n
 #' @export
 #'
 #' @examples
@@ -97,14 +94,14 @@ tscm <- function(tscopula, margin = new("margin", name = "unif")) {
 #' sim(mod)
 setMethod(
   "sim",
-  c(x = "tscm"),
-  function(x, n = 1000) {
-    Utilde <- sim(x@tscopula, n)
-    qmarg(x@margin, Utilde)
+  c(object = "tscm"),
+  function(object, n = 1000) {
+    Utilde <- sim(object@tscopula, n)
+    qmarg(object@margin, Utilde)
   }
 )
 
-#' Fitted tscm Model
+#' Fitted tscm model
 #'
 #' Class of objects for fitted \linkS4class{tscm} models.
 #'
@@ -126,7 +123,7 @@ setClass(
   )
 )
 
-#' Fit Method for tscm Class
+#' Fit method for tscm class
 #'
 #' @param x an object of class \linkS4class{tscm}.
 #' @param y a vector or time series of data.
@@ -183,7 +180,7 @@ setMethod(
   }
 )
 
-#' Fit tscm Using Empirical Distribution Function
+#' Fit tscm using empirical distribution function
 #'
 #' @param x an object of class \linkS4class{tscm}.
 #' @param y a vector or time series of data.
@@ -212,7 +209,7 @@ fitEDF <- function(x, y, tsoptions, control) {
   )
 }
 
-#' Fit tscm in Two Steps
+#' Fit tscm in two steps
 #'
 #' @param x an object of class \linkS4class{tscm}.
 #' @param y a vector or time series of data.
@@ -251,7 +248,7 @@ fitSTEPS <- function(x, y, tsoptions, control) {
   )
 }
 
-#' Fit tscm Jointly
+#' Fit tscm jointly
 #'
 #' @param x an object of class \linkS4class{tscm}.
 #' @param y a vector or time series of data.
@@ -287,7 +284,7 @@ fitFULLa <- function(x, y, tsoptions, control) {
 
 
 
-#' Objective Function for Full of tscopula plus margin Model
+#' Objective function for full of tscopula plus margin model
 #'
 #' @param theta vector of parameter values
 #' @param modelspec list containing model specification
@@ -316,7 +313,7 @@ tsc_objectivea <-
     return(termA + termBC)
   }
 
-#' Convert tscopula Object to tscm Object
+#' Convert tscopula object to tscm object
 #'
 #' @param from a \linkS4class{tscopula} object.
 #' @param to a \linkS4class{tscm} object.
@@ -332,7 +329,7 @@ setMethod(
   }
 )
 
-#' Convert tscopulafit Object to be tscmfit Object
+#' Convert tscopulafit object to be tscmfit object
 #'
 #' @param from a \linkS4class{tscopulafit} object.
 #' @param to a \linkS4class{tscmfit} object.
@@ -353,11 +350,10 @@ setMethod(
   }
 )
 
-#' logLik Method for tscmfit Class
+#' @describeIn tscmfit method for tscmfit class
 #'
-#' @param object an object of class \linkS4class{tscmfit}.
+#' @param object an object of the class.
 #'
-#' @return An object of class logLik.
 #' @export
 #'
 setMethod("logLik", "tscmfit", function(object) {
@@ -368,9 +364,9 @@ setMethod("logLik", "tscmfit", function(object) {
   ll
 })
 
-#' Residual Method for tscmfit Class
+#' @describeIn tscmfit Residual method for tscmfit class
 #'
-#' @param object an object of class \linkS4class{tscmfit}.
+#' @param object an object of the class.
 #' @param trace extract trace instead of residuals.
 #'
 #' @export
@@ -384,7 +380,7 @@ setMethod("resid", "tscmfit",
             resid(object, trace)
           })
 
-#' Plot Method for tscmfit Class
+#' Plot method for tscmfit class
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param plottype type of plot required.
@@ -414,7 +410,7 @@ setMethod("plot", c(x = "tscmfit", y = "missing"),
           })
 
 
-#' Plot Function for Volatility Profile Plot
+#' Plot function for volatility profile plot
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.
@@ -437,7 +433,7 @@ plot_volprofile <- function(x, bw) {
   abline(0, 1, col = colchoice, lty = 2)
 }
 
-#' Plot Function for Volatility Proxy Plot
+#' Plot function for volatility proxy plot
 #'
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.

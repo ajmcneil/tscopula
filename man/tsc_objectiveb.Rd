@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_vtscopula.R
 \name{tsc_objectiveb}
 \alias{tsc_objectiveb}
-\title{Objective Function for Full Fit With V-Tranform}
+\title{Objective function for full fit with v-transform}
 \usage{
 tsc_objectiveb(theta, fulcrum, modelspec, modeltype, dens, cdf, vt, wcopula, y)
 }
@@ -29,6 +29,6 @@ tsc_objectiveb(theta, fulcrum, modelspec, modeltype, dens, cdf, vt, wcopula, y)
 Value of objective function at parameters.
 }
 \description{
-Objective Function for Full Fit With V-Tranform
+Objective function for full fit with v-transform
 }
 \keyword{internal}

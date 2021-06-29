@@ -3,10 +3,28 @@
 \docType{class}
 \name{Vtransform-class}
 \alias{Vtransform-class}
-\title{V-Transform Class}
-\description{
-V-Transform Class
+\alias{show,Vtransform-method}
+\alias{coef,Vtransform-method}
+\title{Class of v-transforms}
+\usage{
+\S4method{show}{Vtransform}(object)
+
+\S4method{coef}{Vtransform}(object)
 }
+\arguments{
+\item{object}{an object of the class.}
+}
+\description{
+This is the class of v-transforms. It contains the \linkS4class{VtransformI} subclass consisting of v-transforms
+with an analytical expression for the inverse.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{show}: Show method for Vtransform class
+
+\item \code{coef}: Coef method for Vtransform class
+}}
+
 \section{Slots}{
 
 \describe{

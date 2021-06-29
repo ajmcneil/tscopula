@@ -2,18 +2,19 @@
 % Please edit documentation in R/armacopula.R
 \name{armacopula}
 \alias{armacopula}
-\title{Constructor Function for ARMA copula process}
+\title{Constructor function for ARMA copula process}
 \usage{
 armacopula(pars = list(ar = 0, ma = 0))
 }
 \arguments{
-\item{pars}{a list of length two containing AR and MA parameters.}
+\item{pars}{list consisting of vector of AR parameters named `ar`
+and vector of MA parameters named `ma`.}
 }
 \value{
 An object of class \linkS4class{armacopula}.
 }
 \description{
-Constructor Function for ARMA copula process
+Constructor function for ARMA copula process
 }
 \examples{
 armacopula(list(ar = 0.5, ma = 0.4))

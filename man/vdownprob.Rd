@@ -2,12 +2,12 @@
 % Please edit documentation in R/vtransforms.R
 \name{vdownprob}
 \alias{vdownprob}
-\title{Calculate Conditional Down Probability of V-Transform}
+\title{Calculate conditional down probability of v-transform}
 \usage{
 vdownprob(x, v)
 }
 \arguments{
-\item{x}{a \code{Vtransform} object.}
+\item{x}{an object of class \linkS4class{Vtransform}.}
 
 \item{v}{a vector or time series with values in [0, 1].}
 }
@@ -15,7 +15,7 @@ vdownprob(x, v)
 A vector or time series of values of gradient.
 }
 \description{
-Calculate Conditional Down Probability of V-Transform
+Calculate conditional down probability of v-transform
 }
 \examples{
 vdownprob(V2p(delta = 0.55, kapp = 1.2), c(0, 0.25, 0.5, 0.75, 1))

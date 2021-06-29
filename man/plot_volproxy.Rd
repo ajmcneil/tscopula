@@ -2,7 +2,7 @@
 % Please edit documentation in R/full_models.R
 \name{plot_volproxy}
 \alias{plot_volproxy}
-\title{Plot Function for Volatility Proxy Plot}
+\title{Plot function for volatility proxy plot}
 \usage{
 plot_volproxy(x, bw)
 }
@@ -12,5 +12,5 @@ plot_volproxy(x, bw)
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
 \description{
-Plot Function for Volatility Proxy Plot
+Plot function for volatility proxy plot
 }

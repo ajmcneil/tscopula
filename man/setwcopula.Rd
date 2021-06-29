@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting_vtscopula.R
 \name{setwcopula}
 \alias{setwcopula}
-\title{Extract W-Copula}
+\title{Extract W-copula}
 \usage{
 setwcopula(x)
 }
@@ -13,6 +13,6 @@ setwcopula(x)
 A description of the W-copula.
 }
 \description{
-Extract W-Copula
+Extract W-copula
 }
 \keyword{internal}

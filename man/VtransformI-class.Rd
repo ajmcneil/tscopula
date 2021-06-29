@@ -3,7 +3,7 @@
 \docType{class}
 \name{VtransformI-class}
 \alias{VtransformI-class}
-\title{Invertible V-Transform Class}
+\title{Class of invertible v-transforms}
 \description{
 This class inherits from the \linkS4class{Vtransform} class and contains v-transforms
 with an analytical expression for the inverse.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{plot,marginfit,missing-method}
 \alias{plot,marginfit,missing-method}
-\title{Plot Method for marginfit Class}
+\title{Plot method for marginfit class}
 \usage{
 \S4method{plot}{marginfit,missing}(x, bw = FALSE)
 }
@@ -12,5 +12,5 @@
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
 \description{
-Plot Method for marginfit Class
+Plot method for marginfit class
 }

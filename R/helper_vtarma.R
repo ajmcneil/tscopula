@@ -1,7 +1,8 @@
-#' Conditional Density for vtarma Process
+#' Conditional density of VT-ARMA process
 #'
 #' @param x vector of points at which density should be calculated.
-#' @param tscmmod an object of class \linkS4class{tscmfit}.
+#' @param tscmmod an object of class \linkS4class{tscmfit} based on underlying copula
+#' of class \linkS4class{armacopula}.
 #' @param armamean conditional mean of underlying ARMA process.
 #' @param armasd conditional standard deviation of underlying ARMA process.
 #'
@@ -20,10 +21,11 @@ dcondvtarma <- function(x, tscmmod, armamean, armasd){
   dv[is.nan(dv)] <- Inf
   return(exp(dv))}
 
-#' Conditional CDF for vtarma Process
+#' Conditional distribution function of VT-ARMA Process
 #'
 #' @param q point at which CDF should be calculated.
-#' @param tscmmod an object of class \linkS4class{tscmfit}.
+#' @param tscmmod an object of class \linkS4class{tscmfit} based on underlying copula
+#' of class \linkS4class{armacopula}.
 #' @param armamean conditional mean of underlying ARMA process.
 #' @param armasd conditional standard deviation of underlying ARMA process.
 #'
@@ -39,10 +41,11 @@ pcondvtarma <- function(q, tscmmod, armamean, armasd) {
   )$value
 }
 
-#' Conditional Quantiles for vtarma Process
+#' Conditional quantiles of VT-ARMA process
 #'
 #' @param p point at which quantile should be calculated.
-#' @param tscmmod an object of class \linkS4class{tscmfit}.
+#' @param tscmmod an object of class \linkS4class{tscmfit} based on underlying copula
+#' of class \linkS4class{armacopula}.
 #' @param armamean conditional mean of underlying ARMA process.
 #' @param armasd conditional standard deviation of underlying ARMA process.
 #'
@@ -59,11 +62,12 @@ qcondvtarma <- function(p, tscmmod, armamean, armasd) {
 pcondvtarma <- Vectorize(pcondvtarma, c("q", "armamean", "armasd"))
 qcondvtarma <- Vectorize(qcondvtarma, c("p", "armamean", "armasd"))
 
-#' Quantile Calculation Method for tscmfit Class
+#' Quantile calculation method for VT-ARMA models
 #'
-#' @param x an object of class \linkS4class{tscmfit}.
+#' @param x an object of class \linkS4class{tscmfit} based on underlying copula
+#' of class \linkS4class{armacopula}.
 #' @param alpha a scalar probability value
-#' @param last logical value asserting that only the last volatility 
+#' @param last logical value asserting that only the last volatility
 #' prediction should be returned
 #'
 #' @return a vector of the same length as the data embedded in the tscmfit object.
@@ -87,11 +91,11 @@ setMethod("quantile", c(x = "tscmfit"), function(x, alpha, last = FALSE){
     mu_t <- mu_t[length(V)]
     sigma_t <- sigma_t[length(V)]
   }
-  VaR <- qcondvtarma(alpha, 
-                     tscmmod = x, 
-                     armamean = mu_t, 
+  VaR <- qcondvtarma(alpha,
+                     tscmmod = x,
+                     armamean = mu_t,
                      armasd = sigma_t)
-  if (!last)  
+  if (!last)
     attributes(VaR) <- attributes(x@data)
   VaR
 }

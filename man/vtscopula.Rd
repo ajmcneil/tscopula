@@ -2,13 +2,13 @@
 % Please edit documentation in R/fitting_vtscopula.R
 \name{vtscopula}
 \alias{vtscopula}
-\title{Constructor Function for vtscopula Object}
+\title{Constructor function for vtscopula object}
 \usage{
 vtscopula(tscopulaU, Vtransform = Vlinear(), Wcopula = swncopula())
 }
 \arguments{
 \item{tscopulaU}{an object of class
-\linkS4class{armacopula} or \linkS4class{dvinecopula}.}
+\linkS4class{armacopula}, \linkS4class{dvinecopula} or \linkS4class{dvinecopula2}.}
 
 \item{Vtransform}{an object of class \linkS4class{Vtransform}.}
 
@@ -18,7 +18,7 @@ vtscopula(tscopulaU, Vtransform = Vlinear(), Wcopula = swncopula())
 An object of class \linkS4class{vtscopula}.
 }
 \description{
-Constructor Function for vtscopula Object
+Constructor function for vtscopula object
 }
 \examples{
 copobject <- armacopula(pars = list(ar = 0.6, ma = 0.2))

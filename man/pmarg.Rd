@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R
 \name{pmarg}
 \alias{pmarg}
-\title{Compute CDF of Marginal Model}
+\title{Compute CDF of marginal model}
 \usage{
 pmarg(x, q)
 }

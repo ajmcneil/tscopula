@@ -2,14 +2,15 @@
 % Please edit documentation in R/helper_vtarma.R
 \name{pcondvtarma}
 \alias{pcondvtarma}
-\title{Conditional CDF for vtarma Process}
+\title{Conditional distribution function of VT-ARMA Process}
 \usage{
 pcondvtarma(q, tscmmod, armamean, armasd)
 }
 \arguments{
 \item{q}{point at which CDF should be calculated.}
 
-\item{tscmmod}{an object of class \linkS4class{tscmfit}.}
+\item{tscmmod}{an object of class \linkS4class{tscmfit} based on underlying copula
+of class \linkS4class{armacopula}.}
 
 \item{armamean}{conditional mean of underlying ARMA process.}
 
@@ -19,6 +20,6 @@ pcondvtarma(q, tscmmod, armamean, armasd)
 a scalar value.
 }
 \description{
-Conditional CDF for vtarma Process
+Conditional distribution function of VT-ARMA Process
 }
 \keyword{internal}

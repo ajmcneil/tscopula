@@ -2,7 +2,7 @@
 % Please edit documentation in R/armacopula.R
 \name{armacopula_objective}
 \alias{armacopula_objective}
-\title{Objective Function for ARMA copula process}
+\title{Objective function for ARMA copula process}
 \usage{
 armacopula_objective(theta, modelspec, u)
 }
@@ -17,6 +17,6 @@ armacopula_objective(theta, modelspec, u)
 Value of objective function at parameters.
 }
 \description{
-Objective Function for ARMA copula process
+Objective function for ARMA copula process
 }
 \keyword{internal}
