@@ -19,40 +19,30 @@ knitr::opts_chunk$set(
 library(tscopula)
 ```
 
-All 3 types of copula process can be combined with a v-transform to model volatile time series.
+All types of copula process can be combined with a v-transform to model volatile time series. 
 
 ## 1. VT-ARMA Copula Processes
 
-Vt-ARMA processes are created by adding a v-transform to an armacopula process using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
+VT-ARMA processes are created by adding a v-transform to an armacopula process using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
 
-### VT-AR(1) Example
+### VT-ARMA(1,1) Example
 
-We first look at a simple symmetric process.
+This example uses a ARMA(1,1) copula and an off-centre linear v-transform. We set up the model and generate some data.
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-vtar1 <- vtscopula(armacopula(list(ar = 0.7)), Vtransform = Vlinear(0.5))
+```{r arma11setup, fig.width = 6, fig.height = 3, fig.show='hold', dev.args =list(pointsize=9)}
+vtarma11 <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)),
+  Vtransform = Vlinear(delta = 0.6))
+vtarma11
 set.seed(19)
-data3 <- sim(vtar1, 2000)
-ts.plot(data3)
-
-vtar1spec <- vtscopula(armacopula(list(ar = 0)), Vtransform = Vlinear(0.5))
-vtar1fit <- fit(vtar1spec, data3)
-vtar1fit
+data <- sim(vtarma11, 2000)
+ts.plot(data)
 ```
 
-### VT-ARMA(1,1) Examples
+We now fit the model with a fixed value for the fulcrum parameter $\delta$ and plot the results. (More on fulcrum choice next.)
 
-This example uses a ARMA(1,1) copula and an off-centre linear v-transform.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-vtarma11 <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)),
-  Vtransform = Vlinear(delta = 0.55))
-set.seed(19)
-data4 <- sim(vtarma11, 2000)
-ts.plot(data4)
-
-vtarma11spec <- vtscopula(armacopula(list(ar = 0, ma = 0)), Vtransform = Vlinear(delta = 0.55))
-vtarma11fit <- fit(vtarma11spec, data4)
+```{r arma11fit, fig.show='hold', dev.args =list(pointsize=9)}
+vtarma11spec <- vtscopula(armacopula(list(ar = 0, ma = 0)), Vtransform = Vlinear(delta = 0.6))
+vtarma11fit <- fit(vtarma11spec, data)
 vtarma11fit
 
 plot(vtarma11fit)
@@ -60,99 +50,14 @@ plot(vtarma11fit, plottype = "vtransform")
 plot(vtarma11fit, plottype = "kendall" )
 ```
 
-This example uses an ARMA(1,1) process and a 2-parameter v-transform.
+Optimization over the fulcrum parameter $\delta$ does not take place. To identify a reasonable value for $\delta$ we can carry a profile likelihood analysis using different fixed values for the fulcrum parameter. 
 
-```{r}
-vt2arma11 <- vtscopula(armacopula(list(ar = 0.95, ma = -0.85)),
-  Vtransform = V2p(delta = 0.55, kappa = 0.8))
-set.seed(17)
-data5 <- sim(vt2arma11, n = 5000)
-
-vt2arma11spec <- vtscopula(armacopula(list(ar = 0, ma = 0)), Vtransform = V2p(delta = 0.55))
-vt2arma11fit <- fit(vt2arma11spec, data5)
-vt2arma11fit
+```{r profileplot, fig.show='hold', dev.args =list(pointsize=9)}
+profilefulcrum(data, tscopula = vtarma11spec, locations = seq(from = 0, to = 1, length = 11))
+abline(v = 0.6)
 ```
 
-Note that we can easily simulate data from the fitted model using the following code.
-
-```{r}
-data5b <- sim(vt2arma11fit, 1000)
-ts.plot(data5b)
-```
-
-Note that optimization over the fulcrum parameter $\delta$ does not take place. To identify a reasonable value for $\delta$ we can carry a profile likelihood analysis using different fixed values for the fulcrum parameter. The base copula is the copula of the `vt2arma11spec`.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-profilefulcrum(data5, tscopula = vt2arma11spec, locations = seq(from = 0, to = 1, length = 21))
-abline(v = 0.55)
-```
-
-## 2. VT-D-Vine Copula Processes (type 1)
-
-VT-D-Vine processes are created by adding a v-transform to an `dvinecopula` object using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
-
-### Construction
-
-We add a 2-parameter V-transform.
-
-```{r}
-copmod <- dvinecopula(
-  family = c("Clayton","t", "Frank", "Gaussian"),
-  pars = list(1.2, c(0.4,5), 2, 0.15),
-  rotation = c(180,0, 0,0)
-)
-vcopmod <- vtscopula(copmod,
-  Vtransform = V2p(delta = 0.55, kappa = 1.2)
-)
-vcopmod
-```
-
-### Simulation
-
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-set.seed(19)
-data2 <- sim(vcopmod, n = 2000)
-hist(data2)
-ts.plot(data2)
-```
-
-### Estimation
-
-```{r}
-copspec <- dvinecopula(
-  family = c("Clayton","t", "Frank", "Gaussian"),
-  pars = list(0.5, c(0,10), 1, 0),
-  rotation = c(180, 0, 0, 0)
-)
-vcopspec <- vtscopula(copspec, V2p(delta = 0.55))
-vcopfit <- fit(vcopspec, data2, 
-               tsoptions = list(hessian = TRUE),
-               control = list(maxit = 3000))
-vcopfit
-coef(vcopfit)
-coef(vcopmod)
-```
-
-### Plotting
-
-We can plot the estimated v-transform and well as the goodness-of-fit plots for the `dvinecopula` object based on Kendall rank correlations.
-
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-plot(vcopfit, plottype = "residual")
-plot(vcopfit, plottype = "vtransform")
-plot(vcopfit, plottype = "kendall")
-```
-
-### Resimulation of fitted model
-
-Note that we can easily simulate data from the fitted model using the following code.
-
-```{r}
-data2b <- sim(vcopfit, 2000)
-ts.plot(data2b)
-```
-
-## 3. VT-D-Vine Copula Processes (type 2)
+## 2. VT-D-Vine Copula Processes (type 2)
 
 VT-D-Vine processes are created by adding a v-transform to an `dvinecopula2` object using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
 
@@ -160,20 +65,20 @@ VT-D-Vine processes are created by adding a v-transform to an `dvinecopula2` obj
 
 We add a 2-parameter V-transform.
 
-```{r}
+```{r vtdvinecopula2}
 copmod <- dvinecopula2(family = "joe",
                        kpacf = "kpacf_arma",
                        pars = list(ar = 0.9, ma = -0.85),
-                       maxlag = 30)
+                       maxlag = 20)
 vcopmod <- vtscopula(copmod,
-  Vtransform = V2p(delta = 0.55, kappa = 0.8)
+  Vtransform = V2p(delta = 0.6, kappa = 0.8)
 )
 vcopmod
 ```
 
 ### Simulation
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r showvtdvinedata, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 set.seed(13)
 data2 <- sim(vcopmod, n = 2000)
 hist(data2)
@@ -182,11 +87,11 @@ ts.plot(data2)
 
 ### Estimation
 
-```{r}
+```{r fitvtdvinecopula2}
 copspec_Joe <- dvinecopula2(family = "joe",
                             pars = list(ar = 0, ma = 0),
                             maxlag = 30)
-vcopspec <- vtscopula(copspec_Joe, V2p(delta = 0.55))
+vcopspec <- vtscopula(copspec_Joe, V2p(delta = 0.6))
 vcopfit <- fit(vcopspec, data2, 
                tsoptions = list(hessian = TRUE),
                control = list(maxit = 1000))
@@ -197,19 +102,11 @@ coef(vcopmod)
 
 ### Plotting
 
-We can plot the estimated v-transform and well as the goodness-of-fit plots for the `dvinecopula` object based on Kendall rank correlations.
+We can plot the estimated v-transform and well as the goodness-of-fit plots for the `dvinecopula2` object based on Kendall rank correlations.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r finalplots, fig.show='hold', dev.args =list(pointsize=9)}
 plot(vcopfit, plottype = "vtransform")
 plot(vcopfit, plottype = "kendall")
 plot(vcopfit, plottype = "residual")
 ```
 
-### Resimulation of fitted model
-
-Note that we can easily simulate data from the fitted model using the following code.
-
-```{r}
-data2b <- sim(vcopfit, 1000)
-ts.plot(data2b)
-```

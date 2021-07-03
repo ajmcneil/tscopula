@@ -27,7 +27,7 @@ tsoptions <- list(hessian = TRUE, method = "Nelder-Mead", avoidzero= FALSE)
 
 We first load the data and calculate log-returns.
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r define-data, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 data(bitcoin)
 X <- (diff(log(bitcoin))[-1]) * 100 # log-returns (as percentages)
 length(X)
@@ -40,7 +40,7 @@ plot(X, type = "h")
 
 We start with the fulcrum profile-likelihood plot which indicates that a value $\delta = 0.45$ is about right.
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r arma-copula-profile, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 U <- strank(X)
 
 copmod_Gauss <- armacopula(pars = list(ar = 0.95, ma = -0.85))
@@ -51,37 +51,17 @@ abline(v = 0.45)
 
 Our baseline model is a model with ARMA(1,1) copula and v-transform with fulcrum at $\delta=0.45$.
 
-```{r}
+```{r arma-copula-fit}
 mod_Gauss <- vtscopula(copmod_Gauss, Vlinear(0.45))
 fit_Gauss <- fit(mod_Gauss, U, tsoptions = tsoptions)
 fit_Gauss
-```
-
-### D-Vine Copula 
-
-Some preliminary analysis suggests that Frank copulas can work well. The model gives a higher log-likelihood, but has quite a lot of parameters.
-
-```{r}
-copmod <- dvinecopula(family = rep("frank", 10),
-                      pars= as.list(rep(1, 10)))
-mod_mix <- vtscopula(copmod, Vlinear(0.45))
-tsoptions <- list(hessian = FALSE, method = "Nelder-Mead")
-fit_mix <- fit(mod_mix, U, tsoptions = tsoptions, control = list(maxit = 4000))
-fit_mix
-AIC(fit_Gauss, fit_mix)
-```
-
-The following plot shows that the fitted model is able to match the form of the Kendall partial autocorrelation function.
-
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-plot(fit_mix, plottype = "kendall")
 ```
 
 ### D-Vine Copula (second kind)
 
 In this next section we try a d-vine copula model of the second kind with a finite value for `maxlag` and a linear v-transform. We continue to use the Frank copula. The resulting model is superior to the ARMA copula model and has the same number of parameters. Note that an infinite value for `maxlag` makes next to no difference in the fit.
 
-```{r}
+```{r dvinecopula2}
 copmod_Frank <- dvinecopula2(family = "frank",
                              pars = list(ar = 0.95, ma = -0.85),
                              maxlag = 30)
@@ -93,7 +73,7 @@ AIC(fit_Gauss, fit_Frank)
 
 We provide plots for the model with Frank copula to show aspects of the fit.
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r dvinecopula2-plots, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 plot(fit_Frank, plottype = "residual")
 plot(fit_Frank, plottype = "kendall")
 ```
@@ -102,7 +82,7 @@ plot(fit_Frank, plottype = "kendall")
 
 We fit 6 marginal distributions (3 symmetric and 3 skewed) of which the double Weibull gives the lowest AIC value.
 
-```{r}
+```{r margmods}
 marg_st <- fit(margin("st"), X)
 marg_sst <- fit(margin("sst"), X)
 marg_lp <- fit(margin("laplace", 
@@ -122,7 +102,7 @@ AIC(marg_st, marg_sst, marg_slp, marg_lp, marg_dw, marg_sdw)
 
 We fit a full model combining the double Weibull margin with the VT-d-vine model of the second kind.
 
-```{r,fig.show='hold', dev.args =list(pointsize=9)}
+```{r fullmod-fit,fig.show='hold', dev.args =list(pointsize=9)}
 fullmod <- tscm(fit_Frank, margin = marg_dw)
 fullmod <- fit(fullmod, as.numeric(X), 
                method = "full", tsoptions = tsoptions)
@@ -132,13 +112,16 @@ AIC(marg_dw, fullmod)
 
 We show all the possible plots for the full model.
 
-```{r,fig.show='hold', dev.args =list(pointsize=9)}
+```{r fullmod-plots1,fig.show='hold', dev.args =list(pointsize=9)}
 plot(fullmod, plottype = "residual")
 plot(fullmod, plottype = "kendall")
 plot(fullmod, plottype = "margin")
 plot(fullmod, plottype = "vtransform")
 plot(fullmod, plottype = "volprofile")
 plot(fullmod, plottype = "volproxy")
+```
+
+```{r fullmod-plots2, fig.show='hold', fig.width = 6, fig.height = 6, dev.args =list(pointsize=9)}
 plot(fullmod, plottype = "glag")
 ```
 

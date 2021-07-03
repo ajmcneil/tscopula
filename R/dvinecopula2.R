@@ -129,7 +129,7 @@ kpacf_arfima <- function(k, theta){
     ma <- theta[nm == "ma"]
   if ("d" %in% nm)
     d <- theta[nm == "d"]
-  if ((tscopula::non_stat(ar)) | (tscopula::non_invert(ma)) | (d <= -0.5) | (d >= 0.5))
+  if ((non_stat(ar)) | (non_invert(ma)) | (d <= -0.5) | (d >= 0.5))
     return(rep(NA, k))
   acvf <- arfima::tacvfARFIMA(phi = ar, theta = -ma, dfrac = d, maxlag = k)
   acf <- acvf[-1]/acvf[1]

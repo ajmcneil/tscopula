@@ -24,7 +24,7 @@ library(stats4)
 
 We generate a Gaussian ARMA model.
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r standard-arma, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 set.seed(13)
 data1 <- 0.5 + 2*arima.sim(list(ar =0.95, ma =-0.85), 1000)
 ts.plot(data1)
@@ -34,7 +34,7 @@ ts.plot(data1)
 
 A model spec can be fitted to data with the generic command `fit`.
 
-```{r}
+```{r standard-arma-fit}
 copspec <- armacopula(pars = list(ar =0.01, ma =0.01))
 margspec <- margin("norm")
 fullspec <- tscm(copspec, margspec)
@@ -46,109 +46,21 @@ modfit
 
 As well as the copula plots we can also plot the marginal fit.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r standardarma-plot, fig.show='hold', dev.args =list(pointsize=9)}
 plot(modfit, plottype = "residual")
 plot(modfit, plottype = "kendall")
 plot(modfit, plottype = "margin")
 ```
 
-## 2. VT-D-Vine Process with Skewed Laplace Margin 
+## 2. VT-D-Vine Process (type 2) with Skewed Laplace Margin 
 
 ### Construction
 
-```{r}
-copmod <- dvinecopula(
-  family = c("Clayton","t", "Frank", "Gaussian"),
-  pars = list(0.7, c(0.2,5), 1, 0.1),
-  rotation = c(180,0, 0,0)
-)
-copmod
-vcopmod <- vtscopula(copmod,
-                     Vtransform = V2p(delta = 0.5, kappa = 2))
-margmod <- margin("slaplace",
-                  pars = c(mu = 1, scale = 2, gamma = 0.7))
-tscmmod <- tscm(vcopmod, margmod)
-tscmmod
-```
-
-### Simulation
-
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
-set.seed(29)
-data2 <- sim(tscmmod, n= 2000)
-hist(data2)
-ts.plot(data2)
-```
-
-### Estimation
-
-First fit a marginal model only. 
-
-```{r}
-margfit <- fit(margmod, data2)
-```
-
-Now fit the time series copula model stepwise.
-
-```{r}
-tscmfit_step <- fit(tscmmod, data2)
-tscmfit_step
-coef(tscmfit_step)
-coef(tscmmod)
-```
-
-Final optimization over all parameters.
-
-```{r}
-tscmfit_full <- fit(tscmfit_step, data2, method = "full")
-tscmfit_full
-```
-
-Comparison of model.
-
-```{r}
-AIC(margfit, tscmfit_step, tscmfit_full)
-```
-
-### Plotting
-
-We can plot the estimated v-transform and well as the goodness-of-fit plots for the `dvinecopula` object based on Kendall rank correlations.
-
-The first plots relate to the fitted copula.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(tscmfit_full, plottype = "residual")
-plot(tscmfit_full, plottype = "kendall")
-```
-
-The next plot is the QQplot of the marginal fit.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(tscmfit_full, plottype = "margin")
-```
-
-The next two plots are the estimated v-transform and the estimated volatility profile function.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(tscmfit_full, plottype = "vtransform")
-plot(tscmfit_full, plottype = "volprofile")
-```
-
-The final plot shows the fitted volatility proxy function.
-
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
-plot(tscmfit_full, plottype = "volproxy")
-```
-
-## 3. VT-D-Vine Process (type 2) with Skewed Laplace Margin 
-
-### Construction
-
-```{r}
+```{r tscm-dvine}
 copmod <- dvinecopula2(family = "joe",
                        kpacf = "kpacf_arma",
                        pars = list(ar = 0.9, ma = -0.8),
-                       maxlag = 30)
+                       maxlag = 20)
 vcopmod <- vtscopula(copmod,
                      Vtransform = V2p(delta = 0.5, kappa = 2))
 margmod <- margin("slaplace",
@@ -159,7 +71,7 @@ tscmmod
 
 ### Simulation
 
-```{r, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
+```{r tscm-dvine-sim, fig.show='hold', fig.width = 6, fig.height = 3, dev.args =list(pointsize=9)}
 set.seed(13)
 data2 <- sim(tscmmod, n= 2000)
 hist(data2)
@@ -170,13 +82,13 @@ ts.plot(data2)
 
 First fit a marginal model only. 
 
-```{r}
+```{r margin-fit}
 margfit <- fit(margmod, data2)
 ```
 
 Now fit the time series copula model stepwise.
 
-```{r}
+```{r stepwise-fit}
 tscmfit_step <- fit(tscmmod, data2)
 tscmfit_step
 coef(tscmfit_step)
@@ -185,14 +97,14 @@ coef(tscmmod)
 
 Final optimization over all parameters.
 
-```{r}
+```{r full-optimization}
 tscmfit_full <- fit(tscmfit_step, data2, method = "full")
 tscmfit_full
 ```
 
 Comparison of model.
 
-```{r}
+```{r compare-models}
 AIC(margfit, tscmfit_step, tscmfit_full)
 ```
 
@@ -202,27 +114,27 @@ We can plot the estimated v-transform and well as the goodness-of-fit plots for 
 
 The first plots relate to the fitted copula.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r plots1, fig.show='hold', dev.args =list(pointsize=9)}
 plot(tscmfit_full)
 plot(tscmfit_full, plottype = "kendall")
 ```
 
 The next plot is the QQplot of the marginal fit.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r plot2, fig.show='hold', dev.args =list(pointsize=9)}
 plot(tscmfit_full, plottype = "margin")
 ```
 
 The next two plots are the estimated v-transform and the estimated volatility profile function.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r plots3, fig.show='hold', dev.args =list(pointsize=9)}
 plot(tscmfit_full, plottype = "vtransform")
 plot(tscmfit_full, plottype = "volprofile")
 ```
 
 The final plot shows aspect of the fit of the v-transform to the data.
 
-```{r, fig.show='hold', dev.args =list(pointsize=9)}
+```{r plot4, fig.show='hold', dev.args =list(pointsize=9)}
 plot(tscmfit_full, plottype = "volproxy")
 ```
 

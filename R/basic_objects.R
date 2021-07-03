@@ -9,6 +9,8 @@
 #' @import methods
 #' @import graphics
 #' @import utils
+#' @import zoo
+#' @import xts
 #'
 setClass("tscopula", contains = c("VIRTUAL"))
 

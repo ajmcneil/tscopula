@@ -360,10 +360,6 @@ vdownprob <- function(x, v) {
 #'
 #' @examples
 #' stochinverse(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))
-#' library(copula)
-#' Gausscop <- normalCopula(0.8, 3)
-#' Vdata <- rCopula(1000, Gausscop)
-#' Udata <- stochinverse(V2p(delta = 0.53, kappa = 1.2), Vdata)
 stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) {
   vinv <- vinverse(x, v, tol)
   pdown <- -1 / vgradient(x, vinv)
