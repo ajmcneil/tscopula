@@ -3,11 +3,15 @@ Type: Package
 Title: Time Series Copula Models
 Version: 0.2.1
 Date: 2021-07-03
-Authors@R: c(person("Alexander J.", "McNeil", email = "alexanderjmcneil@gmail.com", 
-                  role = c("aut", "cre")),
-                  person("Martin", "Bladt", email = "martinbladt@gmail.com", 
-                  role = "aut")
-                  )
+Authors@R: 
+    c(person(given = "Alexander", 
+             family = "McNeil", 
+             email = "alexanderjmcneil@gmail.com", 
+             role = c("aut", "cre")),
+     person(given = "Martin", 
+            family = "Bladt", 
+            email = "martinbladt@gmail.com", 
+            role = "aut"))
 Maintainer: Alexander J. McNeil <alexanderjmcneil@gmail.com>                  
 Description: Functions for the analysis of time series using copula models.  
     The package is based on methodology described in the following references.
