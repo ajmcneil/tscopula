@@ -19,7 +19,7 @@ Description: Functions for the analysis of time series using copula models.
     Bladt, M., & McNeil, A.J. (2020) <arXiv:2006.11088>.
 Depends: R (>= 3.5.0)
 License: GPL-3
-Lazydata: true
+LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Imports:
