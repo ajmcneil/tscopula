@@ -17,21 +17,24 @@ dst(x, df, mu, sigma, log = FALSE)
 rst(n, df, mu, sigma)
 }
 \arguments{
-\item{q}{vector of quantiles}
+\item{q}{vector of quantiles.}
 
-\item{df}{degrees of freedom}
+\item{df}{degrees of freedom.}
 
-\item{mu}{location parameter}
+\item{mu}{location parameter.}
 
-\item{sigma}{scale parameter}
+\item{sigma}{scale parameter.}
 
-\item{p}{vector of probabilities}
+\item{p}{vector of probabilities.}
 
-\item{x}{vector of values}
+\item{x}{vector of values.}
 
-\item{log}{flag for log density}
+\item{log}{flag for log density.}
 
-\item{n}{number of observations}
+\item{n}{number of observations.}
+}
+\value{
+A vector of density, distribution function, quantile or random values.
 }
 \description{
 Student t distribution

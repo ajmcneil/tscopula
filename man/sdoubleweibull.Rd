@@ -17,23 +17,26 @@ qsdoubleweibull(p, mu = 0.05, shape = 1, scale = 1, gamma = 1)
 rsdoubleweibull(n, mu = 0.05, shape = 1, scale = 1, gamma = 1)
 }
 \arguments{
-\item{x}{vector of values}
+\item{x}{vector of values.}
 
-\item{mu}{location parameter}
+\item{mu}{location parameter.}
 
-\item{shape}{shape parameter}
+\item{shape}{shape parameter.}
 
-\item{scale}{scale parameter}
+\item{scale}{scale parameter.}
 
-\item{gamma}{skewness parameter}
+\item{gamma}{skewness parameter.}
 
-\item{log}{flag for log density}
+\item{log}{flag for log density.}
 
-\item{q}{vector of quantiles}
+\item{q}{vector of quantiles.}
 
-\item{p}{vector of probabilities}
+\item{p}{vector of probabilities.}
 
-\item{n}{number of observations}
+\item{n}{number of observations.}
+}
+\value{
+A vector of density, distribution function, quantile or random values.
 }
 \description{
 Skew double Weibull distribution

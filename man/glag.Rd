@@ -13,6 +13,12 @@ glag(x, lagmax = 20, glagplot = FALSE)
 
 \item{glagplot}{logical value indicating generalized lag plot.}
 }
+\value{
+If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+of maximum length 9 is returned to facilitate a generalized lagplot.
+If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+the Kendall rank correlations for the generalized lagged datasets is returned.
+}
 \description{
 Generalized lagging function
 }

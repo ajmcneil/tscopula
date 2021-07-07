@@ -347,6 +347,11 @@ setMethod("kendall", c(object = "armacopula"), function(object, lagmax = 20){
 #' @param lagmax the maximum lag value.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
+#' @return If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+#' of maximum length 9 is returned to facilitate a generalized lagplot.
+#' If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+#' the Kendall rank correlations for the generalized lagged datasets is returned.
+#'
 #' @keywords internal
 glag_for_armacopula <- function(copula, data, lagmax, glagplot = FALSE) {
   n <- length(data)

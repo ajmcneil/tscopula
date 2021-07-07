@@ -77,7 +77,7 @@ Vdegenerate <- function() {
 #'
 #' @param delta a value in (0, 1) specifying the fulcrum of the v-transform.
 #'
-#' @return An o bject of class \linkS4class{VtransformI}.
+#' @return An object of class \linkS4class{VtransformI}.
 #' @export
 #'
 #' @examples
@@ -390,6 +390,7 @@ stochinverse <- function(x, v, tscopula = NULL, tol = .Machine$double.eps^0.75) 
 #' @param lower the lower x-axis value for plotting.
 #' @param upper the upper x-axis value for plotting
 #'
+#' @return No return value, generates plot.
 #' @export
 #'
 #'

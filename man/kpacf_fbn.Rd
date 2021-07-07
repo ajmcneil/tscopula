@@ -7,12 +7,12 @@
 kpacf_fbn(k, theta)
 }
 \arguments{
-\item{k}{vector of lags}
+\item{k}{number of lags}
 
 \item{theta}{parameter of process}
 }
 \value{
-vector of Kendall partial autocorrelations for each lag k
+A vector of Kendall partial autocorrelations of length \code{k}.
 }
 \description{
 KPACF of fractional Brownian noise

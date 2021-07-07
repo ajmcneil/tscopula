@@ -261,6 +261,7 @@ setMethod("logLik", "tscopulafit", function(object) {
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #' @param lagmax maximum lag value for Kendall plots
 #'
+#' @return No return value, generates plot.
 #' @export
 #'
 #' @examples
@@ -299,14 +300,15 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
               nplots <- length(ldata)
               lc <- ifelse(nplots > 4, 3, 2)
               lr <- ceiling(nplots / lc)
-              default_par <- par(mfrow = c(lr, lc),
-                                 mar = c(2.1, 2.1, 1.5, 0.5),
-                                 oma = rep(2, 4),
-                                 pty = "s", cex = 0.5)
+              oldpar <- par(no.readonly = TRUE)
+              on.exit(par(oldpar))
+              par(mfrow = c(lr, lc),
+                  mar = c(2.1, 2.1, 1.5, 0.5),
+                  oma = rep(2, 4),
+                  pty = "s", cex = 0.5)
               for (i in 1:nplots)
                 plot(ldata[[i]], main = paste("Lag ", i, sep = ""), asp = 1,
                      xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
-              par(default_par)
             }
             else
               stop("Not a valid plot type")
@@ -337,6 +339,10 @@ setMethod("resid", "tscopulafit",
 #' @param lagmax maximum value for lag.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
+#' @return If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+#' of maximum length 9 is returned to facilitate a generalized lagplot.
+#' If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+#' the Kendall rank correlations for the generalized lagged datasets is returned.
 #' @export
 #'
 glag <- function(x, lagmax = 20, glagplot = FALSE) {
