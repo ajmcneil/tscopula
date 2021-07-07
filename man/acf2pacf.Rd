@@ -7,10 +7,10 @@
 acf2pacf(rho)
 }
 \arguments{
-\item{rho}{vector of autocorrelation values (excluding 1)}
+\item{rho}{vector of autocorrelation values (excluding 1).}
 }
 \value{
-vector of partial autocorrelation values
+A vector of partial autocorrelation values with same length as \code{rho}.
 }
 \description{
 Compute partial autocorrelations from autocorrelations

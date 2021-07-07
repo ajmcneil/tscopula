@@ -15,6 +15,9 @@
 
 \item{lagmax}{maximum lag value for Kendall plots}
 }
+\value{
+No return value, generates plot.
+}
 \description{
 Plot method for tscopulafit class
 }

@@ -387,6 +387,7 @@ setMethod("resid", "tscmfit",
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #' @param lagmax maximum lag value for dvinecopula2 plots
 #'
+#' @return No return value, generates plot.
 #' @export
 #'
 setMethod("plot", c(x = "tscmfit", y = "missing"),
@@ -415,7 +416,8 @@ setMethod("plot", c(x = "tscmfit", y = "missing"),
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
-#' @export
+#' @return No return value, generates plot.
+#' @keywords internal
 #'
 plot_volprofile <- function(x, bw) {
   if (!(is(x@tscopula, "vtscopula")))
@@ -438,7 +440,8 @@ plot_volprofile <- function(x, bw) {
 #' @param x an object of class \linkS4class{tscmfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
-#' @export
+#' @return No return value, generates plot.
+#' @keywords internal
 #'
 plot_volproxy <- function(x, bw){
   if (!(is(x@tscopula, "vtscopula")))

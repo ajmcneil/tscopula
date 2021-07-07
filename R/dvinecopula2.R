@@ -57,10 +57,10 @@ dvinecopula2 <- function(family = "gauss",
 
 #' KPACF of ARMA process
 #'
-#' @param k vector of lags
-#' @param theta list with components ar and ma specifying the ARMA parameters
+#' @param k number of lags.
+#' @param theta list with components ar and ma specifying the ARMA parameters.
 #'
-#' @return vector of Kendall partial autocorrelations for each lag k
+#' @return A vector of Kendall partial autocorrelations of length \code{k}.
 #' @export
 #'
 kpacf_arma <- function(k, theta){
@@ -81,9 +81,9 @@ kpacf_arma <- function(k, theta){
 
 #' Compute partial autocorrelations from autocorrelations
 #'
-#' @param rho vector of autocorrelation values (excluding 1)
+#' @param rho vector of autocorrelation values (excluding 1).
 #'
-#' @return vector of partial autocorrelation values
+#' @return A vector of partial autocorrelation values with same length as \code{rho}.
 #' @export
 #'
 #' @examples
@@ -95,9 +95,9 @@ acf2pacf <- function(rho){
 
 #' Compute autocorrelations from partial autocorrelations
 #'
-#' @param alpha vector of partial autocorrelation values
+#' @param alpha vector of partial autocorrelation values.
 #'
-#' @return vector of autocorrelation values
+#' @return A vector of autocorrelation values with same length as \code{alpha}.
 #' @export
 #'
 #' @examples
@@ -111,10 +111,10 @@ pacf2acf <- function(alpha){
 
 #' KPACF of ARFIMA process
 #'
-#' @param k vector of lags
+#' @param k number of lags.
 #' @param theta list with components ar, ma and d specifying the ARFIMA parameters
 #'
-#' @return vector of Kendall partial autocorrelations for each lag k
+#' @return A vector of Kendall partial autocorrelations of length \code{k}.
 #' @export
 #'
 kpacf_arfima <- function(k, theta){
@@ -139,10 +139,10 @@ kpacf_arfima <- function(k, theta){
 
 #' KPACF of fractional Brownian noise
 #'
-#' @param k vector of lags
+#' @param k number of lags
 #' @param theta parameter of process
 #'
-#' @return vector of Kendall partial autocorrelations for each lag k
+#' @return A vector of Kendall partial autocorrelations of length \code{k}.
 #' @export
 #'
 kpacf_fbn <- function(k, theta){
@@ -265,7 +265,7 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
   }
 }
 
-#' Transform Kendall's tau values to vopula parameters
+#' Transform Kendall's tau values to copula parameters
 #'
 #' @param family name of copula family
 #' @param tau value of Kendall's tau
@@ -398,6 +398,10 @@ setMethod("kendall", c(object = "dvinecopula2"), function(object, lagmax = 20) {
 #' @param lagmax the maximum lag value.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
+#' @return If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+#' of maximum length 9 is returned to facilitate a generalized lagplot.
+#' If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+#' the Kendall rank correlations for the generalized lagged datasets is returned.
 #' @keywords internal
 glag_for_dvinecopula2 <- function(copula, data, lagmax, glagplot = FALSE) {
   if (glagplot)

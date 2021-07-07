@@ -15,6 +15,9 @@
 
 \item{lagmax}{maximum lag value for dvinecopula2 plots}
 }
+\value{
+No return value, generates plot.
+}
 \description{
 Plot method for tscmfit class
 }

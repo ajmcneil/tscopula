@@ -129,14 +129,15 @@ dmarg <- function(x, y, log = FALSE) {
 
 #' Laplace distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param mu location parameter
-#' @param scale scale parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param scale scale parameter.
+#' @param log flag for log density.
 #' @name laplace
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #'
@@ -163,15 +164,16 @@ rlaplace <- function(n, mu = 0.05, scale = 1){
 
 #' Skew Laplace distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param mu location parameter
-#' @param scale scale parameter
-#' @param gamma parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param scale scale parameter.
+#' @param gamma skewness parameter.
+#' @param log flag for log density.
 #' @name slaplace
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #'
@@ -198,15 +200,16 @@ rslaplace <- function(n, mu = 0.05, scale = 1, gamma = 1){
 
 #' Double Weibull distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param mu location parameter
-#' @param shape shape parameter
-#' @param scale scale parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param shape shape parameter.
+#' @param scale scale parameter.
+#' @param log flag for log density.
 #' @name doubleweibull
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #' @rdname doubleweibull
@@ -232,16 +235,17 @@ rdoubleweibull <- function(n, mu = 0.05, shape = 1, scale = 1){
 
 #' Skew double Weibull distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param mu location parameter
-#' @param shape shape parameter
-#' @param scale scale parameter
-#' @param gamma skewness parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param shape shape parameter.
+#' @param scale scale parameter.
+#' @param gamma skewness parameter.
+#' @param log flag for log density.
 #' @name sdoubleweibull
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #' @rdname sdoubleweibull
@@ -292,15 +296,16 @@ rsdoubleweibull <- function(n, mu = 0.05, shape = 1, scale = 1, gamma = 1)
 
 #' Student t distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param df degrees of freedom
-#' @param mu location parameter
-#' @param sigma scale parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param df degrees of freedom.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
 #' @name st
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #' @rdname st
@@ -334,16 +339,17 @@ rst <- function(n, df, mu, sigma) {
 
 #' Skew Student t distribution
 #'
-#' @param x vector of values
-#' @param q vector of quantiles
-#' @param p vector of probabilities
-#' @param n number of observations
-#' @param df degrees of freedom
-#' @param mu location parameter
-#' @param sigma scale parameter
-#' @param gamma skewness parameter
-#' @param log flag for log density
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param df degrees of freedom.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param gamma skewness parameter.
+#' @param log flag for log density.
 #' @name sst
+#' @return A vector of density, distribution function, quantile or random values.
 NULL
 #> NULL
 #' @rdname sst
@@ -514,6 +520,7 @@ setMethod("logLik", "marginfit", function(object) {
 #' @param x an object of class \linkS4class{marginfit}.
 #' @param bw logical variable specifying whether black-white options should be chosen.
 #'
+#' @return No return value, generates plot.
 #' @export
 #'
 setMethod("plot", c(x = "marginfit", y = "missing"),

@@ -11,6 +11,10 @@ plot_volprofile(x, bw)
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
+\value{
+No return value, generates plot.
+}
 \description{
 Plot function for volatility profile plot
 }
+\keyword{internal}

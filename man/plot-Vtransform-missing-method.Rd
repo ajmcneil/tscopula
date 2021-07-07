@@ -28,6 +28,9 @@ should be shaded}
 
 \item{upper}{the upper x-axis value for plotting}
 }
+\value{
+No return value, generates plot.
+}
 \description{
 Plots the v-transform as well as its gradient or inverse. Can also plot the
 conditional probability that a series PIT falls below the fulcrum for a

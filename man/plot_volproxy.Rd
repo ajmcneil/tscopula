@@ -11,6 +11,10 @@ plot_volproxy(x, bw)
 
 \item{bw}{logical variable specifying whether black-white options should be chosen.}
 }
+\value{
+No return value, generates plot.
+}
 \description{
 Plot function for volatility proxy plot
 }
+\keyword{internal}

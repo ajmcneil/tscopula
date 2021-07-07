@@ -152,7 +152,7 @@ mklist_dvine <- function(x){
 #' @param start vector of start values with length equal to order of process.
 #'
 #' @return a vector of length n.
-#' @export
+#' @keywords internal
 #'
 simdvine <- function(pc_list, n, innov, start){
   # code template provided by Thomas Nagler
@@ -244,6 +244,10 @@ dvinecopula_objective <- function(theta, modelspec, u) {
 #' @param lagmax the maximum lag value.
 #' @param glagplot logical value indicating generalized lag plot.
 #'
+#' @return If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+#' of maximum length 9 is returned to facilitate a generalized lagplot.
+#' If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+#' the Kendall rank correlations for the generalized lagged datasets is returned.
 #' @keywords internal
 glag_for_dvinecopula <- function(copula, data, lagmax, glagplot = FALSE) {
   pc_list <- mklist_dvine(copula)

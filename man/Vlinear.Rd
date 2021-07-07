@@ -10,7 +10,7 @@ Vlinear(delta = 0.5)
 \item{delta}{a value in (0, 1) specifying the fulcrum of the v-transform.}
 }
 \value{
-An o bject of class \linkS4class{VtransformI}.
+An object of class \linkS4class{VtransformI}.
 }
 \description{
 Constructor function for linear v-transform

@@ -2,7 +2,7 @@
 % Please edit documentation in R/dvinecopula2.R
 \name{ktau_to_par}
 \alias{ktau_to_par}
-\title{Transform Kendall's tau values to vopula parameters}
+\title{Transform Kendall's tau values to copula parameters}
 \usage{
 ktau_to_par(family, tau)
 }
@@ -15,6 +15,6 @@ ktau_to_par(family, tau)
 Scalar value of parameter giving tau for a copula family.
 }
 \description{
-Transform Kendall's tau values to vopula parameters
+Transform Kendall's tau values to copula parameters
 }
 \keyword{internal}

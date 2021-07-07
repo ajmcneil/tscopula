@@ -7,12 +7,12 @@
 kpacf_arfima(k, theta)
 }
 \arguments{
-\item{k}{vector of lags}
+\item{k}{number of lags.}
 
 \item{theta}{list with components ar, ma and d specifying the ARFIMA parameters}
 }
 \value{
-vector of Kendall partial autocorrelations for each lag k
+A vector of Kendall partial autocorrelations of length \code{k}.
 }
 \description{
 KPACF of ARFIMA process

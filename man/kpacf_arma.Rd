@@ -7,12 +7,12 @@
 kpacf_arma(k, theta)
 }
 \arguments{
-\item{k}{vector of lags}
+\item{k}{number of lags.}
 
-\item{theta}{list with components ar and ma specifying the ARMA parameters}
+\item{theta}{list with components ar and ma specifying the ARMA parameters.}
 }
 \value{
-vector of Kendall partial autocorrelations for each lag k
+A vector of Kendall partial autocorrelations of length \code{k}.
 }
 \description{
 KPACF of ARMA process

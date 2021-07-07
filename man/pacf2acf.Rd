@@ -7,10 +7,10 @@
 pacf2acf(alpha)
 }
 \arguments{
-\item{alpha}{vector of partial autocorrelation values}
+\item{alpha}{vector of partial autocorrelation values.}
 }
 \value{
-vector of autocorrelation values
+A vector of autocorrelation values with same length as \code{alpha}.
 }
 \description{
 Compute autocorrelations from partial autocorrelations
