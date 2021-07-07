@@ -286,7 +286,7 @@ setMethod("plot", c(x = "tscopulafit", y = "missing"),
               tauE <- glag(x, lagmax)
               k <- length(tauE)
               tauT <- kendall(x@tscopula, k)
-              plot(1:k, tauE, type = "h", xlim = c(1, min(max(k, 10), lagmax)),
+              plot(1:k, tauE, type = "h", xlim = c(1, k),
                    ylim = range(tauE,tauT,0), xlab = "lag", ylab = "tau")
               abline(h=0)
               if (k >1)
