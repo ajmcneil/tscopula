@@ -218,9 +218,9 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
     fam <- tolower(modelspec$family)
     rot <- modelspec$rotation
     if (tauvals[i] < 0){
-      if (modelspec$negtau == "right")
-        rot <- rot + 90
       if (modelspec$negtau == "left")
+        rot <- rot + 90
+      if (modelspec$negtau == "right")
         rot <- (rot + 270) %% 360
       if (modelspec$negtau %in% c("gauss","frank")){
         fam <- modelspec$negtau
@@ -311,9 +311,9 @@ mklist_dvine2 <- function(x, maxlag, truncate, tol = 1){
     fam <- tolower(x@modelspec$family)
     rot <- x@modelspec$rotation
     if (tauvals[i] < 0){
-      if (x@modelspec$negtau == "right")
-        rot <- rot + 90
       if (x@modelspec$negtau == "left")
+        rot <- rot + 90
+      if (x@modelspec$negtau == "right")
         rot <- (rot + 270) %% 360
       if (x@modelspec$negtau %in% c("gauss","frank")){
         fam <- x@modelspec$negtau
@@ -347,6 +347,9 @@ resid_dvinecopula2 <- function(object, data = NA, trace = FALSE){
   n <- length(data)
   pc_list <- mklist_dvine2(object, n-1, truncate = TRUE, tol = 1/3)
   k <- length(pc_list)
+  for (i in 1:k)
+    if (pc_list[[i]]$rotation %in% c(90,270))
+      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
   if (trace)
     target <- rep(0.5, n)
   else

@@ -157,6 +157,10 @@ mklist_dvine <- function(x){
 simdvine <- function(pc_list, n, innov, start){
   # code template provided by Thomas Nagler
   k <- length(pc_list)
+  # swap 90 and 270 to account for notational inconsistencies
+  for (i in 1:k)
+    if (pc_list[[i]]$rotation %in% c(90,270))
+      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
   pcs <- lapply(seq_along(pc_list), function(i) {
     replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
   })
@@ -319,6 +323,9 @@ setMethod("kendall", c(object = "dvinecopula"), function(object, lagmax = 20) {
 resid_dvinecopula <- function(object, data = NA, trace = FALSE){
   pc_list <- mklist_dvine(object)
   k <- length(pc_list)
+  for (i in 1:k)
+    if (pc_list[[i]]$rotation %in% c(90,270))
+      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
   n <- length(data)
   if (trace)
     target <- rep(0.5, n)
