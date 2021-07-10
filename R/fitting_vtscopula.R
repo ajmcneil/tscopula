@@ -76,6 +76,7 @@ setMethod("coef", "vtscopula", function(object) {
 #' @param object an object of class \linkS4class{vtscopula}.
 #'
 #' @return A list of parameters.
+#' @export
 #' @keywords internal
 #'
 vtparlist <- function(object) {
@@ -173,6 +174,7 @@ setMethod(
 #' @param x an object of class \linkS4class{tscopula}.
 #'
 #' @return A description of the W-copula.
+#' @export
 #' @keywords internal
 #'
 setwcopula <- function(x) {
@@ -196,6 +198,7 @@ setwcopula <- function(x) {
 #' @param y vector of data
 #'
 #' @return Value of objective function at parameters.
+#' @export
 #' @keywords internal
 #'
 vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopula, y) {
