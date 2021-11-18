@@ -145,14 +145,12 @@ setMethod(
   function(x,
            y,
            tsoptions = list(),
-           control = list(
-             warn.1d.NelderMead = FALSE,
-             trace = FALSE,
-             maxit = 5000
-           ),
+           control = list(),
            method = "IFM") {
     defaults <- list(hessian = FALSE, method = "Nelder-Mead", changeatzero = FALSE)
+    cdefaults <- list(warn.1d.NelderMead = FALSE, trace = FALSE, maxit = 5000)
     tsoptions <- setoptions(tsoptions, defaults)
+    control <- setoptions(control, cdefaults)
     if (is(x, "tscmfit")) {
       tscopula <- x@tscopula
       margin <- x@margin

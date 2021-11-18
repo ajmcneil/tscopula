@@ -4,13 +4,7 @@
 \alias{fit,tscm-method}
 \title{Fit method for tscm class}
 \usage{
-\S4method{fit}{tscm}(
-  x,
-  y,
-  tsoptions = list(),
-  control = list(warn.1d.NelderMead = FALSE, trace = FALSE, maxit = 5000),
-  method = "IFM"
-)
+\S4method{fit}{tscm}(x, y, tsoptions = list(), control = list(), method = "IFM")
 }
 \arguments{
 \item{x}{an object of class \linkS4class{tscm}.}

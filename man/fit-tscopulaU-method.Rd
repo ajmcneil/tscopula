@@ -4,7 +4,7 @@
 \alias{fit,tscopulaU-method}
 \title{Fit method for tscopulaU class}
 \usage{
-\S4method{fit}{tscopulaU}(x, y, tsoptions = list(), control = list(warn.1d.NelderMead = FALSE))
+\S4method{fit}{tscopulaU}(x, y, tsoptions = list(), control = list())
 }
 \arguments{
 \item{x}{an object of class \linkS4class{tscopulaU}.}

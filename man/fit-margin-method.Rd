@@ -4,7 +4,7 @@
 \alias{fit,margin-method}
 \title{Fit method for margin class}
 \usage{
-\S4method{fit}{margin}(x, y, tsoptions = list(), control = list(maxit = 1000))
+\S4method{fit}{margin}(x, y, tsoptions = list(), control = list())
 }
 \arguments{
 \item{x}{an object of class \linkS4class{margin}.}

@@ -208,9 +208,11 @@ setMethod(
   "fit", c(x = "tscopulaU", y = "ANY"),
   function(x, y,
            tsoptions = list(),
-           control = list(warn.1d.NelderMead = FALSE)) {
+           control = list()) {
     defaults <- list(hessian = FALSE, method = "Nelder-Mead")
+    cdefaults <- list(warn.1d.NelderMead = FALSE, maxit = 1000)
     tsoptions <- setoptions(tsoptions, defaults)
+    control <- setoptions(control, cdefaults)
     objective <- eval(parse(text = paste(is(x)[[1]], "_objective", sep = "")))
     fit <- optim(
       par = unlist(x@pars),
