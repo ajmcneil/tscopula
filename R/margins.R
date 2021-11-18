@@ -451,7 +451,7 @@ setClass("marginfit",
 #' fit(margmod, data)
 setMethod("fit", c(x = "margin", y = "ANY"), function(x, y,
                                                       tsoptions = list(),
-                                                      control = list(maxit = 1000)) {
+                                                      control = list(maxit = 1000, warn.1d.NelderMead = FALSE)) {
   defaults <- list(hessian = FALSE, method = "Nelder-Mead")
   tsoptions <- setoptions(tsoptions, defaults)
   dens <- eval(parse(text = paste("d", x@name, sep = "")))
