@@ -358,3 +358,32 @@ glag <- function(x, lagmax = 20, glagplot = FALSE) {
   lagfunc <- eval(parse(text=paste("glag_for_", coptype, sep="")))
   lagfunc(copula, data, lagmax, glagplot)
 }
+
+#' @describeIn tscopulafit Prediction method for tscopulafit class
+#'
+#' @param object an object of class \linkS4class{tscopulafit}.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "tscopulafit"), function(object, x, type = "df") {
+  predict(object@tscopula, object@data, x, type = type)
+})
+
+#' Transform a fitted armacopula into a fitted dvinecopula or dvinecopula2 object
+#'
+#' @param object an object of class \linkS4class{tscopulafit} in which the copula is
+#' of class \linkS4class{armacopula}.
+#'
+#' @return An object of class \linkS4class{tscopulafit} in which the copula is
+#' a \linkS4class{dvinecopula} (for fitted AR copulas)
+#' or class \linkS4class{dvinecopula2} (for fitted MA or ARMA copulas).
+#' @export
+armafit2dvine <- function(object){
+  if (!(is(object, "tscopulafit")))
+    stop("Not fitted armacopula")
+  tscop <- arma2dvine(object@tscopula)
+  new("tscopulafit", tscopula = tscop, data = object@data, fit = object@fit)
+}

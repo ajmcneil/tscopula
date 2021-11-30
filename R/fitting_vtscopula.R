@@ -71,6 +71,42 @@ setMethod("coef", "vtscopula", function(object) {
   c(coef(object@Vcopula), coef(object@Vtransform), coef(object@Wcopula))
 })
 
+#' @describeIn vtscopula Prediction method for vtscopula class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "vtscopula"), function(object, data, x, type = "df") {
+  if ((object@Vtransform@name != "Vlinear") | (!is(object@Wcopula,"swncopula")))
+    stop("Fast forecasting restricted to linear V-transform and SWN Wcopula")
+  delta <- object@Vtransform@pars[1]
+  if (sum(x == delta) > 0)
+    stop("points at fulcrum: change values")
+  Udata <- as.numeric(vtrans(object@Vtransform, data))
+  switch(type,
+         "df" = {
+           mult <- ifelse(x <= delta, -delta, 1-delta)
+           ux <- vtrans(object@Vtransform, x)
+           delta + mult * predict(object@Vcopula, Udata, ux, "df")
+         },
+         "qf" = {
+           arg <- ifelse(x <= delta, (delta-x)/delta, (x-delta)/(1-delta))
+           v <- predict(object@Vcopula, Udata, arg, "qf")
+           u <- vinverse(object@Vtransform, v)
+           ifelse(x <= delta, u, u+v)
+         },
+         "dens" = {
+           ux <- vtrans(object@Vtransform, x)
+           predict(object@Vcopula, Udata, ux, "dens")
+         })
+})
+
+
 #' Extract parameters of vtscopula
 #'
 #' @param object an object of class \linkS4class{vtscopula}.

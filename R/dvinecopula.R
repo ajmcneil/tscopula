@@ -110,7 +110,7 @@ setMethod("show", "dvinecopula", function(object) {
 
 #' @describeIn dvinecopula Simulation method for dvinecopula class
 #'
-#' @param object an object of class the class.
+#' @param object an object of the class.
 #' @param n length of realization.
 #' @param innov vector of innovations of length n.
 #' @param start vector of start values with length equal to order of process.
@@ -122,6 +122,25 @@ setMethod("show", "dvinecopula", function(object) {
 setMethod("sim", c(object = "dvinecopula"), function(object, n = 1000, innov = NA, start = NA) {
   pc_list <- mklist_dvine(object)
   simdvine(pc_list, n, innov, start)
+})
+
+#' @describeIn dvinecopula Prediction method for dvinecopula class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "dvinecopula"), function(object, data, x, type = "df") {
+  pc_list <- mklist_dvine(object)
+  switch(type,
+         "df" = Rblatt(pc_list, data, x),
+         "qf" = IRblatt(pc_list, data, x),
+         "dens" = Rblattdens(pc_list, data, x))
+
 })
 
 #' Make list of pair copulas for dvinecopula object
@@ -142,6 +161,94 @@ mklist_dvine <- function(x){
     )
   }
   pc_list
+}
+
+#' Calculate Rosenblatt function
+#'
+#' @param pc_list a list of pair copulas.
+#' @param data vector of past data values.
+#' @param x vector of arguments of Rosenblatt function.
+#'
+#' @return a vector of values with same length as \code{x}.
+#' @keywords internal
+#'
+Rblatt <- function(pc_list, data, x){
+  k <- length(pc_list)
+  n <- length(data)
+  # swap 90 and 270 to account for notational inconsistencies
+  for (i in 1:k)
+    if (pc_list[[i]]$rotation %in% c(90,270))
+      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
+  pcs <- lapply(seq_along(pc_list), function(i) {
+    replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
+  })
+  vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
+  lastvals <- cbind(matrix(data[(n-k+1):n],
+                           nrow = length(x), ncol = k, byrow = TRUE), x)
+  rt <- rvinecopulib::rosenblatt(lastvals, vc_short)
+  as.numeric(rt[,k+1])
+}
+
+#' Calculate inverse Rosenblatt function
+#'
+#' @param pc_list a list of pair copulas.
+#' @param data vector of past data values.
+#' @param q vector of arguments of inverse Rosenblatt function.
+#'
+#' @return a vector of values with same length as \code{q}.
+#' @keywords internal
+#'
+IRblatt <- function(pc_list, data, q){
+  k <- length(pc_list)
+  n <- length(data)
+  # swap 90 and 270 to account for notational inconsistencies
+  for (i in 1:k)
+    if (pc_list[[i]]$rotation %in% c(90,270))
+      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
+  pcs <- lapply(seq_along(pc_list), function(i) {
+    replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
+  })
+  vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
+  lastvals <- t(c(data[(n-k+1):n], 0.5))
+  rt <- rvinecopulib::rosenblatt(lastvals, vc_short)
+  rt <- matrix(rt, nrow = length(q), ncol = k+1, byrow = TRUE)
+  rt[, k+1] <- q
+  irt <- rvinecopulib::inverse_rosenblatt(rt, vc_short)
+  as.numeric(irt[,k+1])
+}
+
+#' Calculate Rosenblatt density function
+#'
+#' @param pc_list a list of pair copulas.
+#' @param data vector of past data values.
+#' @param x vector of arguments of Rosenblatt density function.
+#'
+#' @return a vector of values with same length as \code{x}.
+#' @keywords internal
+#'
+Rblattdens <- function(pc_list, data, x){
+  output <- rep(NA, length(x))
+  k <- length(pc_list)
+  n <- length(data)
+  lastkdata <- data[(n-k+1):n]
+  for (i in 1:length(x)){
+    data <- c(lastkdata, x[i])
+    n <- length(data)
+    v <- cbind(data[1:(n - 1)], data[2:n])
+    output[i] <- 0
+    for (j in 1:k) {
+      tmp <- log(rvinecopulib::dbicop(v[n-1,], family = pc_list[[j]]))
+      output[i] <- output[i] + sum(tmp)
+      if (j < k) {
+        n <- dim(v)[1]
+        v <- cbind(
+          rvinecopulib::hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]]),
+          rvinecopulib::hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]])
+        )
+      }
+    }
+  }
+  exp(output)
 }
 
 #' D-vine simulation helper function

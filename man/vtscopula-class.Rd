@@ -5,6 +5,7 @@
 \alias{vtscopula-class}
 \alias{show,vtscopula-method}
 \alias{coef,vtscopula-method}
+\alias{predict,vtscopula-method}
 \alias{sim,vtscopula-method}
 \alias{kendall,vtscopula-method}
 \title{Time series copula processes with v-transforms}
@@ -13,12 +14,21 @@
 
 \S4method{coef}{vtscopula}(object)
 
+\S4method{predict}{vtscopula}(object, data, x, type = "df")
+
 \S4method{sim}{vtscopula}(object, n = 1000)
 
 \S4method{kendall}{vtscopula}(object, lagmax = 20)
 }
 \arguments{
 \item{object}{an object of the class.}
+
+\item{data}{vector of past data values.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 
 \item{n}{length of realization.}
 
@@ -32,6 +42,8 @@ Class of objects for v-transformed time series copula processes.
 \item \code{show}: Show method for vtscopula objects
 
 \item \code{coef}: Coef method for vtscopula class
+
+\item \code{predict}: Prediction method for vtscopula class
 
 \item \code{sim}: Simulation method for vtscopula class
 

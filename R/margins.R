@@ -537,4 +537,11 @@ setMethod("plot", c(x = "marginfit", y = "missing"),
               abline(0, 1, col = colchoice)
             })
 
-
+#' Construct empirical margin
+#'
+#' @return An object of class \linkS4class{margin} signifying an empirical distribution function.
+#' @export
+#'
+edf <- function(){
+  new("margin", name = "edf")
+}

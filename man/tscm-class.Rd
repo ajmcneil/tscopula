@@ -6,6 +6,7 @@
 \alias{show,tscm-method}
 \alias{coef,tscm-method}
 \alias{sim,tscm-method}
+\alias{predict,tscm-method}
 \title{Full models}
 \usage{
 \S4method{show}{tscm}(object)
@@ -13,11 +14,20 @@
 \S4method{coef}{tscm}(object)
 
 \S4method{sim}{tscm}(object, n = 1000)
+
+\S4method{predict}{tscm}(object, data, x, type = "df")
 }
 \arguments{
 \item{object}{an object of the class.}
 
 \item{n}{length of realization.}
+
+\item{data}{vector of past data values.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 }
 \description{
 Class of objects for composite time series models consisting
@@ -30,6 +40,8 @@ of stationary copula processes and marginal distributions.
 \item \code{coef}: Coefficient method for tscm class
 
 \item \code{sim}: Simulation method for tscm class
+
+\item \code{predict}: Prediction method for tscm class
 }}
 
 \section{Slots}{

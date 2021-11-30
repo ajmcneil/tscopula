@@ -101,6 +101,57 @@ setMethod(
   }
 )
 
+#' @describeIn tscm Prediction method for tscm class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df") {
+  margmod <- object@margin
+  if(margmod@name == "edf")
+    return(predict_empirical(object, data, x, type))
+  Udata <- pmarg(margmod, data)
+  uvals <- switch(type,
+                  "df" = pmarg(margmod, x),
+                  "qf" = x,
+                  "dens" = pmarg(margmod, x))
+  upred <- predict(object@tscopula, Udata, uvals, type = type)
+  switch(type,
+         "df" = upred,
+         "qf" = qmarg(margmod, upred),
+         "dens" = upred * dmarg(margmod, x))
+})
+
+
+#' Prediction function for tscm class with empirical margin
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#' @keywords internal
+#'
+predict_empirical <- function(object, data, x, type){
+  Udata <- strank(data)
+  uvals <- switch(type,
+                  "df" = ecdf(data)(x),
+                  "qf" = x,
+                  "dens" = ecdf(data)(x))
+  uvals[uvals == 0] <- min(uvals[uvals > 0])
+  uvals[uvals == 1] <- max(uvals[uvals < 1])
+  upred <- predict(object@tscopula, Udata, uvals, type = type)
+  switch(type,
+         "df" = upred,
+         "qf" = quantile(data, upred),
+         "dens" = upred * kdensity::kdensity(data)(x))
+}
+
 #' Fitted tscm model
 #'
 #' Class of objects for fitted \linkS4class{tscm} models.
@@ -377,6 +428,19 @@ setMethod("resid", "tscmfit",
                 fit = object@fit)
             resid(object, trace)
           })
+
+#' @describeIn tscmfit Prediction method for tscmfit class
+#'
+#' @param object an object of the class.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "tscmfit"), function(object, x, type = "df") {
+  predict(tscm(object@tscopula, object@margin), object@data, x, type = type)
+})
 
 #' Plot method for tscmfit class
 #'

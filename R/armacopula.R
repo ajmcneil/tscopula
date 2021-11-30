@@ -388,3 +388,66 @@ glag_for_armacopula <- function(copula, data, lagmax, glagplot = FALSE) {
   }
 output
 }
+
+#' @describeIn armacopula Prediction method for armacopula class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "armacopula"), function(object, data, x, type = "df") {
+  ar <- object@pars$ar
+  p <- object@modelspec[1]
+  if (p == 0) {
+    ar <- 0
+  }
+  ma <- object@pars$ma
+  q <- object@modelspec[2]
+  if (q == 0) {
+    ma <- 0
+  }
+  sp <- starmaStateSpace(ar, ma, c(p, q))
+  ans <- FKF::fkf(
+    a0 = sp$a0, P0 = sp$P0, dt = sp$dt, ct = sp$ct, Tt = sp$Tt, Zt = sp$Zt,
+    HHt = sp$HHt, GGt = sp$GGt, yt = rbind(as.numeric(qnorm(data)))
+  )
+  n <- length(data)
+  mu_t <- ans$at[1, (n+1)]
+  sigma_t <- sqrt(ans$Pt[1, 1, (n+1)])
+  switch(type,
+         "df" = pnorm(qnorm(x), mean = mu_t, sd = sigma_t),
+         "qf" = pnorm(qnorm(x, mean = mu_t, sd = sigma_t)),
+         "dens" = dnorm(qnorm(x), mean = mu_t, sd = sigma_t)/dnorm(qnorm(x)))
+})
+
+#' Transform an armacopula into a dvinecopula or dvinecopula2 object
+#'
+#' @param object an object of class \linkS4class{armacopula}.
+#'
+#' @return An object of class \linkS4class{dvinecopula} (for AR copulas)
+#' or class \linkS4class{dvinecopula2} (for MA or ARMA copulas).
+#' @export
+#'
+#' @examples
+#' arma2dvine(armacopula(list(ar = 0.5, ma = 0.4)))
+arma2dvine <- function(object){
+  if (!(is(object, "armacopula")))
+    stop("Not armacopula object")
+  ord <- object@modelspec
+  p <- ord[1]
+  q <- ord[2]
+  if (q == 0)
+    tscop <- dvinecopula(family = "gauss", pars = coef(object))
+  else {
+    if (p == 0)
+      parlist <- list(ma = coef(object))
+    if (p > 0)
+      parlist <- list(ar = coef(object)[1:p], ma = coef(object)[(p+1):(p+q)])
+    tscop <- dvinecopula2(family = "gauss", pars = parlist)
+  }
+  tscop
+}

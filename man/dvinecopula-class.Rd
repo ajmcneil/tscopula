@@ -6,6 +6,7 @@
 \alias{coef,dvinecopula-method}
 \alias{show,dvinecopula-method}
 \alias{sim,dvinecopula-method}
+\alias{predict,dvinecopula-method}
 \alias{kendall,dvinecopula-method}
 \title{D-vine copula processes}
 \usage{
@@ -14,6 +15,8 @@
 \S4method{show}{dvinecopula}(object)
 
 \S4method{sim}{dvinecopula}(object, n = 1000, innov = NA, start = NA)
+
+\S4method{predict}{dvinecopula}(object, data, x, type = "df")
 
 \S4method{kendall}{dvinecopula}(object, lagmax = 20)
 }
@@ -25,6 +28,13 @@
 \item{innov}{vector of innovations of length n.}
 
 \item{start}{vector of start values with length equal to order of process.}
+
+\item{data}{vector of past data values.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 
 \item{lagmax}{maximum value of lag.}
 }
@@ -38,6 +48,8 @@ Class of objects for d-vine copula processes.
 \item \code{show}: Show method for dvinecopula class
 
 \item \code{sim}: Simulation method for dvinecopula class
+
+\item \code{predict}: Prediction method for dvinecopula class
 
 \item \code{kendall}: Calculate Kendall's tau values for pair copulas in d-vine copula
 }}

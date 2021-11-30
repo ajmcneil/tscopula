@@ -8,6 +8,7 @@
 \alias{show,tscopulafit-method}
 \alias{logLik,tscopulafit-method}
 \alias{resid,tscopulafit-method}
+\alias{predict,tscopulafit-method}
 \title{Fitted time series copula processes}
 \usage{
 \S4method{sim}{tscopulafit}(object, n = 1000)
@@ -19,6 +20,8 @@
 \S4method{logLik}{tscopulafit}(object)
 
 \S4method{resid}{tscopulafit}(object, trace = FALSE)
+
+\S4method{predict}{tscopulafit}(object, x, type = "df")
 }
 \arguments{
 \item{object}{an object of class \linkS4class{tscopulafit}.}
@@ -26,6 +29,11 @@
 \item{n}{length of realization.}
 
 \item{trace}{extract trace instead of residuals.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 }
 \description{
 Class of objects for fitted time series copula processes.
@@ -41,6 +49,8 @@ Class of objects for fitted time series copula processes.
 \item \code{logLik}: logLik method for tscopulafit class
 
 \item \code{resid}: Residual method for tscopulafit class
+
+\item \code{predict}: Prediction method for tscopulafit class
 }}
 
 \section{Slots}{

@@ -7,6 +7,7 @@
 \alias{show,armacopula-method}
 \alias{sim,armacopula-method}
 \alias{kendall,armacopula-method}
+\alias{predict,armacopula-method}
 \title{ARMA copula processes}
 \usage{
 \S4method{coef}{armacopula}(object)
@@ -16,6 +17,8 @@
 \S4method{sim}{armacopula}(object, n = 1000)
 
 \S4method{kendall}{armacopula}(object, lagmax = 20)
+
+\S4method{predict}{armacopula}(object, data, x, type = "df")
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -23,6 +26,13 @@
 \item{n}{length of realization.}
 
 \item{lagmax}{maximum value of lag.}
+
+\item{data}{vector of past data values.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 }
 \description{
 Class of objects for ARMA copula processes.
@@ -36,6 +46,8 @@ Class of objects for ARMA copula processes.
 \item \code{sim}: Simulation method for armacopula class
 
 \item \code{kendall}: Calculate Kendall's tau values for armacopula model
+
+\item \code{predict}: Prediction method for armacopula class
 }}
 
 \section{Slots}{

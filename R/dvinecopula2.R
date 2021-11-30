@@ -334,6 +334,25 @@ mklist_dvine2 <- function(x, maxlag, truncate, tol = 1){
   pc_list
 }
 
+#' @describeIn dvinecopula2 Prediction method for dvinecopula2 class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "dvinecopula2"), function(object, data, x, type = "df") {
+  pc_list <- mklist_dvine2(object, length(data)-1, truncate = TRUE, tol = 1/3)
+  switch(type,
+         "df" = Rblatt(pc_list, data, x),
+         "qf" = IRblatt(pc_list, data, x),
+         "dens" = Rblattdens(pc_list, data, x))
+
+})
+
 #' Residual function for dvinecopula2 object
 #'
 #' @param object a fitted dvinecopula2 object.
