@@ -7,6 +7,7 @@
 \alias{coef,tscm-method}
 \alias{sim,tscm-method}
 \alias{predict,tscm-method}
+\alias{kendall,tscm-method}
 \title{Full models}
 \usage{
 \S4method{show}{tscm}(object)
@@ -15,7 +16,9 @@
 
 \S4method{sim}{tscm}(object, n = 1000)
 
-\S4method{predict}{tscm}(object, data, x, type = "df")
+\S4method{predict}{tscm}(object, data, x, type = "df", qtype = 7)
+
+\S4method{kendall}{tscm}(object, lagmax = 20)
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -28,6 +31,10 @@
 
 \item{type}{type of prediction function ("df" for density, "qf" for quantile function
 or "dens" for density).}
+
+\item{qtype}{type of empirical quantile estimate.}
+
+\item{lagmax}{maximum value of lag.}
 }
 \description{
 Class of objects for composite time series models consisting
@@ -42,6 +49,8 @@ of stationary copula processes and marginal distributions.
 \item \code{sim}: Simulation method for tscm class
 
 \item \code{predict}: Prediction method for tscm class
+
+\item \code{kendall}: Calculate Kendall's tau values for pair copulas for tscm class
 }}
 
 \section{Slots}{

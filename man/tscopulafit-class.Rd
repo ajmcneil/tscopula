@@ -4,6 +4,7 @@
 \name{tscopulafit-class}
 \alias{tscopulafit-class}
 \alias{sim,tscopulafit-method}
+\alias{kendall,tscopulafit-method}
 \alias{coef,tscopulafit-method}
 \alias{show,tscopulafit-method}
 \alias{logLik,tscopulafit-method}
@@ -12,6 +13,8 @@
 \title{Fitted time series copula processes}
 \usage{
 \S4method{sim}{tscopulafit}(object, n = 1000)
+
+\S4method{kendall}{tscopulafit}(object, lagmax = 20)
 
 \S4method{coef}{tscopulafit}(object)
 
@@ -28,6 +31,8 @@
 
 \item{n}{length of realization.}
 
+\item{lagmax}{maximum value of lag.}
+
 \item{trace}{extract trace instead of residuals.}
 
 \item{x}{vector of arguments of prediction function.}
@@ -41,6 +46,8 @@ Class of objects for fitted time series copula processes.
 \section{Methods (by generic)}{
 \itemize{
 \item \code{sim}: Simulation method for tscopulafit class
+
+\item \code{kendall}: Calculate Kendall's tau values for pair copulas for tscopulafit class
 
 \item \code{coef}: Coef method for tscopulafit class
 

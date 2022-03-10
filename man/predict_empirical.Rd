@@ -4,7 +4,7 @@
 \alias{predict_empirical}
 \title{Prediction function for tscm class with empirical margin}
 \usage{
-predict_empirical(object, data, x, type)
+predict_empirical(object, data, x, type, qtype)
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -15,6 +15,8 @@ predict_empirical(object, data, x, type)
 
 \item{type}{type of prediction function ("df" for density, "qf" for quantile function
 or "dens" for density).}
+
+\item{qtype}{type of empirical quantile estimate.}
 }
 \description{
 Prediction function for tscm class with empirical margin

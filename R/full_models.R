@@ -108,13 +108,14 @@ setMethod(
 #' @param x vector of arguments of prediction function.
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
+#' @param qtype type of empirical quantile estimate.
 #'
 #' @export
 #'
-setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df") {
+setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df", qtype = 7) {
   margmod <- object@margin
   if(margmod@name == "edf")
-    return(predict_empirical(object, data, x, type))
+    return(predict_empirical(object, data, x, type, qtype))
   Udata <- pmarg(margmod, data)
   uvals <- switch(type,
                   "df" = pmarg(margmod, x),
@@ -127,6 +128,34 @@ setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df") 
          "dens" = upred * dmarg(margmod, x))
 })
 
+#' @describeIn tscm Calculate Kendall's tau values for pair copulas for tscm class
+#'
+#' @param object an object of the class.
+#' @param lagmax maximum value of lag.
+#'
+#' @export
+#'
+setMethod("kendall", c(object = "tscm"), function(object, lagmax = 20) {
+  kendall(object@tscopula, lagmax)
+}
+)
+
+#' Adjusted empirical distribution function
+#'
+#' @param x argument of empirical distribution function.
+#' @param data vector of data for constructing empirical
+#' distribution function.
+#'
+#' @return a vector of same length as x
+#' @export
+#'
+pedf <- function(x, data){
+  n <- length(data)
+  df <- ecdf(data)(x)*n/(n+1)
+  df[x < min(data)] <- 0.5/(n+1)
+  df[x > max(data)] <- (n+0.5)/(n+1)
+  df
+}
 
 #' Prediction function for tscm class with empirical margin
 #'
@@ -135,20 +164,19 @@ setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df") 
 #' @param x vector of arguments of prediction function.
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
+#' @param qtype type of empirical quantile estimate.
 #' @keywords internal
 #'
-predict_empirical <- function(object, data, x, type){
+predict_empirical <- function(object, data, x, type, qtype){
   Udata <- strank(data)
   uvals <- switch(type,
-                  "df" = ecdf(data)(x),
+                  "df" = pedf(x, data),
                   "qf" = x,
-                  "dens" = ecdf(data)(x))
-  uvals[uvals == 0] <- min(uvals[uvals > 0])
-  uvals[uvals == 1] <- max(uvals[uvals < 1])
+                  "dens" = pedf(x, data))
   upred <- predict(object@tscopula, Udata, uvals, type = type)
   switch(type,
          "df" = upred,
-         "qf" = quantile(data, upred),
+         "qf" = quantile(data, upred, type = qtype),
          "dens" = upred * kdensity::kdensity(data)(x))
 }
 
@@ -213,6 +241,8 @@ setMethod(
       }
       x <- new("tscm", tscopula = tscopula, margin = margin)
     }
+    if (x@margin@name == "edf")
+      method <- "empirical"
     if ((method == "full") & is(x@tscopula, "tscopulaU")) {
       method <- paste(method, "A", sep = "")
     }

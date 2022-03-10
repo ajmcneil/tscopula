@@ -77,6 +77,19 @@ setMethod("sim", c(object = "tscopulafit"), function(object, n = 1000) {
   sim(object@tscopula, n)
 })
 
+#' @describeIn tscopulafit Calculate Kendall's tau values for pair copulas for tscopulafit class
+#'
+#' @param object an object of the class.
+#' @param lagmax maximum value of lag.
+#'
+#' @export
+#'
+setMethod("kendall", c(object = "tscopulafit"), function(object, lagmax = 20) {
+  kendall(object@tscopula, lagmax)
+}
+)
+
+
 #' @describeIn tscopulafit Coef method for tscopulafit class
 #'
 #' @param object an object of class \linkS4class{tscopulafit}.
