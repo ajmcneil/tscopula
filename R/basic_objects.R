@@ -6,6 +6,7 @@
 #' @export
 #'
 #' @import stats
+#' @import stats4
 #' @import methods
 #' @import graphics
 #' @import utils

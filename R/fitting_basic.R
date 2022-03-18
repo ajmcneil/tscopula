@@ -269,6 +269,51 @@ setMethod("logLik", "tscopulafit", function(object) {
   logLik(as(object, "tscmfit"))
 })
 
+#' Akaike Corrected Information Criterion
+#'
+#' @param object a fitted model object for which there exists a logLik method
+#' to extract the corresponding log-likelihood.
+#' @param ... optionally more fitted model objects.
+#'
+#' @return If just one object is provided, a numeric value with the corresponding AICC value.
+#'
+#' If multiple objects are provided, a data.frame with rows corresponding to the objects and
+#' columns representing the number of parameters in the model (df) and the AICC.
+#' @export
+#'
+AICc <- function(object, ...)
+{
+  ll   <- if(isNamespaceLoaded("stats4")) stats4::logLik else logLik
+  Nobs <- if(isNamespaceLoaded("stats4")) stats4::nobs   else nobs
+  if(!missing(...)) {# several objects: produce data.frame
+    lls <- lapply(list(object, ...), ll)
+    vals <- sapply(lls, function(el) {
+      no <- attr(el, "nobs")
+      c(as.numeric(el), attr(el, "df"),
+        if(is.null(no)) NA_integer_ else no)
+    })
+    val <- data.frame(df = vals[2L,], ll = vals[1L,], nobs = vals[3L,])
+    nos <- na.omit(val$nobs)
+    if (length(nos) && any(nos != nos[1L]))
+      warning("models are not all fitted to the same number of observations")
+    ## if any val$nobs = NA, try to get value via nobs().
+    unknown <- is.na(val$nobs)
+    if(any(unknown))
+      val$nobs[unknown] <-
+      sapply(list(object, ...)[unknown],
+             function(x) tryCatch(Nobs(x), error = function(e) NA_real_))
+    val <- data.frame(df = val$df, AICc = -2*val$ll + 2*val$df + 2*val$df*(val$df+1)/(val$nobs-val$df-1))
+    row.names(val) <- as.character(match.call()[-1L])
+    val
+  } else {
+    lls <- ll(object)
+    nos <- attr(lls, "nobs")
+    if (is.null(nos)) ## helps if has nobs() method, but logLik() gives no "nobs":
+      nos <- tryCatch(Nobs(object), error = function(e) NA_real_)
+    -2 * as.numeric(lls) + 2 * attr(lls, "df") + 2*attr(lls, "df")*(attr(lls, "df")+1)/(nos - attr(lls, "df") - 1)
+  }
+}
+
 #' Plot method for tscopulafit class
 #'
 #' @param x an object of class \linkS4class{tscopulafit}.

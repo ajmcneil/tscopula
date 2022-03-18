@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(tscopula)
-library(stats4)
 ```
 This library currently implements 3 basic kinds of time series copula process: ARMA copula processes and d-vine copula processes of type 1 and type 2. These are described in the next 3 sections.
 
