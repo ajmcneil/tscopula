@@ -12,7 +12,7 @@
 
 \S4method{resid}{tscmfit}(object, trace = FALSE)
 
-\S4method{predict}{tscmfit}(object, x, type = "df")
+\S4method{predict}{tscmfit}(object, x, type = "df", qtype = 7)
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -23,6 +23,8 @@
 
 \item{type}{type of prediction function ("df" for density, "qf" for quantile function
 or "dens" for density).}
+
+\item{qtype}{type of empirical quantile estimate.}
 }
 \description{
 Class of objects for fitted \linkS4class{tscm} models.

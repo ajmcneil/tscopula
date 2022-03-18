@@ -4,13 +4,16 @@
 \alias{pedf}
 \title{Adjusted empirical distribution function}
 \usage{
-pedf(x, data)
+pedf(x, data, proper = FALSE)
 }
 \arguments{
 \item{x}{argument of empirical distribution function.}
 
 \item{data}{vector of data for constructing empirical
 distribution function.}
+
+\item{proper}{logical variable which when set to TRUE will return
+the standard empirical distribution function.}
 }
 \value{
 a vector of same length as x

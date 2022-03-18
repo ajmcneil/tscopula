@@ -145,15 +145,20 @@ setMethod("kendall", c(object = "tscm"), function(object, lagmax = 20) {
 #' @param x argument of empirical distribution function.
 #' @param data vector of data for constructing empirical
 #' distribution function.
+#' @param proper logical variable which when set to TRUE will return
+#' the standard empirical distribution function.
 #'
 #' @return a vector of same length as x
 #' @export
 #'
-pedf <- function(x, data){
-  n <- length(data)
-  df <- ecdf(data)(x)*n/(n+1)
-  df[x < min(data)] <- 0.5/(n+1)
-  df[x > max(data)] <- (n+0.5)/(n+1)
+pedf <- function(x, data, proper = FALSE){
+  df <- ecdf(data)(x)
+  if (!proper){
+    n <- length(data)
+    df <- df*n/(n+1)
+    df[x < min(data)] <- 0.5/(n+1)
+    df[x > max(data)] <- (n+0.5)/(n+1)
+  }
   df
 }
 
@@ -465,11 +470,12 @@ setMethod("resid", "tscmfit",
 #' @param x vector of arguments of prediction function.
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
+#' @param qtype type of empirical quantile estimate.
 #'
 #' @export
 #'
-setMethod("predict", c(object = "tscmfit"), function(object, x, type = "df") {
-  predict(tscm(object@tscopula, object@margin), object@data, x, type = type)
+setMethod("predict", c(object = "tscmfit"), function(object, x, type = "df", qtype = 7) {
+  predict(tscm(object@tscopula, object@margin), object@data, x, type = type, qtype = qtype)
 })
 
 #' Plot method for tscmfit class
