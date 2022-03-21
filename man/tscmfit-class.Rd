@@ -12,7 +12,7 @@
 
 \S4method{resid}{tscmfit}(object, trace = FALSE)
 
-\S4method{predict}{tscmfit}(object, x, type = "df", qtype = 7)
+\S4method{predict}{tscmfit}(object, x, type = "df", qtype = 7, proper = FALSE)
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -25,6 +25,10 @@
 or "dens" for density).}
 
 \item{qtype}{type of empirical quantile estimate.}
+
+\item{proper}{logical variable stating whether the standard empirical distribution function should
+be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+and 1 is used.}
 }
 \description{
 Class of objects for fitted \linkS4class{tscm} models.

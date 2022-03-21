@@ -4,7 +4,7 @@
 \alias{predict_empirical}
 \title{Prediction function for tscm class with empirical margin}
 \usage{
-predict_empirical(object, data, x, type, qtype)
+predict_empirical(object, data, x, type, qtype, proper)
 }
 \arguments{
 \item{object}{an object of the class.}
@@ -17,6 +17,10 @@ predict_empirical(object, data, x, type, qtype)
 or "dens" for density).}
 
 \item{qtype}{type of empirical quantile estimate.}
+
+\item{proper}{logical variable stating whether the standard empirical distribution function should
+be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+and 1 is used.}
 }
 \description{
 Prediction function for tscm class with empirical margin

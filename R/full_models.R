@@ -109,13 +109,16 @@ setMethod(
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
 #' @param qtype type of empirical quantile estimate.
+#' @param proper logical variable stating whether the standard empirical distribution function should
+#' be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+#' and 1 is used.
 #'
 #' @export
 #'
-setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df", qtype = 7) {
+setMethod("predict", c(object = "tscm"), function(object, data, x, type = "df", qtype = 7, proper = FALSE) {
   margmod <- object@margin
   if(margmod@name == "edf")
-    return(predict_empirical(object, data, x, type, qtype))
+    return(predict_empirical(object, data, x, type, qtype, proper))
   Udata <- pmarg(margmod, data)
   uvals <- switch(type,
                   "df" = pmarg(margmod, x),
@@ -170,14 +173,17 @@ pedf <- function(x, data, proper = FALSE){
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
 #' @param qtype type of empirical quantile estimate.
+#' @param proper logical variable stating whether the standard empirical distribution function should
+#' be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+#' and 1 is used.
 #' @keywords internal
 #'
-predict_empirical <- function(object, data, x, type, qtype){
+predict_empirical <- function(object, data, x, type, qtype, proper){
   Udata <- strank(data)
   uvals <- switch(type,
-                  "df" = pedf(x, data),
+                  "df" = pedf(x, data, proper),
                   "qf" = x,
-                  "dens" = pedf(x, data))
+                  "dens" = pedf(x, data, proper))
   upred <- predict(object@tscopula, Udata, uvals, type = type)
   switch(type,
          "df" = upred,
@@ -471,11 +477,14 @@ setMethod("resid", "tscmfit",
 #' @param type type of prediction function ("df" for density, "qf" for quantile function
 #' or "dens" for density).
 #' @param qtype type of empirical quantile estimate.
+#' @param proper logical variable stating whether the standard empirical distribution function should
+#' be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+#' and 1 is used.
 #'
 #' @export
 #'
-setMethod("predict", c(object = "tscmfit"), function(object, x, type = "df", qtype = 7) {
-  predict(tscm(object@tscopula, object@margin), object@data, x, type = type, qtype = qtype)
+setMethod("predict", c(object = "tscmfit"), function(object, x, type = "df", qtype = 7, proper = FALSE) {
+  predict(tscm(object@tscopula, object@margin), object@data, x, type = type, qtype = qtype, proper = proper)
 })
 
 #' Plot method for tscmfit class

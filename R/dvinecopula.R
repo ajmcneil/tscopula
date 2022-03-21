@@ -173,20 +173,27 @@ mklist_dvine <- function(x){
 #' @keywords internal
 #'
 Rblatt <- function(pc_list, data, x){
-  k <- length(pc_list)
-  n <- length(data)
+  lx <- length(x)
+  output <- vector("numeric", length(x))
+  output[x == 1] <- 1
+  lx <- length(x[(x > 0) & (x < 1)])
+  if (lx > 0){
+    k <- length(pc_list)
+    n <- length(data)
   # swap 90 and 270 to account for notational inconsistencies
-  for (i in 1:k)
-    if (pc_list[[i]]$rotation %in% c(90,270))
-      pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
-  pcs <- lapply(seq_along(pc_list), function(i) {
-    replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
-  })
-  vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
-  lastvals <- cbind(matrix(data[(n-k+1):n],
-                           nrow = length(x), ncol = k, byrow = TRUE), x)
-  rt <- rvinecopulib::rosenblatt(lastvals, vc_short)
-  as.numeric(rt[,k+1])
+    for (i in 1:k)
+      if (pc_list[[i]]$rotation %in% c(90,270))
+        pc_list[[i]]$rotation <- 360 - pc_list[[i]]$rotation
+    pcs <- lapply(seq_along(pc_list), function(i) {
+      replicate(k - i + 1, pc_list[[i]], simplify = FALSE)
+    })
+    vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
+    lastvals <- cbind(matrix(data[(n-k+1):n],
+                           nrow = lx, ncol = k, byrow = TRUE), x[(x > 0) & (x < 1)])
+    rt <- rvinecopulib::rosenblatt(lastvals, vc_short)
+    output[(x > 0) & (x < 1)] <- as.numeric(rt[,k+1])
+  }
+  output
 }
 
 #' Calculate inverse Rosenblatt function

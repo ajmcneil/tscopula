@@ -16,7 +16,7 @@
 
 \S4method{sim}{tscm}(object, n = 1000)
 
-\S4method{predict}{tscm}(object, data, x, type = "df", qtype = 7)
+\S4method{predict}{tscm}(object, data, x, type = "df", qtype = 7, proper = FALSE)
 
 \S4method{kendall}{tscm}(object, lagmax = 20)
 }
@@ -33,6 +33,10 @@
 or "dens" for density).}
 
 \item{qtype}{type of empirical quantile estimate.}
+
+\item{proper}{logical variable stating whether the standard empirical distribution function should
+be used when the margin is empirical; otherwise an improper distribution that is bounded away from 0
+and 1 is used.}
 
 \item{lagmax}{maximum value of lag.}
 }

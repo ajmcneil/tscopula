@@ -2,7 +2,7 @@ Package: tscopula
 Type: Package
 Title: Time Series Copula Models
 Version: 0.2.6
-Date: 2022-03-15
+Date: 2022-03-21
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
