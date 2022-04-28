@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.2.6
-Date: 2022-03-21
+Version: 0.2.7
+Date: 2022-04-28
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
@@ -32,7 +32,6 @@ Imports:
     FKF,
     ltsa,
     rvinecopulib,
-    FitAR,
     arfima,
     Matrix,
     kdensity

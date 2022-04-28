@@ -89,8 +89,21 @@ kpacf_arma <- function(k, theta){
 #' @examples
 #' rho <- ARMAacf(ar = -0.9, ma = 0.8, lag.max = 50)[-1]
 #' alpha <- acf2pacf(rho)
-acf2pacf <- function(rho){
-  FitAR::PacfDL(c(1,rho))$Pacf
+acf2pacf <- function(rho) {
+  L <- length(rho)
+  pi <- numeric(L)
+  pi[1] <- rho[1]
+  phik <- pi
+  vk <- (1 - pi[1] ^ 2)
+  if (L > 1) {
+    for (k in 2:L) {
+      a <- sum(c(1, -phik[1:(k - 1)]) * rev(rho[1:k])) / vk
+      phik <- c(phik[1:(k - 1)] - a * rev(phik[1:(k - 1)]), a)
+      vk <- vk * (1 - a ^ 2)
+      pi[k] <- a
+    }
+  }
+  pi
 }
 
 #' Compute autocorrelations from partial autocorrelations
@@ -103,9 +116,14 @@ acf2pacf <- function(rho){
 #' @examples
 #' alpha <- ARMAacf(ar = -0.9, ma = 0.8, lag.max = 50, pacf = TRUE)
 #' rho <- pacf2acf(alpha)
-pacf2acf <- function(alpha){
-  arcoef <- FitAR::PacfToAR(alpha)
-  rho <- stats::ARMAacf(ar = arcoef, lag.max = length(alpha))
+pacf2acf <- function(alpha) {
+  L <- length(alpha)
+  phik <- numeric(L)
+  phik[1] <- alpha[1]
+  if (L > 1)
+    for (k in 2:L)
+      phik[1:k] = c(phik[1:(k - 1)] - alpha[k] * rev(phik[1:(k - 1)]), alpha[k])
+  rho <- stats::ARMAacf(ar = phik, lag.max = length(alpha))
   as.numeric(rho[-1])
 }
 
