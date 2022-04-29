@@ -320,7 +320,7 @@ vgradient <- function(x, u) {
 #' @examples
 #' vinverse(Vsymmetric(), c(0, 0.25, 0.5, 0.75, 1))
 vinverse <- function(x, v, tol = .Machine$double.eps^0.75) {
-  if (class(x) == "VtransformI") {
+  if (is(x,"VtransformI")) {
     do.call(x@inverse, append(x@pars, list(v = v)))
   } else {
     vecinverse <- Vectorize(function(v, vfunc, pars, tol) {

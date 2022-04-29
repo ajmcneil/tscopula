@@ -27,6 +27,7 @@ Imports:
     stats,
     graphics,
     utils,
+    stats4,
     zoo,
     xts,
     FKF,
