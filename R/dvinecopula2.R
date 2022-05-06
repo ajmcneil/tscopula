@@ -35,7 +35,7 @@ dvinecopula2 <- function(family = "gauss",
                          pars = list(ar = 0.1, ma = 0.1),
                          maxlag = Inf,
                          negtau = "none") {
-  if (class(family) != "character")
+  if (is(family, "character"))
     stop("copula family must be specified by name")
   if (is.null(names(pars)))
     stop("parameters should be named (p1 and p2 for exp/power)")
