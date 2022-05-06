@@ -26,7 +26,7 @@ setClass("dvinecopula", contains = "tscopula", slots = list(
 #' @examples
 #' dvinecopula(family = c("joe", "gauss", "t"), pars = list(3, .5, c(1, 2)), rotation = c(180, 0, 0))
 dvinecopula <- function(family = "indep", pars = list(NULL), rotation = 0) {
-  if (is(family, "character"))
+  if (!(is(family, "character")))
     stop("families must be specified by names")
   else
     family <- tolower(family)
