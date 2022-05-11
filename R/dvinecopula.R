@@ -16,15 +16,26 @@ setClass("dvinecopula", contains = "tscopula", slots = list(
 
 #' Constructor function for dvinecopula process
 #'
+#' This function sets up a stationary d-vine process of finite order where the elements of
+#' the (finite-length) copula sequence may be any copulas that can be implemented using
+#' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
+#'
+#' Copulas may also be rotated through 90, 180 and 270 degrees.  If the
+#' same \code{family} or same \code{rotation} is to be used at every lag, these arguments may be scalars.
+#' The \code{pars} argument must be a list with the same length as the copula sequence.
+#'
+#' If a t copula is included, the correlation parameter precedes the degrees of freedom in the parameter vector.
+#' This copula should be referred to as "t" rather than "Student".
+#'
 #' @param family a vector of family names
-#' @param pars a list containing the parameters of each lag
+#' @param pars a list containing the parameters of the copula at each lag
 #' @param rotation a vector of rotations
 #'
 #' @return An object of class \linkS4class{dvinecopula}.
 #' @export
 #'
 #' @examples
-#' dvinecopula(family = c("joe", "gauss", "t"), pars = list(3, .5, c(1, 2)), rotation = c(180, 0, 0))
+#' dvinecopula(family = c("joe", "gauss", "t"), pars = list(3, .5, c(0.4, 4)), rotation = c(180, 0, 0))
 dvinecopula <- function(family = "indep", pars = list(NULL), rotation = 0) {
   if (!(is(family, "character")))
     stop("families must be specified by names")

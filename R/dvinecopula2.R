@@ -16,12 +16,40 @@ setClass("dvinecopula2", contains = "tscopula", slots = list(
 
 #' Constructor function for dvinecopula2 process
 #'
+#' This function sets up a stationary d-vine process of finite or infinite order based on a single
+#' copula family from a subset of those that can be implemented using
+#' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
+#'
+#' The copula family may be any one-parameter family or the t copula family. The basic copula from
+#' which the sequence is built may be rotated through 180 degrees using the \code{rotation} argument; the default
+#' is no rotation (0 degrees).
+#'
+#' The copulas are parameterized using the Kendall partial autocorrelation function (kpacf) specified
+#' by the \code{kpacf} argument. The default choice is the kpacf of a standard ARMA process which is
+#' implemented in the function \code{\link{kpacf_arma}}. The parameters
+#' of the kpacf should be set as a list using the \code{pars} argument; the required parameters should usually
+#' be clear from the documentation of the chosen kpacf function and must be correctly named.
+#'
+#' If the kpacf takes a negative value at any lag and the standard copula is unable to model a
+#' negative dependency (e.g. Clayton, Gumbel, Joe and their 180 degree rotations) then one of four
+#' different treatments may be specified using the \code{negtau} parameter: "gauss" substitutes a
+#' Gaussian copula at that lag; "frank" substitutes a Frank copula; "right" and "left" rotate the copula
+#' through 90 degrees in a clockwise or anto-clockwise direction respectively.
+#'
+#' The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
+#' stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+#'
+#' If the t copula is chosen by setting \code{family} equal to "t", the list of
+#' parameters needs to be augmented with a component named "nu" which is
+#' the degrees of freedom. In this case it makes sense to set \code{maxlag} to be a finite number to avoid models
+#' with tail dependencies at arbitrary lags which are not ergodic.
+#'
 #' @param family family name
-#' @param rotation rotation
-#' @param kpacf character string giving name of Kendal pacf
-#' @param pars a list containing the parameters of each lag
-#' @param maxlag scalar specifying maximum lag
-#' @param negtau character specifiying treatment of negative tau values
+#' @param rotation a scalar specifying the rotation (default is 0)
+#' @param kpacf a character string giving the name of the Kendall pacf
+#' @param pars a list containing the parameters of the model
+#' @param maxlag a scalar specifying the maximum lag
+#' @param negtau a character string specifying the treatment of negative Kendall's tau values
 #'
 #' @return An object of class \linkS4class{dvinecopula2}.
 #' @export
