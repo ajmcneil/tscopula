@@ -17,6 +17,16 @@ Rblatt(pc_list, data, x)
 a vector of values with same length as \code{x}.
 }
 \description{
-Calculate Rosenblatt function
+Evaluates the Rosenblatt function for a sequence of pair copulas extracted from an
+object of class \linkS4class{dvinecopula} or \linkS4class{dvinecopula2}.
+}
+\details{
+To set up the pair copula list, use the functions \link{mklist_dvine} for objects of
+class \linkS4class{dvinecopula} or \link{mklist_dvine2} for objects
+of class \linkS4class{dvinecopula2}.
+
+The vector \code{data} containing the past values of the time series must have
+at least as many elements as the list of pair copulas in \code{pc_list}. The elements
+of \code{data} should be in (0,1) and the elements of \code{x} in [0,1].
 }
 \keyword{internal}
