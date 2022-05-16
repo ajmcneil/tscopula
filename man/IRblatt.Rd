@@ -9,7 +9,7 @@ IRblatt(pc_list, data, q)
 \arguments{
 \item{pc_list}{a list of pair copulas.}
 
-\item{data}{vector of past data values.}
+\item{data}{vector of past data values in order of occurrence.}
 
 \item{q}{vector of arguments of inverse Rosenblatt function.}
 }

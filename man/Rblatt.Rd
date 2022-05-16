@@ -9,7 +9,7 @@ Rblatt(pc_list, data, x)
 \arguments{
 \item{pc_list}{a list of pair copulas.}
 
-\item{data}{vector of past data values.}
+\item{data}{vector of past data values in order of occurrence.}
 
 \item{x}{vector of arguments of Rosenblatt function.}
 }
