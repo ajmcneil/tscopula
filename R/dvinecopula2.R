@@ -155,6 +155,26 @@ pacf2acf <- function(alpha) {
   as.numeric(rho[-1])
 }
 
+#' Compute autoregressive coefficients from partial autocorrelations
+#'
+#' @param alpha vector of partial autocorrelation values.
+#'
+#' @return A vector of autoregressive coefficients with same length as \code{alpha}.
+#' @export
+#'
+#' @examples
+#' alpha <- ARMAacf(ar = -0.9, ma = 0.8, lag.max = 50, pacf = TRUE)
+#' phi <- pacf2ar(alpha)
+pacf2ar <- function(alpha) {
+  L <- length(alpha)
+  phik <- numeric(L)
+  phik[1] <- alpha[1]
+  if (L > 1)
+    for (k in 2:L)
+      phik[1:k] = c(phik[1:(k - 1)] - alpha[k] * rev(phik[1:(k - 1)]), alpha[k])
+  phik
+}
+
 #' KPACF of ARFIMA process
 #'
 #' @param k number of lags.
