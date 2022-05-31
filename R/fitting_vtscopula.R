@@ -246,7 +246,8 @@ vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopul
     dvinecopulaNE = sum(sapply(modelspec, function(v) {
       v$npars
     })),
-    dvinecopula2 = modelspec$npar
+    dvinecopula2 = modelspec$npar,
+    dvinecopula3 = modelspec$npar
   )
   theta_core <- theta[1:n_corepars]
   theta_vt <- c(delta = fulcrum)
