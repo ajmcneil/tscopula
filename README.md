@@ -11,5 +11,5 @@ McNeil, A.J. (2021). Modelling volatile time series with v-transforms and copula
 Bladt, M., & McNeil, A.J. (2021). Time series copula models using d-vines and v-transforms. Econometrics and Statistics.
 https://www.sciencedirect.com/science/article/pii/S2452306221000800
 
-Bladt, M., & McNeil, A.J. (2021). Time series models with infinite-order partial copula dependence.
-https://arxiv.org/abs/2107.00960
+Bladt, M., & McNeil, A.J. (2022). Time series models with infinite-order partial copula dependence.
+https://www.degruyter.com/document/doi/10.1515/demo-2022-0105/html

@@ -2,7 +2,7 @@ Package: tscopula
 Type: Package
 Title: Time Series Copula Models
 Version: 0.3.3
-Date: 2022-05-30
+Date: 2022-05-31
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
@@ -17,7 +17,7 @@ Description: Functions for the analysis of time series using copula models.
     The package is based on methodology described in the following references.
     McNeil, A.J. (2021) <doi:10.3390/risks9010014>,
     Bladt, M., & McNeil, A.J. (2021) <doi:10.1016/j.ecosta.2021.07.004>,
-    Bladt, M., & McNeil, A.J. (2021) <arXiv:2107.00960>.
+    Bladt, M., & McNeil, A.J. (2022) <doi:10.1515/demo-2022-0105>.
 Depends: R (>= 3.5.0)
 License: GPL-3
 LazyData: true
