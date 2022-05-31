@@ -55,9 +55,10 @@ The \code{maxlag} parameter specifies the maximum lag of the process; a finite n
 stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
 
 If the t copula is chosen by setting \code{family} equal to "t", the list of
-parameters needs to be augmented with a component named "nu" which is
+parameters needs to be augmented with a component named "df" which is
 the degrees of freedom. In this case it makes sense to set \code{maxlag} to be a finite number to avoid models
-with tail dependencies at arbitrary lags which are not ergodic.
+with tail dependencies at arbitrary lags which are not ergodic. The class \linkS4class{dvinecopula3}
+is more suitable for working with t copulas with different degrees of freedom at different lags.
 }
 \examples{
 dvinecopula2(family = "joe", kpacf = "kpacf_arma",

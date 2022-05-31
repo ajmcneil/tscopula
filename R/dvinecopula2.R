@@ -1,6 +1,6 @@
 #' D-vine copula processes of type 2
 #'
-#' Class of objects for d-vine copula processes.
+#' Class of objects for d-vine copula processes. See \link{dvinecopula2} for more details.
 #'
 #' @slot name name of the d-vine copula process.
 #' @slot modelspec list containing the family, rotation, and name of KPACF
@@ -40,9 +40,10 @@ setClass("dvinecopula2", contains = "tscopula", slots = list(
 #' stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
 #'
 #' If the t copula is chosen by setting \code{family} equal to "t", the list of
-#' parameters needs to be augmented with a component named "nu" which is
+#' parameters needs to be augmented with a component named "df" which is
 #' the degrees of freedom. In this case it makes sense to set \code{maxlag} to be a finite number to avoid models
-#' with tail dependencies at arbitrary lags which are not ergodic.
+#' with tail dependencies at arbitrary lags which are not ergodic. The class \linkS4class{dvinecopula3}
+#' is more suitable for working with t copulas with different degrees of freedom at different lags.
 #'
 #' @param family family name
 #' @param rotation a scalar specifying the rotation (default is 0)
@@ -302,7 +303,7 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
     if (is.na(coppars))
       return(NA)
     if (fam == "t")
-      coppars <- c(coppars, theta["nu"])
+      coppars <- c(coppars, theta["df"])
     pc_list[[i]] <- tryCatch(rvinecopulib::bicop_dist(
       family = fam,
       rotation = rot,
@@ -391,7 +392,7 @@ mklist_dvine2 <- function(x, maxlag, truncate, tol = 1){
       tau = tauvals[i]
     )
     if (fam == "t")
-      coppars <- c(coppars, x@pars$nu)
+      coppars <- c(coppars, x@pars$df)
     pc_list[[i]] <- rvinecopulib::bicop_dist(
       family = fam,
       rotation = rot,

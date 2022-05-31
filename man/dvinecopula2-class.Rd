@@ -35,7 +35,7 @@ or "dens" for density).}
 \item{lagmax}{maximum value of lag.}
 }
 \description{
-Class of objects for d-vine copula processes.
+Class of objects for d-vine copula processes. See \link{dvinecopula2} for more details.
 }
 \section{Methods (by generic)}{
 \itemize{

@@ -5,7 +5,7 @@
 #'
 #' @exportClass tscopulaU
 #'
-setClassUnion("tscopulaU", c("armacopula", "dvinecopula", "dvinecopula2"))
+setClassUnion("tscopulaU", c("armacopula", "dvinecopula", "dvinecopula2", "dvinecopula3"))
 
 #' Calculate standardized ranks of data
 #'
@@ -138,6 +138,20 @@ setMethod("show", "tscopulafit", function(object) {
       cat("copula family: ", famname, "\n", sep = "")
       if (modobject@modelspec$negtau != "none")
         cat("negative tau treatment: ", modobject@modelspec$negtau, "\n", sep = "")
+      kpacf  <- modobject@modelspec$kpacf
+      if (modobject@modelspec$maxlag != Inf)
+        kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
+      cat("KPACF: ", kpacf,"\n", sep = "")
+    }
+    if (is(object@tscopula, "dvinecopula3")) {
+      modobject <- object@tscopula
+      cat("non-Gaussian substitutions:\n")
+      cat(" - locations:", modobject@modelspec$location, "\n", sep = " ")
+      cat(" - families:", modobject@modelspec$family, "\n", sep = " ")
+      tau <- kendall(modobject)[modobject@modelspec$location]
+      rot <- ifelse(tau >= 0, modobject@modelspec$posrot, modobject@modelspec$negrot)
+      cat(" - rotations:", rot, "\n", sep = " ")
+      cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
       kpacf  <- modobject@modelspec$kpacf
       if (modobject@modelspec$maxlag != Inf)
         kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
