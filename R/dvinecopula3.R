@@ -82,6 +82,8 @@ dvinecopula3 <- function(location = 1,
   negrot[(fam == "frank") | (fam == "t")] <- 0
   if (length(fam[fam == "t"]) > 0){
     ntcop <- length(fam[fam == "t"])
+    if (length(df) == 1)
+      df <- rep(df, ntcop)
     if (length(df) != ntcop)
       stop("Require degree of freedom parameters for t copula(s)")
     pars$df <- df
