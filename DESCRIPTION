@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.3.3
-Date: 2022-05-31
+Version: 0.3.4
+Date: 2022-06-15
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
@@ -36,6 +36,7 @@ Imports:
     rvinecopulib,
     arfima,
     Matrix,
+    polynom,
     kdensity
 Collate:
     'basic_objects.R'

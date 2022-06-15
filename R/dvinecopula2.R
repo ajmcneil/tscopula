@@ -108,6 +108,86 @@ kpacf_arma <- function(k, theta){
   (2/pi)*asin(pacf)
 }
 
+#' KPACF of quarterly seasonal ARMA process
+#'
+#' @param k number of lags.
+#' @param theta list with components ar, ma, sar and sma specifying the ARMA and seasonal ARMA parameters.
+#'
+#' @return A vector of Kendall partial autocorrelations of length \code{k}.
+#' @export
+kpacf_sarma4 <- function (k, theta)
+{
+  if (is.list(theta))
+    theta <- unlist(theta)
+  nm <- substring(names(theta), 1, 2)
+  D <- 4
+  ar <- numeric()
+  ma <- numeric()
+  sar <- numeric()
+  sma <- numeric()
+  if ("ar" %in% nm)
+    ar <- theta[nm == "ar"]
+  if ("ma" %in% nm)
+    ma <- theta[nm == "ma"]
+  nm <- substring(names(theta), 1, 3)
+  if ("sar" %in% nm){
+    sar <- theta[nm == "sar"]
+    sar <- as.vector(sapply(sar, function(x, d){c(rep(0, d-1), x)}, d=D))
+    ar <- -coefficients(polynom::polynomial(c(1, -sar)) * polynom::polynomial(c(1, -ar)))[-1]
+    if (length(ar) == 0) ar <-0
+  }
+  if ("sma" %in% nm){
+    sma <- theta[nm == "sma"]
+    sma <- as.vector(sapply(sma, function(x, d){c(rep(0, d-1), x)}, d=D))
+    ma <- coefficients(polynom::polynomial(c(1, sma)) * polynom::polynomial(c(1, ma)))[-1]
+    if (length(ma) == 0) ma <- 0
+  }
+  if ((non_stat(ar)) | (non_invert(ma)))
+    return(rep(NA, k))
+  pacf <- ARMAacf(ar = ar, ma = ma, lag.max = k, pacf = TRUE)
+  (2/pi) * asin(pacf)
+}
+
+#' KPACF of monthly seasonal ARMA process
+#'
+#' @param k number of lags.
+#' @param theta list with components ar, ma, sar and sma specifying the ARMA and seasonal ARMA parameters.
+#'
+#' @return A vector of Kendall partial autocorrelations of length \code{k}.
+#' @export
+kpacf_sarma12 <- function (k, theta)
+{
+  if (is.list(theta))
+    theta <- unlist(theta)
+  nm <- substring(names(theta), 1, 2)
+  D <- 12
+  ar <- numeric()
+  ma <- numeric()
+  sar <- numeric()
+  sma <- numeric()
+  if ("ar" %in% nm)
+    ar <- theta[nm == "ar"]
+  if ("ma" %in% nm)
+    ma <- theta[nm == "ma"]
+  nm <- substring(names(theta), 1, 3)
+  if ("sar" %in% nm){
+    sar <- theta[nm == "sar"]
+    sar <- as.vector(sapply(sar, function(x, d){c(rep(0, d-1), x)}, d=D))
+    ar <- -coefficients(polynom::polynomial(c(1, -sar)) * polynom::polynomial(c(1, -ar)))[-1]
+    if (length(ar) == 0) ar <-0
+  }
+  if ("sma" %in% nm){
+    sma <- theta[nm == "sma"]
+    sma <- as.vector(sapply(sma, function(x, d){c(rep(0, d-1), x)}, d=D))
+    ma <- coefficients(polynom::polynomial(c(1, sma)) * polynom::polynomial(c(1, ma)))[-1]
+    if (length(ma) == 0) ma <- 0
+  }
+  if ((non_stat(ar)) | (non_invert(ma)))
+    return(rep(NA, k))
+  pacf <- ARMAacf(ar = ar, ma = ma, lag.max = k, pacf = TRUE)
+  (2/pi) * asin(pacf)
+}
+
 #' Compute partial autocorrelations from autocorrelations
 #'
 #' @param rho vector of autocorrelation values (excluding 1).
