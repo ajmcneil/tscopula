@@ -35,6 +35,7 @@ setMethod("coef", "margin", function(object) {
   object@pars
 })
 
+
 #' Constructor function for margin
 #'
 #' @param name character string giving name of distribution
