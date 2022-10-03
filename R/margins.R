@@ -2,9 +2,9 @@
 #'
 #' Class of objects for marginal models for stationary time series. The
 #' object is given a name and there must exist functions pname, qname,
-#' dname and rname. For example, the object could be named norm and
-#' make use of \code{\link[stats]{pnorm}}, \code{\link[stats]{qnorm}},
-#' \code{\link[stats]{dnorm}} and \code{\link[stats]{rnorm}}.
+#' dname and rname. For example, the object could be named st and
+#' make use of \code{\link[stats]{pst}}, \code{\link[stats]{qst}},
+#' \code{\link[stats]{dst}} and \code{\link[stats]{rst}}.
 #' As well as the parameters of the distribution, dname must have the
 #' logical argument log specifying whether log density should be computed.
 #'
@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' new("margin", name = "norm", pars = c(mu = 0, sigma = 1))
+#' new("margin", name = "gauss", pars = c(mu = 0, sigma = 1))
 setClass("margin", slots = list(
   name = "character",
   pars = "numeric"
@@ -46,11 +46,10 @@ setMethod("coef", "margin", function(object) {
 #' @examples
 #' margin("sst")
 margin <- function(name, pars = NULL) {
+  if (name == "norm")
+    name <- "gauss"
   pfunc <- eval(parse(text = paste("p", name, sep = "")))
   defaults <- unlist(formals(pfunc)[-1])
-  if (name == "norm") {
-    defaults <- defaults[1:2]
-  }
   if (!is.null(pars)) {
     parnames <- names(pars)
     parset <- parnames[parnames %in% names(defaults)]
@@ -125,6 +124,81 @@ dmarg <- function(x, y, log = FALSE) {
   }
   func <- eval(parse(text = paste("d", x@name, sep = "")))
   do.call(func, append(x@pars, list(x = y, log = log)))
+}
+
+#' Gaussian distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
+#' @name gauss
+#' @return A vector of density, distribution function, quantile or random values.
+NULL
+#> NULL
+#'
+#' @rdname gauss
+#' @export
+dgauss <- function(x, mu = 0, sigma = 1, log = FALSE){
+  if (sigma < 0)
+    return(NA)
+  dnorm(x, mean = mu, sd = sigma, log = log)
+}
+#' @rdname gauss
+#' @export
+pgauss <- function(q, mu = 0, sigma = 1){
+  if (sigma < 0)
+    return(NA)
+  pnorm(q, mean = mu, sd = sigma)
+}
+#' @rdname gauss
+#' @export
+qgauss <- function(p, mu = 0, sigma = 1){
+  if (sigma < 0)
+    return(NA)
+  qnorm(p, mean = mu, sd = sigma)
+}
+#' @rdname gauss
+#' @export
+rgauss <- function(n, mu = 0, sigma = 1){
+  rnorm(n, mean = mu, sd = sigma)
+}
+
+#' Centred Gaussian distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param mu location parameter.
+#' @param log flag for log density.
+#' @name gauss0
+#' @return A vector of density, distribution function, quantile or random values.
+NULL
+#> NULL
+#'
+#' @rdname gauss0
+#' @export
+dgauss0 <- function(x, sigma = 1, log = FALSE){
+  dgauss(x, mu = 0, sigma = sigma, log = log)
+}
+#' @rdname gauss0
+#' @export
+pgauss0 <- function(q, sigma = 1){
+  pgauss(q, mu = 0, sigma = sigma)
+}
+#' @rdname gauss0
+#' @export
+qgauss0 <- function(p, sigma = 1){
+  qgauss(p, mu = 0, sigma = sigma)
+}
+#' @rdname gauss0
+#' @export
+rgauss0 <- function(n, sigma = 1){
+  rgauss(n, mu = 0, sigma = sigma)
 }
 
 #' Laplace distribution
