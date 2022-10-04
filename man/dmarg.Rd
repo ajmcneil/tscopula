@@ -21,6 +21,6 @@ A vector of values for the density.
 Compute the density function of the marginal model.
 }
 \examples{
-margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 dmarg(margmod, c(-2, 0, 2), log = TRUE)
 }

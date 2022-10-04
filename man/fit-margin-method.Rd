@@ -25,7 +25,7 @@ An object of class \linkS4class{marginfit}.
 Fit method for margin class
 }
 \examples{
-margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 data <- sim(margmod, n = 500)
 fit(margmod, data)
 }

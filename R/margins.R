@@ -2,10 +2,7 @@
 #'
 #' Class of objects for marginal models for stationary time series. The
 #' object is given a name and there must exist functions pname, qname,
-#' dname and rname. For example, the object could be named st and
-#' make use of \code{\link[stats]{pst}}, \code{\link[stats]{qst}},
-#' \code{\link[stats]{dst}} and \code{\link[stats]{rst}}.
-#' As well as the parameters of the distribution, dname must have the
+#' dname and rname. As well as the parameters of the distribution, dname must have the
 #' logical argument log specifying whether log density should be computed.
 #'
 #' @slot name name of the marginal model class.
@@ -73,7 +70,7 @@ margin <- function(name, pars = NULL) {
 #' @export
 #'
 #' @examples
-#' margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+#' margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 #' pmarg(margmod, c(-2, 0, 2))
 pmarg <- function(x, q) {
   if (is(x, "marginfit")) {
@@ -94,7 +91,7 @@ pmarg <- function(x, q) {
 #' @export
 #'
 #' @examples
-#' margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+#' margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 #' qmarg(margmod, c(0.05, 0.5, 0.95))
 qmarg <- function(x, p) {
   if (is(x, "marginfit")) {
@@ -117,7 +114,7 @@ qmarg <- function(x, p) {
 #' @export
 #'
 #' @examples
-#' margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+#' margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 #' dmarg(margmod, c(-2, 0, 2), log = TRUE)
 dmarg <- function(x, y, log = FALSE) {
   if (is(x, "marginfit")) {
@@ -174,7 +171,7 @@ rgauss <- function(n, mu = 0, sigma = 1){
 #' @param q vector of quantiles.
 #' @param p vector of probabilities.
 #' @param n number of observations.
-#' @param mu location parameter.
+#' @param sigma scale parameter.
 #' @param log flag for log density.
 #' @name gauss0
 #' @return A vector of density, distribution function, quantile or random values.
@@ -483,7 +480,7 @@ rsst <- function(n, df, gamma, mu, sigma) {
 #' @export
 #'
 #' @examples
-#' margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+#' margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 #' sim(margmod, n = 500)
 setMethod("sim", c(object = "margin"), function(object, n = 1000) {
   func <- eval(parse(text = paste("r", object@name, sep = "")))
@@ -521,7 +518,7 @@ setClass("marginfit",
 #' @export
 #'
 #' @examples
-#' margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+#' margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 #' data <- sim(margmod, n = 500)
 #' fit(margmod, data)
 setMethod("fit", c(x = "margin", y = "ANY"), function(x, y,

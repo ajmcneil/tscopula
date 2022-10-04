@@ -18,6 +18,6 @@ A vector of values for the quantile function.
 Compute the quantile function of the marginal model.
 }
 \examples{
-margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 qmarg(margmod, c(0.05, 0.5, 0.95))
 }

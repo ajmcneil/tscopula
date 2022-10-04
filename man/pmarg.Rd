@@ -18,6 +18,6 @@ A vector of values for the CDF.
 Compute the cumulative distribution function of the marginal model.
 }
 \examples{
-margmod <- margin("norm", pars = c(mean = 0, sd = 1))
+margmod <- margin("gauss", pars = c(mu = 0, sigma = 1))
 pmarg(margmod, c(-2, 0, 2))
 }
