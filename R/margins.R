@@ -215,24 +215,77 @@ NULL
 #'
 #' @rdname laplace
 #' @export
-dlaplace <- function(x, mu = 0.05, scale = 1, log = FALSE){
-  dsdoubleweibull(x, mu = mu, shape = 1, scale = scale, gamma = 1, log = log)
+dlaplace <- function(x, mu = 0, scale = 1, log = FALSE){
+  if (scale <= 0){
+    return(NA)
+  }
+  y <- (x - mu)/scale
+  tmp <- -abs(y) - log(2*scale)
+  arg <- rep(NA, length(x))
+  if (!log)
+    tmp <- exp(tmp)
+  tmp
 }
 #' @rdname laplace
 #' @export
-plaplace <- function(q, mu = 0.05, scale = 1){
-  psdoubleweibull(q, mu = mu, shape = 1, scale = scale, gamma = 1)
+plaplace <- function(q, mu = 0, scale = 1){
+  if (scale <= 0)
+    return(NA)
+  y <- (q - mu)/scale
+  tmp <- exp(-abs(y))/2
+  tmp[y >= 0] <- 1 - tmp[y >= 0]
+  tmp
 }
 #' @rdname laplace
 #' @export
-qlaplace <- function(p, mu = 0.05, scale = 1){
-  qsdoubleweibull(p, mu = mu, shape = 1, scale = scale, gamma = 1)
+qlaplace <- function(p, mu = 0, scale = 1){
+  if (scale <= 0)
+    return(NA)
+  tmp <- rep(NA, length(p))
+  tmp[p < 0.5] <- log(2*p[p < 0.5])
+  tmp[p >= 0.5] <- -log(2 - 2*p[p >= 0.5])
+  mu + scale*tmp
 }
 #' @rdname laplace
 #' @export
-rlaplace <- function(n, mu = 0.05, scale = 1){
+rlaplace <- function(n, mu = 0, scale = 1){
   qlaplace(runif(n), mu, scale)
 }
+
+#' Centred Laplace distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param scale scale parameter.
+#' @param log flag for log density.
+#' @name laplace0
+#' @return A vector of density, distribution function, quantile or random values.
+NULL
+#> NULL
+#'
+#' @rdname laplace0
+#' @export
+dlaplace0 <- function(x, scale = 1, log = FALSE){
+ dlaplace(x, mu = 0, scale = scale, log = log)
+}
+#' @rdname laplace0
+#' @export
+plaplace0 <- function(q, scale = 1){
+ plaplace(q, mu = 0 , scale = scale)
+}
+#' @rdname laplace0
+#' @export
+qlaplace0 <- function(p, scale = 1){
+ qlaplace(p, mu = 0, scale = scale)
+}
+#' @rdname laplace0
+#' @export
+rlaplace0 <- function(n, scale = 1){
+  qlaplace(runif(n), mu = 0, scale)
+}
+
 
 #' Skew Laplace distribution
 #'
@@ -407,6 +460,40 @@ dst <- function(x, df, mu, sigma, log = FALSE) {
 #' @export
 rst <- function(n, df, mu, sigma) {
   rt(n, df) * sigma + mu
+}
+
+#' Centred Student t distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param df degrees of freedom.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
+#' @name st0
+#' @return A vector of density, distribution function, quantile or random values.
+NULL
+#> NULL
+#' @rdname st0
+#' @export
+pst0 <- function(q, df = 10, sigma = 1) {
+  pst(q, df = df, mu = 0, sigma = sigma)
+}
+#' @rdname st0
+#' @export
+qst0 <- function(p, df, sigma) {
+  qst(p, df = df, mu = 0, sigma = sigma)
+}
+#' @rdname st0
+#' @export
+dst0 <- function(x, df, sigma, log = FALSE) {
+  dst(x, df = df, mu = 0, sigma = sigma, log = log)
+}
+#' @rdname st0
+#' @export
+rst0 <- function(n, df, sigma) {
+  rt(n, df = df) * sigma
 }
 
 #' Skew Student t distribution
