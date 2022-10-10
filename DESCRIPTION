@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.3.5
-Date: 2022-10-04
+Version: 0.3.6
+Date: 2022-10-10
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
@@ -41,6 +41,7 @@ Imports:
 Collate:
     'basic_objects.R'
     'armacopula.R'
+    'sarmacopula.R'
     'dvinecopula.R'
     'dvinecopula2.R'
     'dvinecopula3.R'
