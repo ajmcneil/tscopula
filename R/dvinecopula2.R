@@ -312,7 +312,10 @@ setMethod("coef", c(object = "dvinecopula2"), function(object) {
   if (length(object@pars) == 1) {
     return(object@pars[[1]])
   } else {
-    return(unlist(object@pars))
+    nms <- unlist(lapply(object@pars, names), use.names = FALSE)
+    vals <- unlist(object@pars, use.names = FALSE)
+    names(vals) <- nms
+    return(vals)
   }
 })
 

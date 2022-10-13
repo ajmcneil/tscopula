@@ -302,3 +302,20 @@ setMethod("predict", c(object = "sarmacopula"), function(object, data, x, type =
   predict(sarma2arma(object), data, x, type)
 })
 
+#' Transform a sarmacopula into a dvinecopula2 object
+#'
+#' @param object an object of class \linkS4class{sarmacopula}.
+#'
+#' @return An object of class \linkS4class{dvinecopula2}.
+#' @export
+#'
+#' @examples
+#' sarma2dvine(sarmacopula(list(ar = 0.5, ma = 0.4, sar = 0.2, sma = 0.6), period = 4))
+sarma2dvine <- function(object){
+  if (!(is(object, "sarmacopula")))
+    stop("Not sarmacopula object")
+  period <- object@modelspec["period"]
+  dvinecopula2(family = "gauss", pars = object@pars,
+                          kpacf = paste("kpacf_sarma", period, sep = ""))
+}
+

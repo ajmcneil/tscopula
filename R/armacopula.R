@@ -443,12 +443,7 @@ arma2dvine <- function(object){
   q <- ord[2]
   if (q == 0)
     tscop <- dvinecopula(family = "gauss", pars = coef(object))
-  else {
-    if (p == 0)
-      parlist <- list(ma = coef(object))
-    if (p > 0)
-      parlist <- list(ar = coef(object)[1:p], ma = coef(object)[(p+1):(p+q)])
-    tscop <- dvinecopula2(family = "gauss", pars = parlist)
-  }
+  else
+    tscop <- dvinecopula2(family = "gauss", pars = object@pars)
   tscop
 }
