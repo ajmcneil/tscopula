@@ -146,7 +146,7 @@ setMethod("show", c(object = "sarmacopula"), function(object) {
 sarma2arma <- function(object){
   if (!(is(object, "sarmacopula")))
     stop("Not sarmacopula object")
-  D <- object@modelspec["period"]
+  period <- object@modelspec["period"]
   ar <- numeric()
   ma <- numeric()
   sar <- numeric()
@@ -157,13 +157,11 @@ sarma2arma <- function(object){
     ma <- object@pars$ma
   if ("sar" %in% names(object@pars)){
     sar <- object@pars$sar
-    sar <- as.vector(sapply(sar, function(x, d){c(rep(0, d-1), x)}, d=D))
-    ar <- -coefficients(polynom::polynomial(c(1, -sar)) * polynom::polynomial(c(1, -ar)))[-1]
+    ar <- expand_ar(ar, sar, period)
   }
   if ("sma" %in% names(object@pars)){
     sma <- object@pars$sma
-    sma <- as.vector(sapply(sma, function(x, d){c(rep(0, d-1), x)}, d=D))
-    ma <- coefficients(polynom::polynomial(c(1, sma)) * polynom::polynomial(c(1, ma)))[-1]
+    ma <- expand_ma(ma, sma, period)
   }
   output <- list()
   if (length(ar) > 0)
@@ -171,6 +169,44 @@ sarma2arma <- function(object){
   if (length(ma >0))
     output$ma <- ma
   armacopula(pars = output)
+}
+
+#' Expand AR coefficients to include SAR coefficients of SARMA model
+#'
+#' @param ar vector of AR coefficients
+#' @param sar vector of SAR coefficients
+#' @param period period of SARMA model
+#'
+#' @return vector of AR coefficients in equivalent ARMA model
+#' @keywords internal
+#'
+expand_ar <- function(ar, sar, period){
+  output <- rep(0, length(ar) + period*length(sar))
+  sar <- as.vector(sapply(sar, function(x, d){c(rep(0, d-1), x)}, d = period))
+  newvals <- -coefficients(polynom::polynomial(c(1, -sar)) *
+                             polynom::polynomial(c(1, -ar)))[-1]
+  if (length(newvals) > 0)
+    output[1:length(newvals)] <- newvals
+  output
+}
+
+#' Expand MA coefficients to include SMA coefficients of SARMA model
+#'
+#' @param ma vector of MA coefficients
+#' @param sma vector of SMA coefficients
+#' @param period period of SARMA model
+#'
+#' @return vector of MA coefficients in equivalent ARMA model
+#' @keywords internal
+#'
+expand_ma <- function(ma, sma, period){
+  output <- rep(0, length(ma) + period*length(sma))
+  sma <- as.vector(sapply(sma, function(x, d){c(rep(0, d-1), x)}, d = period))
+  newvals <- coefficients(polynom::polynomial(c(1, sma)) *
+                            polynom::polynomial(c(1, ma)))[-1]
+  if (length(newvals) > 0)
+    output[1:length(newvals)] <- newvals
+  output
 }
 
 #' @describeIn sarmacopula Simulation method for sarmacopula class
@@ -198,42 +234,38 @@ sim(sarma2arma(object), n = n)
 sarmacopula_objective <- function(theta, modelspec, u) {
   xdata <- qnorm(u)
   p <- modelspec[1]
-  ar <- 0
   q <- modelspec[2]
-  ma <- 0
-  if (p > 0) {
-    ar <- theta[1:p]
-  }
-  if (q > 0) {
-    ma <- theta[(p + 1):(p + q)]
-  }
   P <- modelspec[3]
-  sar <- 0
   Q <- modelspec[4]
-  sma <- 0
-  if (P > 0) {
+  period <- modelspec[5]
+  ar <- numeric()
+  ma <- numeric()
+  sar <- numeric()
+  sma <- numeric()
+  if (p > 0)
+    ar <- theta[1:p]
+  if (q > 0)
+    ma <- theta[(p + 1):(p + q)]
+  if (P > 0)
     sar <- theta[(p + q + 1):(p + q + P)]
-  }
-  if (Q > 0) {
+  if (Q > 0)
     sma <- theta[(p + q + P + 1):(p + q + P + Q)]
-  }
-  D <- modelspec[5]
   if (non_stat(ar) | non_invert(ma) | non_stat(sar) | non_invert(sma)) {
     output <- NA
   } else {
     if (P > 0){
-      sar <- as.vector(sapply(sar, function(x, d){c(rep(0, d-1), x)}, d=D))
-      ar <- -coefficients(polynom::polynomial(c(1, -sar)) * polynom::polynomial(c(1, -ar)))[-1]
-      if (length(ar) == 0)
-        ar <- 0
+      ar <- expand_ar(ar, sar, period)
+      p <- p + period*P
     }
     if (Q > 0){
-      sma <- as.vector(sapply(sma, function(x, d){c(rep(0, d-1), x)}, d=D))
-      ma <- coefficients(polynom::polynomial(c(1, sma)) * polynom::polynomial(c(1, ma)))[-1]
-      if (length(ma) == 0)
-        ma <- 0
+      ma <- expand_ma(ma, sma, period)
+      q <- q + period*Q
     }
-    sp <- starmaStateSpace(ar, ma, c(p + D*P, q + D*Q))
+    if (length(ar) == 0)
+      ar <- 0
+    if (length(ma) == 0)
+      ma <- 0
+    sp <- starmaStateSpace(ar, ma, c(p,q))
     ans <- FKF::fkf(
       a0 = sp$a0, P0 = sp$P0, dt = sp$dt, ct = sp$ct, Tt = sp$Tt, Zt = sp$Zt,
       HHt = sp$HHt, GGt = sp$GGt, yt = rbind(xdata)
