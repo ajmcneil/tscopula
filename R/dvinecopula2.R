@@ -425,6 +425,8 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
 ktau_to_par <- function(family, tau){
   if (family == "t")
     family <- "gauss"
+  if (family == "bb1")
+    family <- "clayton"
   rvinecopulib::ktau_to_par(family, tau)
 }
 

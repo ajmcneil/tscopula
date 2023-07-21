@@ -18,7 +18,7 @@ setClass("dvinecopula3", contains = "tscopula", slots = list(
 #'
 #' This function sets up a stationary d-vine process of finite or infinite order based on a
 #' sequence of Gaussian copulas with a finite number of non-Gaussian substitutions at specified lags.
-#' The substituted families can be Gumbel, Clayton, Joe, Frank and t copulas as implemented by the
+#' The substituted families can be Gumbel, Clayton, Joe, Frank, t and BB1 copulas as implemented by the
 #' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
 #'
 #' For the substituted copulas (other than t and Frank) the user must specify the rotation that should be used for
@@ -33,8 +33,9 @@ setClass("dvinecopula3", contains = "tscopula", slots = list(
 #' The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
 #' stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
 #'
-#' If one or more of the substituted copulas are t copulas the argument \code{df} should be used to
-#' specify the degree of freedom parameter(s).
+#' If one or more of the substituted copulas are t or BB1 copulas the argument \code{auxpar} should be used to
+#' specify the additional parameters. These are the degree-of-freedom parameter for t and the delta parameter for BB1;
+#' the former must be greater or equal 2 and the latter greater or equal 1.
 #'
 #' @param location vector of locations of non-Gaussian copula substitutions
 #' @param family vector of family names for non-Gaussian copula substitutions
@@ -42,7 +43,7 @@ setClass("dvinecopula3", contains = "tscopula", slots = list(
 #' @param negrot vector of rotations for substituted families under negative dependence (default is 90)
 #' @param kpacf a character string giving the name of the Kendall pacf
 #' @param pars a list containing the parameters of the model
-#' @param df vector of degree of freedom parameters for any t copulas
+#' @param auxpar vector of additional parameters for two-parameter copulas
 #' @param maxlag a scalar specifying the maximum lag
 #'
 #' @return An object of class \linkS4class{dvinecopula3}.
@@ -58,7 +59,7 @@ dvinecopula3 <- function(location = 1,
                          negrot = 90,
                          kpacf = "kpacf_arma",
                          pars = list(ar = 0.1, ma = 0.1),
-                         df = NA,
+                         auxpar = NA,
                          maxlag = Inf) {
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
@@ -78,15 +79,14 @@ dvinecopula3 <- function(location = 1,
   if ((length(posrot) != nsub) | (length(negrot) != nsub) | (length(fam) != nsub))
     stop("Length of family and rotations must
          be equal to length of location or 1")
-  posrot[(fam == "frank") | (fam == "t")] <- 0
-  negrot[(fam == "frank") | (fam == "t")] <- 0
-  if (length(fam[fam == "t"]) > 0){
-    ntcop <- length(fam[fam == "t"])
-    if (length(df) == 1)
-      df <- rep(df, ntcop)
-    if (length(df) != ntcop)
-      stop("Require degree of freedom parameters for t copula(s)")
-    pars$df <- df
+  posrot[(fam == "frank") | (fam == "t")] <- 0 # radial symmetry
+  negrot[(fam == "frank") | (fam == "t")] <- 0 # radial symmetry
+  twoparfamily <- fam[(fam == "t") | (fam == "bb1")]
+  ntwopar <- length(twoparfamily)
+  if (ntwopar > 0){
+    if (length(auxpar) != ntwopar)
+      stop("Require second parameter for two-parameter copulas")
+    pars$auxpar <- auxpar
   }
   modelspec <- list(location = location,
                     family = fam,
@@ -95,11 +95,13 @@ dvinecopula3 <- function(location = 1,
                     kpacf = kpacf,
                     maxlag = maxlag,
                     npar = length(unlist(pars)))
-  new("dvinecopula3",
+  output <- new("dvinecopula3",
       name = paste("type3-d-vine"),
       modelspec = modelspec,
       pars = pars
   )
+  check <- mklist_dvine3(output, maxlag, truncate = TRUE)
+  output
 }
 
 #' @describeIn dvinecopula3 Coef Method for dvinecopula3 class
@@ -171,7 +173,7 @@ mklist_dvine3 <- function(x, maxlag, truncate, tol = 1){
   if (truncate)
     k <- max(c(1, which(abs(tauvals) > .Machine$double.eps^tol)))
   pc_list <- vector("list", k)
-  tpar <- 1
+  auxpar <- 1
   for (i in 1:k) {
     fam <- "gauss"
     rot <- 0
@@ -179,10 +181,10 @@ mklist_dvine3 <- function(x, maxlag, truncate, tol = 1){
       if (i == x@modelspec$location[j]){
         fam <- tolower(x@modelspec$family)[j]
         if ((tauvals[i] >= 0) &
-            (fam %in% c("gumbel", "clayton", "joe")))
+            (fam %in% c("gumbel", "clayton", "joe", "bb1")))
           rot <- x@modelspec$posrot[j]
         if ((tauvals[i] < 0) &
-            (fam %in% c("gumbel", "clayton", "joe")))
+            (fam %in% c("gumbel", "clayton", "joe", "bb1")))
           rot <- x@modelspec$negrot[j]
       }
     }
@@ -191,8 +193,14 @@ mklist_dvine3 <- function(x, maxlag, truncate, tol = 1){
       tau = tauvals[i]
     )
     if (fam == "t"){
-      coppars <- c(coppars, x@pars$df[tpar])
-      tpar <- tpar + 1
+      coppars <- c(coppars, x@pars$auxpar[auxpar])
+      auxpar <- auxpar + 1
+    }
+    if (fam == "bb1"){
+      par2 <- x@pars$auxpar[auxpar]
+      par1 <- (coppars+2)/par2 -2
+      coppars <- c(par1, par2)
+      auxpar <- auxpar + 1
     }
     pc_list[[i]] <- rvinecopulib::bicop_dist(
       family = fam,
@@ -257,8 +265,15 @@ dvinecopula3_objective <- function(theta, modelspec, u) {
       tau = tauvals[i]
     )
     if (fam == "t"){
-      df <- theta[substring(names(theta),1,2) == "df"]
-      coppars <- c(coppars, df[tpar])
+      auxpar <- theta[substring(names(theta),1,2) == "au"]
+      coppars <- c(coppars, auxpar[tpar])
+      tpar <- tpar + 1
+    }
+    if (fam == "bb1"){
+      auxpar <- theta[substring(names(theta),1,2) == "au"]
+      par2 <- auxpar[tpar]
+      par1 <- (coppars+2)/par2 -2
+      coppars <- c(par1, par2)
       tpar <- tpar + 1
     }
     pc_list[[i]] <- tryCatch(rvinecopulib::bicop_dist(

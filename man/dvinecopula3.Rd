@@ -11,7 +11,7 @@ dvinecopula3(
   negrot = 90,
   kpacf = "kpacf_arma",
   pars = list(ar = 0.1, ma = 0.1),
-  df = NA,
+  auxpar = NA,
   maxlag = Inf
 )
 }
@@ -28,7 +28,7 @@ dvinecopula3(
 
 \item{pars}{a list containing the parameters of the model}
 
-\item{df}{vector of degree of freedom parameters for any t copulas}
+\item{auxpar}{vector of additional parameters for two-parameter copulas}
 
 \item{maxlag}{a scalar specifying the maximum lag}
 }
@@ -38,7 +38,7 @@ An object of class \linkS4class{dvinecopula3}.
 \description{
 This function sets up a stationary d-vine process of finite or infinite order based on a
 sequence of Gaussian copulas with a finite number of non-Gaussian substitutions at specified lags.
-The substituted families can be Gumbel, Clayton, Joe, Frank and t copulas as implemented by the
+The substituted families can be Gumbel, Clayton, Joe, Frank, t and BB1 copulas as implemented by the
 \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
 }
 \details{
@@ -54,8 +54,9 @@ be clear from the documentation of the chosen kpacf function and must be correct
 The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
 stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
 
-If one or more of the substituted copulas are t copulas the argument \code{df} should be used to
-specify the degree of freedom parameter(s).
+If one or more of the substituted copulas are t or BB1 copulas the argument \code{auxpar} should be used to
+specify the additional parameters. These are the degree-of-freedom parameter for t and the delta parameter for BB1;
+the former must be greater or equal 2 and the latter greater or equal 1.
 }
 \examples{
 dvinecopula3(location = c(1,4), family = c("Gumbel", "clayton"),
