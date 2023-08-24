@@ -100,7 +100,7 @@ dvinecopula3 <- function(location = 1,
       modelspec = modelspec,
       pars = pars
   )
-  check <- mklist_dvine3(output, maxlag, truncate = TRUE)
+  check <- mklist_dvine3(output, max(location), truncate = TRUE)
   output
 }
 
