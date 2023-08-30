@@ -142,9 +142,10 @@ setMethod("show", c(object = "dvinecopula3"), function(object) {
   cat("object class: ", is(object)[[1]], "\n", sep = "")
   cat("name: ", object@name, "\n", sep = "")
   cat("non-Gaussian substitutions:\n")
-  cat(" - locations:", object@modelspec$location, "\n", sep = " ")
+  locs <- object@modelspec$location
+  cat(" - locations:", locs, "\n", sep = " ")
   cat(" - families:", object@modelspec$family, "\n", sep = " ")
-  tau <- kendall(object)[object@modelspec$location]
+  tau <- kendall(object, lagmax = max(locs))[locs]
   rot <- ifelse(tau >= 0, object@modelspec$posrot,object@modelspec$negrot)
   cat(" - rotations:", rot, "\n", sep = " ")
   cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
@@ -253,10 +254,10 @@ dvinecopula3_objective <- function(theta, modelspec, u) {
       if (i == modelspec$location[j]){
         fam <- tolower(modelspec$family)[j]
         if ((tauvals[i] >= 0) &
-            (fam %in% c("gumbel", "clayton", "joe")))
+            (fam %in% c("gumbel", "clayton", "joe", "bb1")))
           rot <- modelspec$posrot[j]
         if ((tauvals[i] < 0) &
-            (fam %in% c("gumbel", "clayton", "joe")))
+            (fam %in% c("gumbel", "clayton", "joe", "bb1")))
           rot <- modelspec$negrot[j]
       }
     }

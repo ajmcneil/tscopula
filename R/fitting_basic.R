@@ -147,9 +147,10 @@ setMethod("show", "tscopulafit", function(object) {
     if (is(object@tscopula, "dvinecopula3")) {
       modobject <- object@tscopula
       cat("non-Gaussian substitutions:\n")
-      cat(" - locations:", modobject@modelspec$location, "\n", sep = " ")
+      locs <- modobject@modelspec$location
+      cat(" - locations:", locs, "\n", sep = " ")
       cat(" - families:", modobject@modelspec$family, "\n", sep = " ")
-      tau <- kendall(modobject)[modobject@modelspec$location]
+      tau <- kendall(modobject, lagmax = max(locs))[locs]
       rot <- ifelse(tau >= 0, modobject@modelspec$posrot, modobject@modelspec$negrot)
       cat(" - rotations:", rot, "\n", sep = " ")
       cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
