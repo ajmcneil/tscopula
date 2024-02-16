@@ -46,17 +46,17 @@ of stationary copula processes and marginal distributions.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{show}: Show method for tscm class
+\item \code{show(tscm)}: Show method for tscm class
 
-\item \code{coef}: Coefficient method for tscm class
+\item \code{coef(tscm)}: Coefficient method for tscm class
 
-\item \code{sim}: Simulation method for tscm class
+\item \code{sim(tscm)}: Simulation method for tscm class
 
-\item \code{predict}: Prediction method for tscm class
+\item \code{predict(tscm)}: Prediction method for tscm class
 
-\item \code{kendall}: Calculate Kendall's tau values for pair copulas for tscm class
+\item \code{kendall(tscm)}: Calculate Kendall's tau values for pair copulas for tscm class
+
 }}
-
 \section{Slots}{
 
 \describe{

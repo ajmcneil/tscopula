@@ -39,17 +39,17 @@ Class of objects for seasonal ARMA copula processes.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{coef}: Coef method for SARMA copula class
+\item \code{coef(sarmacopula)}: Coef method for SARMA copula class
 
-\item \code{show}: Show method for SARMA copula process
+\item \code{show(sarmacopula)}: Show method for SARMA copula process
 
-\item \code{sim}: Simulation method for sarmacopula class
+\item \code{sim(sarmacopula)}: Simulation method for sarmacopula class
 
-\item \code{kendall}: Calculate Kendall's tau values for sarmacopula model
+\item \code{kendall(sarmacopula)}: Calculate Kendall's tau values for sarmacopula model
 
-\item \code{predict}: Prediction method for sarmacopula class
+\item \code{predict(sarmacopula)}: Prediction method for sarmacopula class
+
 }}
-
 \section{Slots}{
 
 \describe{

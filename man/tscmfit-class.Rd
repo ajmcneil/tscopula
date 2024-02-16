@@ -35,13 +35,13 @@ Class of objects for fitted \linkS4class{tscm} models.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{logLik}: method for tscmfit class
+\item \code{logLik(tscmfit)}: method for tscmfit class
 
-\item \code{resid}: Residual method for tscmfit class
+\item \code{resid(tscmfit)}: Residual method for tscmfit class
 
-\item \code{predict}: Prediction method for tscmfit class
+\item \code{predict(tscmfit)}: Prediction method for tscmfit class
+
 }}
-
 \section{Slots}{
 
 \describe{

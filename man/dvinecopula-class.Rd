@@ -43,17 +43,17 @@ Class of objects for d-vine copula processes.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{coef}: Coef method for dvinecopula class
+\item \code{coef(dvinecopula)}: Coef method for dvinecopula class
 
-\item \code{show}: Show method for dvinecopula class
+\item \code{show(dvinecopula)}: Show method for dvinecopula class
 
-\item \code{sim}: Simulation method for dvinecopula class
+\item \code{sim(dvinecopula)}: Simulation method for dvinecopula class
 
-\item \code{predict}: Prediction method for dvinecopula class
+\item \code{predict(dvinecopula)}: Prediction method for dvinecopula class
 
-\item \code{kendall}: Calculate Kendall's tau values for pair copulas in d-vine copula
+\item \code{kendall(dvinecopula)}: Calculate Kendall's tau values for pair copulas in d-vine copula
+
 }}
-
 \section{Slots}{
 
 \describe{

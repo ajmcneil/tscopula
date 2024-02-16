@@ -39,17 +39,17 @@ Class of objects for ARMA copula processes.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{coef}: Coef method for ARMA copula class
+\item \code{coef(armacopula)}: Coef method for ARMA copula class
 
-\item \code{show}: Show method for ARMA copula process
+\item \code{show(armacopula)}: Show method for ARMA copula process
 
-\item \code{sim}: Simulation method for armacopula class
+\item \code{sim(armacopula)}: Simulation method for armacopula class
 
-\item \code{kendall}: Calculate Kendall's tau values for armacopula model
+\item \code{kendall(armacopula)}: Calculate Kendall's tau values for armacopula model
 
-\item \code{predict}: Prediction method for armacopula class
+\item \code{predict(armacopula)}: Prediction method for armacopula class
+
 }}
-
 \section{Slots}{
 
 \describe{

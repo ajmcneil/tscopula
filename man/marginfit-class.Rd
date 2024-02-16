@@ -16,9 +16,9 @@ Fitted marginal model for time series
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{logLik}: logLik method for marginfit class
-}}
+\item \code{logLik(marginfit)}: logLik method for marginfit class
 
+}}
 \section{Slots}{
 
 \describe{

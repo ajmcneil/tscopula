@@ -20,11 +20,11 @@ with an analytical expression for the inverse.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{show}: Show method for Vtransform class
+\item \code{show(Vtransform)}: Show method for Vtransform class
 
-\item \code{coef}: Coef method for Vtransform class
+\item \code{coef(Vtransform)}: Coef method for Vtransform class
+
 }}
-
 \section{Slots}{
 
 \describe{

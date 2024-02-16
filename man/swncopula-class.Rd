@@ -24,13 +24,13 @@ Strict white noise copula process
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{sim}: Simulation method for strict white noise copula
+\item \code{sim(swncopula)}: Simulation method for strict white noise copula
 
-\item \code{coef}: Coef method for strict white noise copula
+\item \code{coef(swncopula)}: Coef method for strict white noise copula
 
-\item \code{show}: Show method for strict white noise copula
+\item \code{show(swncopula)}: Show method for strict white noise copula
+
 }}
-
 \examples{
 sim(swncopula())
 }

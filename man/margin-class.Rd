@@ -27,13 +27,13 @@ logical argument log specifying whether log density should be computed.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{coef}: Coef method for margin class
+\item \code{coef(margin)}: Coef method for margin class
 
-\item \code{sim}: Simulation method for margin class
+\item \code{sim(margin)}: Simulation method for margin class
 
-\item \code{show}: Show method for margin class
+\item \code{show(margin)}: Show method for margin class
+
 }}
-
 \section{Slots}{
 
 \describe{

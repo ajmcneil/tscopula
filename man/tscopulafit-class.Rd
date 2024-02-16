@@ -45,21 +45,21 @@ Class of objects for fitted time series copula processes.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{sim}: Simulation method for tscopulafit class
+\item \code{sim(tscopulafit)}: Simulation method for tscopulafit class
 
-\item \code{kendall}: Calculate Kendall's tau values for pair copulas for tscopulafit class
+\item \code{kendall(tscopulafit)}: Calculate Kendall's tau values for pair copulas for tscopulafit class
 
-\item \code{coef}: Coef method for tscopulafit class
+\item \code{coef(tscopulafit)}: Coef method for tscopulafit class
 
-\item \code{show}: Show method for tscopulafit objects
+\item \code{show(tscopulafit)}: Show method for tscopulafit objects
 
-\item \code{logLik}: logLik method for tscopulafit class
+\item \code{logLik(tscopulafit)}: logLik method for tscopulafit class
 
-\item \code{resid}: Residual method for tscopulafit class
+\item \code{resid(tscopulafit)}: Residual method for tscopulafit class
 
-\item \code{predict}: Prediction method for tscopulafit class
+\item \code{predict(tscopulafit)}: Prediction method for tscopulafit class
+
 }}
-
 \section{Slots}{
 
 \describe{

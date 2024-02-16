@@ -39,17 +39,17 @@ Class of objects for v-transformed time series copula processes.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{show}: Show method for vtscopula objects
+\item \code{show(vtscopula)}: Show method for vtscopula objects
 
-\item \code{coef}: Coef method for vtscopula class
+\item \code{coef(vtscopula)}: Coef method for vtscopula class
 
-\item \code{predict}: Prediction method for vtscopula class
+\item \code{predict(vtscopula)}: Prediction method for vtscopula class
 
-\item \code{sim}: Simulation method for vtscopula class
+\item \code{sim(vtscopula)}: Simulation method for vtscopula class
 
-\item \code{kendall}: Calculate Kendall's tau values for vtscopula model
+\item \code{kendall(vtscopula)}: Calculate Kendall's tau values for vtscopula model
+
 }}
-
 \section{Slots}{
 
 \describe{
