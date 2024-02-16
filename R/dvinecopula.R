@@ -356,7 +356,7 @@ simdvine <- function(pc_list, n, innov, start){
 #'
 #' @param theta parameters of copulas
 #' @param modelspec list of families of copulas
-#' @param udata data
+#' @param u vector of data
 #'
 #' @return Value of objective function at parameters.
 #'

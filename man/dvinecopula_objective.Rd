@@ -11,7 +11,7 @@ dvinecopula_objective(theta, modelspec, u)
 
 \item{modelspec}{list of families of copulas}
 
-\item{udata}{data}
+\item{u}{vector of data}
 }
 \value{
 Value of objective function at parameters.

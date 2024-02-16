@@ -11,9 +11,11 @@ wobjective(theta, paircop, theta_vt, vtgrad, u)
 
 \item{paircop}{specification of W copula}
 
-\item{u}{vector of data}
+\item{theta_vt}{parameter(s) of v-transform}
 
-\item{vt}{v-transform}
+\item{vtgrad}{gradient of v-transform}
+
+\item{u}{vector of data}
 }
 \value{
 Value of additional objective for W-copula.

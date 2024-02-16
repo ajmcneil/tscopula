@@ -275,7 +275,8 @@ vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopul
 #'
 #' @param theta parameter of W copula
 #' @param paircop specification of W copula
-#' @param vt v-transform
+#' @param theta_vt parameter(s) of v-transform
+#' @param vtgrad gradient of v-transform
 #' @param u vector of data
 #'
 #' @return Value of additional objective for W-copula.
