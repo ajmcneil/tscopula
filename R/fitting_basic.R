@@ -6,7 +6,8 @@
 #' @exportClass tscopulaU
 #'
 setClassUnion("tscopulaU", c("armacopula", "sarmacopula",
-                             "dvinecopula", "dvinecopula2", "dvinecopula3"))
+                             "dvinecopula", "dvinecopula2", "dvinecopula3",
+                             "dvinecopulavt"))
 
 #' Calculate standardized ranks of data
 #'
