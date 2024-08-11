@@ -5,14 +5,34 @@
 \alias{dvinecopulavt-class}
 \alias{coef,dvinecopulavt-method}
 \alias{show,dvinecopulavt-method}
+\alias{kendall,dvinecopulavt-method}
+\alias{sim,dvinecopulavt-method}
+\alias{predict,dvinecopulavt-method}
 \title{D-vine copula processes with v-transforms}
 \usage{
 \S4method{coef}{dvinecopulavt}(object)
 
 \S4method{show}{dvinecopulavt}(object)
+
+\S4method{kendall}{dvinecopulavt}(object, lagmax = 20)
+
+\S4method{sim}{dvinecopulavt}(object, n = 1000, forcetrunc = TRUE)
+
+\S4method{predict}{dvinecopulavt}(object, data, x, type = "df")
 }
 \arguments{
 \item{object}{an object of the class.}
+
+\item{lagmax}{maximum value of lag.}
+
+\item{n}{length of realization.}
+
+\item{data}{vector of past data values.}
+
+\item{x}{vector of arguments of prediction function.}
+
+\item{type}{type of prediction function ("df" for density, "qf" for quantile function
+or "dens" for density).}
 }
 \description{
 Class of objects for d-vine copula processes. See \link{dvinecopulavt} for more details.
@@ -22,6 +42,13 @@ Class of objects for d-vine copula processes. See \link{dvinecopulavt} for more 
 \item \code{coef(dvinecopulavt)}: Coef Method for dvinecopulavt class
 
 \item \code{show(dvinecopulavt)}: Show method for dvinecopulavt class
+
+\item \code{kendall(dvinecopulavt)}: Calculate Kendall's tau values for core pair copulas
+in d-vine copula model with v-transforms
+
+\item \code{sim(dvinecopulavt)}: Simulation method for dvinecopulavt class
+
+\item \code{predict(dvinecopulavt)}: Prediction method for dvinecopulavt class
 
 }}
 \section{Slots}{
@@ -34,3 +61,8 @@ Class of objects for d-vine copula processes. See \link{dvinecopulavt} for more 
 \item{\code{pars}}{list comprising of the parameters.}
 }}
 
+\examples{
+copmod <- dvinecopulavt(family = "joe", kpacf = "kpacf_arma",
+pars = list(ar = 0.95, ma = -0.85), maxlag = 30)
+kendall(copmod)
+}

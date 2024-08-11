@@ -41,6 +41,8 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' @param rotation a scalar specifying the rotation (default is 0)
 #' @param kpacf a character string giving the name of the Kendall pacf
 #' @param pars a list containing the parameters of the model
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
 #' @param maxlag a scalar specifying the maximum lag
 #'
 #' @return An object of class \linkS4class{dvinecopulavt}.
@@ -53,7 +55,9 @@ dvinecopulavt <- function(family = "joe",
                          rotation = 0,
                          kpacf = "kpacf_arma",
                          pars = list(ar = 0.1, ma = 0),
-                         maxlag = Inf) {
+                         vt1 = Vlinear(0.5),
+                         vt2 = Vlinear(0.5),
+                         maxlag = 15) {
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   fam <- tolower(family)
@@ -64,15 +68,18 @@ dvinecopulavt <- function(family = "joe",
           Gumbel with no rotation or Clayton with 180 degree rotation")
   if (is.null(names(pars)))
     stop("parameters should be named (p1 and p2 for exp/power)")
-  if (!("delta1" %in% names(pars)))
-    pars <- c(pars, delta1 = 0.5)
-  if (!("delta2" %in% names(pars)))
-    pars <- c(pars, delta2 = 0.5)
+  vt1pars <- coef(vt1)
+  names(vt1pars) <- paste(names(vt1pars),"1",sep="")
+  vt2pars <- coef(vt2)
+  names(vt2pars) <- paste(names(vt2pars),"2",sep="")
+  pars <- c(pars, vt1pars, vt2pars)
   modelspec <- list(family = fam,
                     rotation = rotation,
                     kpacf = kpacf,
                     maxlag = maxlag,
                     npar = length(unlist(pars)),
+                    vt1 = vt1,
+                    vt2 = vt2,
                     negtau = "none")
   new("dvinecopulavt",
       name = paste("d-vine-vt"),
@@ -104,7 +111,8 @@ setMethod("show", c(object = "dvinecopulavt"), function(object) {
   if (object@modelspec$rotation !=0)
     famname <- paste(famname, "with rotation", object@modelspec$rotation)
   cat("copula family: ", famname, "\n", sep = "")
-  cat("linear v-transforms with fulcrums at", object@pars$delta1, "and", object@pars$delta2, "\n")
+  cat("v-transform 1: ", object@modelspec$vt1@name, "\n")
+  cat("v-transform 2: ", object@modelspec$vt2@name, "\n")
   kpacf  <- object@modelspec$kpacf
   if (object@modelspec$maxlag != Inf)
     kpacf <- paste(kpacf, "with max lag", object@modelspec$maxlag)
@@ -160,20 +168,39 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
     }
   }
   v <- cbind(u[1:(n - 1)], u[2:n])
-  delta <- as.numeric(c(theta["delta1"], theta["delta2"]))
+  vt1 <- getvt(modelspec$vt1, theta, 1)
+  vt2 <- getvt(modelspec$vt2, theta, 2)
   LL <- 0
   for (j in 1:k) {
-    v_vt <- cbind(vtrans(Vlinear(delta[1]), v[,1]), vtrans(Vlinear(delta[2]), v[,2]))
+    v_vt <- cbind(vtrans(vt1, v[,1]), vtrans(vt2, v[,2]))
     LL <- LL + sum(log(rvinecopulib::dbicop(u = v_vt, family = pc_list[[j]])))
     if (j == k) {
       return(-LL)
     }
     n <- dim(v)[1]
     v <- cbind(
-      hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]], delta),
-      hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]], delta)
+      hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]], vt1, vt2),
+      hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]], vt1, vt2)
     )
   }
+}
+
+#' Helper function for reparameterizing v-transforms
+#'
+#' @param vt a v-transform
+#' @param theta vector of parameters containing parameters of v-transform
+#' @param number number of v-transform (1 or 2)
+#'
+#' @return a v-transform
+#'
+#' @keywords internal
+#'
+getvt <- function(vt, theta, number){
+  vtnms <- names(vt@pars)
+  vtpars <- theta[paste(vtnms, number, sep = "")]
+  names(vtpars) <- vtnms
+  vt@pars <- vtpars
+  vt
 }
 
 #' h-function for linear inverse-v-transformed copula
@@ -181,21 +208,31 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
 #' @param u two-column matrix of data at which h-function is evaluated
 #' @param cond_var identity of conditioning variable (1/2)
 #' @param family name of copula family
-#' @param delta vector of two fulcrum values
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
+#' @param inverse logical variable specifying whether inverse is taken
 #'
 #' @return vector of values of h-function
 #'
 #' @keywords internal
 #'
-hbicop <- function(u, cond_var, family, delta) {
-  cond1 <- u[,2] > delta[2]
-  cond2 <- u[,1] > delta[2]
-  mult1 <- -(delta[2]^(1-cond1))*(delta[2] - 1)^cond1
-  mult2 <- -(delta[1]^(1-cond2))*(delta[1] - 1)^cond2
-  v <- cbind(vtrans(Vlinear(delta[1]), u[,1]), vtrans(Vlinear(delta[2]), u[,2]))
+hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
+  if (vt1@name != "Vlinear")
+    stop("first vt non-linear")
+  if (vt2@name != "Vlinear")
+    stop("second vt non-linear")
+  delta1 <- vt1@pars["delta"]
+  delta2 <- vt2@pars["delta"]
+  cond1 <- u[,2] > delta1
+  cond2 <- u[,1] > delta2
+  mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+  mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+  v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
   switch(cond_var,
-           mult1 * rvinecopulib::hbicop(u = v, cond_var = 1, family = family) + delta[2],
-           mult2 * rvinecopulib::hbicop(u = v, cond_var = 2, family = family) + delta[1]
+           mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+                                        family = family, inverse = inverse) + delta2,
+           mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+                                        family = family, inverse = inverse) + delta1
     )
 }
 
@@ -227,7 +264,6 @@ setMethod("kendall", c(object = "dvinecopulavt"), function(object, lagmax = 20) 
 #' @keywords internal
 #'
 resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
-  browser()
   n <- length(data)
   pc_list <- mklist_dvine2(object, n-1, truncate = TRUE, tol = 1/3)
   k <- length(pc_list)
@@ -236,95 +272,215 @@ resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
   else
     target <- data
   res <- rep(NA, n)
+  delta <- as.numeric(unlist(object@pars)[c("delta1", "delta2")])
   res[1] <- target[1]
-  if (k >1){
-    for (i in 2:k){
-      pcs <- lapply(1:(i-1), function(j) {
-        replicate(i - j, pc_list[[j]], simplify = FALSE)
-      })
-      vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure(i:1))
-      vals <- c(data[1:(i-1)], target[i])
-      res[i] <- rvinecopulib::rosenblatt(t(vals), vc_short)[i]
-    }
-  }
-  pcs <- lapply(1:k, function(j) {
-    replicate(k + 1 - j, pc_list[[j]], simplify = FALSE)
-  })
-  vc_short <- rvinecopulib::vinecop_dist(pcs, rvinecopulib::dvine_structure((k + 1):1))
-  for (i in ((k+1):n)){
-    vals <- c(data[(i-k):(i-1)], target[i])
-    res[i] <- rvinecopulib::rosenblatt(t(vals), vc_short)[k+1]
-  }
+  for (i in 2:k)
+    res[i] <- Rforward(data[i], matrix(data[(i-1):1], ncol = i-1, nrow =1), pc_list, delta)
+  pastdata <- matrix(NA, ncol = k, nrow = n - k)
+  for (i in ((k+1):n))
+    pastdata[i-k,] <- data[(i-1):(i-k)]
+  res[(k+1):n] <- Rforward(data[(k+1):n], pastdata, pc_list, delta)
   qnorm(res)
-}
-
-#' Rosenblatt Transforms for copulas with v-transforms
-#'
-#' @param latest argument of Rosenblatt functiom
-#' @param previous conditioning vales
-#' @param cv identity of conditioning variable
-#' @param pcs list of pair copulas
-#' @param delta vector fulcrum parameters
-#'
-#' @return
-#' @export
-#'
-RT <- function(latest, previous, cv, pcs, delta) {
-  if ((latest == 0) | (latest == 1)) {
-    return(latest)
-  }
-  k <- length(previous)
-  x <- c(previous, latest)
-  if (k == 1) {
-    return(hbicop(cbind(x[1], x[2]), cv, pcs[[1]], delta))
-  } else {
-    return(hbicop(cbind(
-      RT(x[k], x[1:(k - 1)], cv = 2, pcs, delta),
-      RT(x[k + 1], x[2:k], cv = 1, pcs, delta)
-    ), cv, pcs[[k]], delta))
-  }
 }
 
 #' Rosenblatt forward function with v-transforms
 #'
-#' @param x argument of Rosenblatt functiom
-#' @param u conditioning values
+#' @param x vector argument of Rosenblatt functiom
+#' @param u matrix of conditioning values. Number of rows
+#' must be either 1 or same length as x. Number of columns
+#' should not be much more than 15 (due to repeated recursive
+#' calling)
 #' @param pcs list of pair copulas
-#' @param delta vector fulcrum parameters
+#' @param delta vector of fulcrum parameters
 #'
-#' @return
-#' @export
+#' @return vector of same length as x
+#'
+#' @keywords internal
 #'
 Rforward <- function(x, u, pcs, delta) {
-  k <- length(u)
+  if (!(is.matrix(u)))
+    stop("Must have matrix of conditioning variables")
+  k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(u, x), 1, pcs[[1]], delta)))
+    return(as.numeric(hbicop(cbind(as.vector(u), x), 1, pcs[[1]], delta)))
   } else {
     return(hbicop(cbind(
-      Rbackward(u[k], u[(k-1):1], pcs, delta),
-      Rforward(x, u[1:(k-1)], pcs, delta)
+      Rbackward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, delta),
+      Rforward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, delta)
     ), 1, pcs[[k]], delta))
   }
 }
 
 #' Rosenblatt backward function with v-transforms
 #'
-#' @param x argument of Rosenblatt functiom
-#' @param u conditioning vales
+#' @param x vector argument of Rosenblatt functiom
+#' @param u matrix of conditioning values. Number of rows
+#' must be either 1 or same length as x. Number of columns
+#' should not be much more than 15 (due to repeated recursive
+#' calling)
 #' @param pcs list of pair copulas
-#' @param delta vector fulcrum parameters
+#' @param delta vector of fulcrum parameters
 #'
-#' @return
-#' @export
+#' @return vector of same length as x
 #'
 Rbackward <- function(x, u, pcs, delta) {
-  k <- length(u)
+  if (!(is.matrix(u)))
+    stop("Must have matrix of conditioning variables")
+  k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(x, u), 2, pcs[[1]], delta)))
+    return(as.numeric(hbicop(cbind(x, as.vector(u)), 2, pcs[[1]], delta)))
   } else {
     return(hbicop(cbind(
-      Rbackward(x, u[1:(k-1)], pcs, delta),
-      Rforward(u[k], u[(k-1):1], pcs, delta)
+      Rbackward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, delta),
+      Rforward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, delta)
     ), 2, pcs[[k]], delta))
   }
 }
+
+#' Inverse Rosenblatt forward function with v-transforms
+#'
+#' @param x vector argument of Rosenblatt functiom
+#' @param u matrix of conditioning values. Number of rows
+#' must be either 1 or same length as x. Number of columns
+#' should not be much more than 15 (due to repeated recursive
+#' calling)
+#' @param pcs list of pair copulas
+#' @param delta vector of fulcrum parameters
+#'
+#' @return vector of same length as x
+#'
+RforwardI <- function(x, u, pcs, delta) {
+  if (!(is.matrix(u)))
+    stop("Must have matrix of conditioning variables")
+  k <- dim(u)[2]
+  if (k == 1) {
+    return(as.numeric(hbicop(cbind(as.vector(u), x),
+                             1, pcs[[1]], delta, inverse = TRUE)))
+  } else {
+    arg1 <- hbicop(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, delta),x),
+                   1, pcs[[k]], delta, inverse = TRUE)
+    return(RforwardI(arg1, matrix(u[,(1:(k-1))], ncol = k-1), pcs, delta))
+  }
+}
+
+#' @describeIn dvinecopulavt Simulation method for dvinecopulavt class
+#'
+#' @param object an object of the class.
+#' @param n length of realization.
+#'
+#' @export
+#'
+setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetrunc = TRUE) {
+  pc_list <- mklist_dvine2(object, n-1, truncate = TRUE, tol = 1/3)
+  k <- length(pc_list)
+  if ((k > 10) & forcetrunc){
+    k <- 10
+    warning("Copula sequence has been truncated to length 10 for speed.
+            Can be overridden if you are a patient person.")
+  }
+  delta <- as.numeric(unlist(object@pars)[c("delta1", "delta2")])
+  sim <- numeric(n)
+  sim[1] <- runif(1)
+  for (t in 2:n) {
+    pastvalues <- sim[(t-1):max(1, (t - k))]
+    sim[t] <- RforwardI(runif(1), matrix(pastvalues, ncol = length(pastvalues)),
+                        pc_list, delta)
+  }
+  sim
+})
+
+#' Generalized lagging for fitted dvinecopulavt objects
+#'
+#' @param copula a dvinecopulavt object
+#' @param data the data to which copula is fitted
+#' @param lagmax the maximum lag value.
+#' @param glagplot logical value indicating generalized lag plot.
+#'
+#' @return If \code{glagplot} is \code{TRUE} a list of generalized lagged datasets
+#' of maximum length 9 is returned to facilitate a generalized lagplot.
+#' If \code{glagplot} is \code{FALSE} a vector of length \code{lagmax} containing
+#' the Kendall rank correlations for the generalized lagged datasets is returned.
+#' @keywords internal
+glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
+  if (glagplot)
+    lagmax <- min(lagmax, 9)
+  pc_list <- mklist_dvine2(copula, lagmax, truncate = FALSE)
+  k <- length(pc_list)
+  n <- length(data)
+  delta <- as.numeric(unlist(copula@pars)[c("delta1", "delta2")])
+  data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
+  if (glagplot){
+    output <- vector(mode = "list", length = k)
+    output[[1]] <- data
+  }
+  else{
+    output <- rep(NA, k)
+    vdata <- cbind(vtrans(Vlinear(delta[1]), data[,1]),
+                   vtrans(Vlinear(delta[2]), data[,2]))
+    output[1] <- cor(vdata, method = "kendall")[1, 2]
+  }
+  if (k >1){
+    for (i in 1:(k - 1)) {
+      n <- dim(data)[1]
+      data <-
+        cbind(hbicop(data[(1:(n - 1)), ], pc_list[[i]], cond_var = 2, delta),
+              hbicop(data[(2:n), ], pc_list[[i]], cond_var = 1, delta))
+      if (glagplot)
+        output[[i+1]] <- data
+      else{
+        vdata <- cbind(vtrans(Vlinear(delta[1]), data[,1]),
+                       vtrans(Vlinear(delta[2]), data[,2]))
+        output[i+1] <- cor(vdata, method = "kendall")[1, 2]
+      }
+    }
+  }
+  output
+}
+
+#' @describeIn dvinecopulavt Prediction method for dvinecopulavt class
+#'
+#' @param object an object of the class.
+#' @param data vector of past data values.
+#' @param x vector of arguments of prediction function.
+#' @param type type of prediction function ("df" for density, "qf" for quantile function
+#' or "dens" for density).
+#'
+#' @export
+#'
+setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type = "df") {
+  pc_list <- mklist_dvine2(object, length(data)-1, truncate = TRUE, tol = 1/3)
+  k <- length(pc_list)
+  n <- length(data)
+  delta <- as.numeric(coef(object)[c("delta1", "delta2")])
+  lastkdata <- data[(n-k+1):n]
+  switch(type,
+         "df" = Rforward(x, matrix(rev(lastkdata), ncol = k), pc_list, delta),
+         "qf" = RforwardI(x, matrix(rev(lastkdata), ncol = k), pc_list, delta),
+         "dens" = {
+            output <- rep(NA, length(x))
+            for (i in 1:length(x)){
+              data <- c(as.numeric(lastkdata), x[i])
+              n <- length(data)
+              v <- cbind(data[1:(n - 1)], data[2:n])
+              output[i] <- 0
+              for (j in 1:k) {
+                v_vt <- cbind(vtrans(Vlinear(delta[1]), v[,1]), vtrans(Vlinear(delta[2]), v[,2]))
+                tmp <- log(rvinecopulib::dbicop(v_vt[n-1,], family = pc_list[[j]]))
+                output[i] <- output[i] + sum(tmp)
+                  if (j < k) {
+                    n <- dim(v)[1]
+                    arg1 <- matrix(v[(1:(n - 1)), ], ncol =2)
+                    arg2 <- matrix(v[(2:n), ], ncol =2)
+                    v <- cbind(
+                 hbicop(arg1, cond_var = 2, family = pc_list[[j]], delta),
+                 hbicop(arg2, cond_var = 1, family = pc_list[[j]], delta)
+                  )
+                }
+              }
+            }
+           exp(output)
+           })
+})
+
+
+
