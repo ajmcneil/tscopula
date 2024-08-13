@@ -9,7 +9,10 @@ dvinecopulavt(
   rotation = 0,
   kpacf = "kpacf_arma",
   pars = list(ar = 0.1, ma = 0),
-  maxlag = 15
+  vt1 = Vlinear(0.5),
+  vt2 = Vlinear(0.5),
+  maxlag = 15,
+  V2override = FALSE
 )
 }
 \arguments{
@@ -21,7 +24,14 @@ dvinecopulavt(
 
 \item{pars}{a list containing the parameters of the model}
 
+\item{vt1}{first v-transform}
+
+\item{vt2}{second v-transform}
+
 \item{maxlag}{a scalar specifying the maximum lag}
+
+\item{V2override}{logical variable stating whether 2-parameter v-transform
+should be permitted}
 }
 \value{
 An object of class \linkS4class{dvinecopulavt}.
@@ -42,6 +52,12 @@ by the \code{kpacf} argument. The default choice is the kpacf of a standard ARMA
 implemented in the function \code{\link{kpacf_arma}}. The parameters
 of the kpacf should be set as a list using the \code{pars} argument; the required parameters should usually
 be clear from the documentation of the chosen kpacf function and must be correctly named.
+
+The arguments \code{vt1} and \code{vt2} are used to enter two parametric v-transforms which may be created, for example,
+by \code{\link{Vlinear}} or \code{\link{V2p}}. However, the latter is very slow and the
+variable \code{V2override} has to be set to \code{TRUE} if you want to include 2-parameter
+v-transforms. While fitting is possible, residual analysis and simulation are almost always
+prohibitively slow.
 
 For data showing stochastic volatility, we expect positive serial dependencies in the base copula sequence.
 For this reason, we do not consider models where the kpacf takes negative values.

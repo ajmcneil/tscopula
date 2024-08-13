@@ -160,6 +160,19 @@ setMethod("show", "tscopulafit", function(object) {
         kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
       cat("KPACF: ", kpacf,"\n", sep = "")
     }
+    if (is(object@tscopula, "dvinecopulavt")) {
+      modobject <- object@tscopula
+      famname <- modobject@modelspec$family
+      if (modobject@modelspec$rotation !=0)
+        famname <- paste(famname, "with rotation", modobject@modelspec$rotation)
+      cat("copula family: ", famname, "\n", sep = "")
+      cat("v-transform 1: ", modobject@modelspec$vt1@name, "\n")
+      cat("v-transform 2: ", modobject@modelspec$vt2@name, "\n")
+      kpacf  <- modobject@modelspec$kpacf
+      if (modobject@modelspec$maxlag != Inf)
+        kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
+      cat("KPACF: ", kpacf,"\n", sep = "")
+    }
   }
   else {
     stop("Unknown tscopula type")
@@ -254,6 +267,10 @@ setMethod(
       control = control
     )
     x@pars <- relist(fit$par, x@pars)
+    if (is(x, "dvinecopulavt")){
+      x@modelspec$vt1 <- getvt(x@modelspec$vt1, fit$par, 1)
+      x@modelspec$vt2 <- getvt(x@modelspec$vt2, fit$par, 2)
+    }
     new("tscopulafit",
       tscopula = x,
       data = y,

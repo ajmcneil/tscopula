@@ -31,6 +31,12 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' of the kpacf should be set as a list using the \code{pars} argument; the required parameters should usually
 #' be clear from the documentation of the chosen kpacf function and must be correctly named.
 #'
+#' The arguments \code{vt1} and \code{vt2} are used to enter two parametric v-transforms which may be created, for example,
+#' by \code{\link{Vlinear}} or \code{\link{V2p}}. However, the latter is very slow and the
+#' variable \code{V2override} has to be set to \code{TRUE} if you want to include 2-parameter
+#' v-transforms. While fitting is possible, residual analysis and simulation are almost always
+#' prohibitively slow.
+#'
 #' For data showing stochastic volatility, we expect positive serial dependencies in the base copula sequence.
 #' For this reason, we do not consider models where the kpacf takes negative values.
 #'
@@ -44,6 +50,8 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' @param vt1 first v-transform
 #' @param vt2 second v-transform
 #' @param maxlag a scalar specifying the maximum lag
+#' @param V2override logical variable stating whether 2-parameter v-transform
+#' should be permitted
 #'
 #' @return An object of class \linkS4class{dvinecopulavt}.
 #' @export
@@ -57,7 +65,8 @@ dvinecopulavt <- function(family = "joe",
                          pars = list(ar = 0.1, ma = 0),
                          vt1 = Vlinear(0.5),
                          vt2 = Vlinear(0.5),
-                         maxlag = 15) {
+                         maxlag = 15,
+                         V2override = FALSE) {
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   fam <- tolower(family)
@@ -68,11 +77,24 @@ dvinecopulavt <- function(family = "joe",
           Gumbel with no rotation or Clayton with 180 degree rotation")
   if (is.null(names(pars)))
     stop("parameters should be named (p1 and p2 for exp/power)")
+  if (((vt1@name == "V2p") | (vt2@name == "V2p")) & (!V2override))
+    stop("Use of 2-parameter v-transforms very slow. Set V2override to TRUE if you
+         really want to use them.")
+  vtpermitted <- (vt1@name %in% c("Vlinear", "V2p")) & (vt2@name %in% c("Vlinear", "V2p"))
+  if (!(vtpermitted))
+    stop("Only Vlinear and V2p v-transforms are currently permitted")
   vt1pars <- coef(vt1)
   names(vt1pars) <- paste(names(vt1pars),"1",sep="")
+  if (!("delta1" %in% names(pars)))
+    pars <- c(pars, vt1pars["delta1"])
+  if ((vt1@name == "V2p") & (!("kappa1" %in% names(pars))))
+    pars <- c(pars, vt1pars["kappa1"])
   vt2pars <- coef(vt2)
   names(vt2pars) <- paste(names(vt2pars),"2",sep="")
-  pars <- c(pars, vt1pars, vt2pars)
+  if (!("delta2" %in% names(pars)))
+    pars <- c(pars, vt2pars["delta2"])
+  if ((vt2@name == "V2p") & (!("kappa2" %in% names(pars))))
+    pars <- c(pars, vt2pars["kappa2"])
   modelspec <- list(family = fam,
                     rotation = rotation,
                     kpacf = kpacf,
@@ -170,6 +192,14 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
   v <- cbind(u[1:(n - 1)], u[2:n])
   vt1 <- getvt(modelspec$vt1, theta, 1)
   vt2 <- getvt(modelspec$vt2, theta, 2)
+  if ((vt1@pars["delta"] <= 0) | (vt2@pars["delta"] >= 1))
+    return(NA)
+  if (length(vt1@pars) > 1)
+    if (vt1@pars["kappa"] <= 0)
+      return(NA)
+  if (length(vt2@pars) > 1)
+    if (vt2@pars["kappa"] <= 0)
+      return(NA)
   LL <- 0
   for (j in 1:k) {
     v_vt <- cbind(vtrans(vt1, v[,1]), vtrans(vt2, v[,2]))
@@ -179,8 +209,10 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
     }
     n <- dim(v)[1]
     v <- cbind(
-      hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]], vt1, vt2),
-      hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]], vt1, vt2)
+      hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]],
+             vt1 = vt1, vt2 = vt2),
+      hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]],
+             vt1 = vt1, vt2 = vt2)
     )
   }
 }
@@ -203,6 +235,39 @@ getvt <- function(vt, theta, number){
   vt
 }
 
+#' #' h-function for linear inverse-v-transformed copula
+#' #'
+#' #' @param u two-column matrix of data at which h-function is evaluated
+#' #' @param cond_var identity of conditioning variable (1/2)
+#' #' @param family name of copula family
+#' #' @param vt1 first v-transform
+#' #' @param vt2 second v-transform
+#' #' @param inverse logical variable specifying whether inverse is taken
+#' #'
+#' #' @return vector of values of h-function
+#' #'
+#' #' @keywords internal
+#' #'
+#' hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
+#'   if (vt1@name != "Vlinear")
+#'     stop("first vt non-linear")
+#'   if (vt2@name != "Vlinear")
+#'     stop("second vt non-linear")
+#'   delta1 <- vt1@pars["delta"]
+#'   delta2 <- vt2@pars["delta"]
+#'   cond1 <- u[,2] > delta2
+#'   cond2 <- u[,1] > delta1
+#'   mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+#'   mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+#'   v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
+#'   switch(cond_var,
+#'            mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+#'                                         family = family, inverse = inverse) + delta2,
+#'            mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+#'                                         family = family, inverse = inverse) + delta1
+#'     )
+#' }
+
 #' h-function for linear inverse-v-transformed copula
 #'
 #' @param u two-column matrix of data at which h-function is evaluated
@@ -217,23 +282,51 @@ getvt <- function(vt, theta, number){
 #' @keywords internal
 #'
 hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
-  if (vt1@name != "Vlinear")
-    stop("first vt non-linear")
-  if (vt2@name != "Vlinear")
-    stop("second vt non-linear")
-  delta1 <- vt1@pars["delta"]
-  delta2 <- vt2@pars["delta"]
-  cond1 <- u[,2] > delta1
-  cond2 <- u[,1] > delta2
-  mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
-  mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
-  v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-  switch(cond_var,
-           mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
-                                        family = family, inverse = inverse) + delta2,
-           mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
-                                        family = family, inverse = inverse) + delta1
-    )
+  if ((cond_var == 1) & (vt2@name == "Vlinear"))
+  {
+    delta2 <- vt2@pars["delta"]
+    cond1 <- u[,2] > delta2
+    mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+    v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
+    return(mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+                                        family = family, inverse = inverse) + delta2)
+  }
+  else if ((cond_var == 2) & (vt1@name == "Vlinear"))
+  {
+    delta1 <- vt1@pars["delta"]
+    cond2 <- u[,1] > delta1
+    mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+    v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
+    return(mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+                                        family = family, inverse = inverse) + delta1)
+  }
+  else if (cond_var == 1)
+  {
+    output <- rep(NA, nrow(u))
+    integrand <- function(x, y, family, vt1, vt2){
+        rvinecopulib::dbicop(u = cbind(vtrans(vt1, y), vtrans(vt2, x)), family = family)
+    }
+    for (i in 1:length(output)){
+      tmp <- integrate(integrand, lower = 0, upper = u[i,2], y = u[i,1],
+                             family = family, vt1 = vt1, vt2 = vt2)
+      output[i] <- tmp$value
+    }
+    return(pmax(pmin(output,1),0))
+  }
+  else if (cond_var == 2)
+  {
+    output <- rep(NA, nrow(u))
+    integrand <- function(x, y, family, vt1, vt2){
+      rvinecopulib::dbicop(u = cbind(vtrans(vt1, x), vtrans(vt2, y)), family = family)
+    }
+    crudefix <- 5.5e-07 # bound conditioning variable below to fix integrability issue
+    for (i in 1:length(output)){
+      tmp <- integrate(integrand, lower = 0, upper = u[i,1], y = pmax(u[i,2], crudefix),
+                             family = family, vt1 = vt1, vt2 = vt2)
+      output[i] <- tmp$value
+    }
+    return(pmax(pmin(output,2),0))
+  }
 }
 
 #' @describeIn dvinecopulavt Calculate Kendall's tau values for core pair copulas
@@ -272,14 +365,15 @@ resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
   else
     target <- data
   res <- rep(NA, n)
-  delta <- as.numeric(unlist(object@pars)[c("delta1", "delta2")])
+  vt1 <- object@modelspec$vt1
+  vt2 <- object@modelspec$vt2
   res[1] <- target[1]
   for (i in 2:k)
-    res[i] <- Rforward(data[i], matrix(data[(i-1):1], ncol = i-1, nrow =1), pc_list, delta)
+    res[i] <- Rforward(data[i], matrix(data[(i-1):1], ncol = i-1, nrow =1), pc_list, vt1, vt2)
   pastdata <- matrix(NA, ncol = k, nrow = n - k)
   for (i in ((k+1):n))
     pastdata[i-k,] <- data[(i-1):(i-k)]
-  res[(k+1):n] <- Rforward(data[(k+1):n], pastdata, pc_list, delta)
+  res[(k+1):n] <- Rforward(data[(k+1):n], pastdata, pc_list, vt1, vt2)
   qnorm(res)
 }
 
@@ -291,23 +385,25 @@ resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
 #' should not be much more than 15 (due to repeated recursive
 #' calling)
 #' @param pcs list of pair copulas
-#' @param delta vector of fulcrum parameters
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
 #'
 #' @return vector of same length as x
 #'
 #' @keywords internal
 #'
-Rforward <- function(x, u, pcs, delta) {
+Rforward <- function(x, u, pcs, vt1, vt2) {
   if (!(is.matrix(u)))
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(as.vector(u), x), 1, pcs[[1]], delta)))
+    return(as.numeric(hbicop(cbind(as.vector(u), x), cond_var = 1,
+                             family = pcs[[1]], vt1 = vt1, vt2 = vt2)))
   } else {
     return(hbicop(cbind(
-      Rbackward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, delta),
-      Rforward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, delta)
-    ), 1, pcs[[k]], delta))
+      Rbackward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, vt1, vt2),
+      Rforward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, vt1, vt2)
+    ), cond_var = 1, family = pcs[[k]], vt1 = vt1, vt2 = vt2))
   }
 }
 
@@ -319,21 +415,23 @@ Rforward <- function(x, u, pcs, delta) {
 #' should not be much more than 15 (due to repeated recursive
 #' calling)
 #' @param pcs list of pair copulas
-#' @param delta vector of fulcrum parameters
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
 #'
 #' @return vector of same length as x
 #'
-Rbackward <- function(x, u, pcs, delta) {
+Rbackward <- function(x, u, pcs, vt1, vt2) {
   if (!(is.matrix(u)))
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(x, as.vector(u)), 2, pcs[[1]], delta)))
+    return(as.numeric(hbicop(cbind(x, as.vector(u)), cond_var = 2,
+                             pcs[[1]], vt1 = vt1, vt2 = vt2)))
   } else {
     return(hbicop(cbind(
-      Rbackward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, delta),
-      Rforward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, delta)
-    ), 2, pcs[[k]], delta))
+      Rbackward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, vt1, vt2),
+      Rforward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, vt1, vt2)
+    ), cond_var = 2, family = pcs[[k]], vt1 = vt1, vt2 = vt2))
   }
 }
 
@@ -345,21 +443,23 @@ Rbackward <- function(x, u, pcs, delta) {
 #' should not be much more than 15 (due to repeated recursive
 #' calling)
 #' @param pcs list of pair copulas
-#' @param delta vector of fulcrum parameters
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
 #'
 #' @return vector of same length as x
 #'
-RforwardI <- function(x, u, pcs, delta) {
+RforwardI <- function(x, u, pcs, vt1, vt2) {
   if (!(is.matrix(u)))
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
     return(as.numeric(hbicop(cbind(as.vector(u), x),
-                             1, pcs[[1]], delta, inverse = TRUE)))
+                             cond_var = 1, family = pcs[[1]], vt1 = vt1,
+                             vt2 = vt2, inverse = TRUE)))
   } else {
-    arg1 <- hbicop(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, delta),x),
-                   1, pcs[[k]], delta, inverse = TRUE)
-    return(RforwardI(arg1, matrix(u[,(1:(k-1))], ncol = k-1), pcs, delta))
+    arg1 <- hbicop(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, vt1, vt2), x),
+                   cond_var = 1, family = pcs[[k]], vt1 = vt1, vt2 = vt2, inverse = TRUE)
+    return(RforwardI(arg1, matrix(u[,(1:(k-1))], ncol = k-1), pcs, vt1, vt2))
   }
 }
 
@@ -378,13 +478,14 @@ setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetr
     warning("Copula sequence has been truncated to length 10 for speed.
             Can be overridden if you are a patient person.")
   }
-  delta <- as.numeric(unlist(object@pars)[c("delta1", "delta2")])
+  vt1 <- object@modelspec$vt1
+  vt2 <- object@modelspec$vt2
   sim <- numeric(n)
   sim[1] <- runif(1)
   for (t in 2:n) {
     pastvalues <- sim[(t-1):max(1, (t - k))]
     sim[t] <- RforwardI(runif(1), matrix(pastvalues, ncol = length(pastvalues)),
-                        pc_list, delta)
+                        pc_list, vt1, vt2)
   }
   sim
 })
@@ -407,7 +508,8 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
   pc_list <- mklist_dvine2(copula, lagmax, truncate = FALSE)
   k <- length(pc_list)
   n <- length(data)
-  delta <- as.numeric(unlist(copula@pars)[c("delta1", "delta2")])
+  vt1 <- copula@modelspec$vt1
+  vt2 <- copula@modelspec$vt2
   data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))
   if (glagplot){
     output <- vector(mode = "list", length = k)
@@ -415,21 +517,23 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
   }
   else{
     output <- rep(NA, k)
-    vdata <- cbind(vtrans(Vlinear(delta[1]), data[,1]),
-                   vtrans(Vlinear(delta[2]), data[,2]))
+    vdata <- cbind(vtrans(vt1, data[,1]),
+                   vtrans(vt2, data[,2]))
     output[1] <- cor(vdata, method = "kendall")[1, 2]
   }
   if (k >1){
     for (i in 1:(k - 1)) {
       n <- dim(data)[1]
       data <-
-        cbind(hbicop(data[(1:(n - 1)), ], pc_list[[i]], cond_var = 2, delta),
-              hbicop(data[(2:n), ], pc_list[[i]], cond_var = 1, delta))
+        cbind(hbicop(data[(1:(n - 1)), ], cond_var = 2, family = pc_list[[i]],
+                     vt1 = vt1, vt2 = vt2),
+              hbicop(data[(2:n), ], cond_var = 1, family = pc_list[[i]],
+                     vt1 = vt1, vt2 = vt2))
       if (glagplot)
         output[[i+1]] <- data
       else{
-        vdata <- cbind(vtrans(Vlinear(delta[1]), data[,1]),
-                       vtrans(Vlinear(delta[2]), data[,2]))
+        vdata <- cbind(vtrans(vt1, data[,1]),
+                       vtrans(vt2, data[,2]))
         output[i+1] <- cor(vdata, method = "kendall")[1, 2]
       }
     }
@@ -451,11 +555,12 @@ setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type
   pc_list <- mklist_dvine2(object, length(data)-1, truncate = TRUE, tol = 1/3)
   k <- length(pc_list)
   n <- length(data)
-  delta <- as.numeric(coef(object)[c("delta1", "delta2")])
+  vt1 <- object@modelspec$vt1
+  vt2 <- object@modelspec$vt2
   lastkdata <- data[(n-k+1):n]
   switch(type,
-         "df" = Rforward(x, matrix(rev(lastkdata), ncol = k), pc_list, delta),
-         "qf" = RforwardI(x, matrix(rev(lastkdata), ncol = k), pc_list, delta),
+         "df" = Rforward(x, matrix(rev(lastkdata), ncol = k), pc_list, vt1, vt2),
+         "qf" = RforwardI(x, matrix(rev(lastkdata), ncol = k), pc_list, vt1, vt2),
          "dens" = {
             output <- rep(NA, length(x))
             for (i in 1:length(x)){
@@ -464,7 +569,7 @@ setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type
               v <- cbind(data[1:(n - 1)], data[2:n])
               output[i] <- 0
               for (j in 1:k) {
-                v_vt <- cbind(vtrans(Vlinear(delta[1]), v[,1]), vtrans(Vlinear(delta[2]), v[,2]))
+                v_vt <- cbind(vtrans(vt1, v[,1]), vtrans(vt2, v[,2]))
                 tmp <- log(rvinecopulib::dbicop(v_vt[n-1,], family = pc_list[[j]]))
                 output[i] <- output[i] + sum(tmp)
                   if (j < k) {
@@ -472,8 +577,8 @@ setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type
                     arg1 <- matrix(v[(1:(n - 1)), ], ncol =2)
                     arg2 <- matrix(v[(2:n), ], ncol =2)
                     v <- cbind(
-                 hbicop(arg1, cond_var = 2, family = pc_list[[j]], delta),
-                 hbicop(arg2, cond_var = 1, family = pc_list[[j]], delta)
+                 hbicop(arg1, cond_var = 2, family = pc_list[[j]], vt1 = vt1, vt2 = vt2),
+                 hbicop(arg2, cond_var = 1, family = pc_list[[j]], vt1 = vt1, vt2 = vt2)
                   )
                 }
               }

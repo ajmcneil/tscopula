@@ -4,7 +4,7 @@
 \alias{Rbackward}
 \title{Rosenblatt backward function with v-transforms}
 \usage{
-Rbackward(x, u, pcs, delta)
+Rbackward(x, u, pcs, vt1, vt2)
 }
 \arguments{
 \item{x}{vector argument of Rosenblatt functiom}
@@ -16,7 +16,9 @@ calling)}
 
 \item{pcs}{list of pair copulas}
 
-\item{delta}{vector of fulcrum parameters}
+\item{vt1}{first v-transform}
+
+\item{vt2}{second v-transform}
 }
 \value{
 vector of same length as x

@@ -2,9 +2,41 @@
 % Please edit documentation in R/dvinecopulavt.R
 \name{hbicop}
 \alias{hbicop}
-\title{h-function for linear inverse-v-transformed copula}
+\title{#' h-function for linear inverse-v-transformed copula
+#'
+#' @param u two-column matrix of data at which h-function is evaluated
+#' @param cond_var identity of conditioning variable (1/2)
+#' @param family name of copula family
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
+#' @param inverse logical variable specifying whether inverse is taken
+#'
+#' @return vector of values of h-function
+#'
+#' @keywords internal
+#'
+hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
+  if (vt1@name != "Vlinear")
+    stop("first vt non-linear")
+  if (vt2@name != "Vlinear")
+    stop("second vt non-linear")
+  delta1 <- vt1@pars["delta"]
+  delta2 <- vt2@pars["delta"]
+  cond1 <- u[,2] > delta2
+  cond2 <- u[,1] > delta1
+  mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+  mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+  v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
+  switch(cond_var,
+           mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+                                        family = family, inverse = inverse) + delta2,
+           mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+                                        family = family, inverse = inverse) + delta1
+    )
+}
+h-function for linear inverse-v-transformed copula}
 \usage{
-hbicop(u, cond_var, family, delta, inverse = FALSE)
+hbicop(u, cond_var, family, vt1, vt2, inverse = FALSE)
 }
 \arguments{
 \item{u}{two-column matrix of data at which h-function is evaluated}
@@ -13,7 +45,9 @@ hbicop(u, cond_var, family, delta, inverse = FALSE)
 
 \item{family}{name of copula family}
 
-\item{delta}{vector of two fulcrum values}
+\item{vt1}{first v-transform}
+
+\item{vt2}{second v-transform}
 
 \item{inverse}{logical variable specifying whether inverse is taken}
 }
@@ -21,6 +55,38 @@ hbicop(u, cond_var, family, delta, inverse = FALSE)
 vector of values of h-function
 }
 \description{
+#' h-function for linear inverse-v-transformed copula
+#'
+#' @param u two-column matrix of data at which h-function is evaluated
+#' @param cond_var identity of conditioning variable (1/2)
+#' @param family name of copula family
+#' @param vt1 first v-transform
+#' @param vt2 second v-transform
+#' @param inverse logical variable specifying whether inverse is taken
+#'
+#' @return vector of values of h-function
+#'
+#' @keywords internal
+#'
+hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
+  if (vt1@name != "Vlinear")
+    stop("first vt non-linear")
+  if (vt2@name != "Vlinear")
+    stop("second vt non-linear")
+  delta1 <- vt1@pars["delta"]
+  delta2 <- vt2@pars["delta"]
+  cond1 <- u[,2] > delta2
+  cond2 <- u[,1] > delta1
+  mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+  mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+  v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
+  switch(cond_var,
+           mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+                                        family = family, inverse = inverse) + delta2,
+           mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+                                        family = family, inverse = inverse) + delta1
+    )
+}
 h-function for linear inverse-v-transformed copula
 }
 \keyword{internal}
