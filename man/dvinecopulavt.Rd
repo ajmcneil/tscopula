@@ -11,7 +11,8 @@ dvinecopulavt(
   pars = list(ar = 0.1, ma = 0),
   vt1 = Vlinear(0.5),
   vt2 = Vlinear(0.5),
-  maxlag = 15,
+  tautol = 1e-04,
+  maxlag = Inf,
   V2override = FALSE
 )
 }
@@ -28,7 +29,9 @@ dvinecopulavt(
 
 \item{vt2}{second v-transform}
 
-\item{maxlag}{a scalar specifying the maximum lag}
+\item{tautol}{scalar value at which kpacf is truncated}
+
+\item{maxlag}{a scalar which can be used to force a given value for maximum lag}
 
 \item{V2override}{logical variable stating whether 2-parameter v-transform
 should be permitted}
@@ -62,8 +65,9 @@ prohibitively slow.
 For data showing stochastic volatility, we expect positive serial dependencies in the base copula sequence.
 For this reason, we do not consider models where the kpacf takes negative values.
 
-The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
-stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+In practice, the sequence of base copulas will be truncated at the last copula for which the kpacf exceeds \code{tautol}.
+The \code{maxlag} parameter is typically used to force the truncation to take place at a lower lag (to increase speed).
+This can also be achieved by increasing the value of \code{tautol}.
 }
 \examples{
 dvinecopulavt(family = "joe", kpacf = "kpacf_arma",

@@ -4,16 +4,12 @@
 \alias{mklist_dvine2}
 \title{Make list of pair copulas for dvinecopula2 object}
 \usage{
-mklist_dvine2(x, maxlag, truncate, tol = 1)
+mklist_dvine2(x, maxlag)
 }
 \arguments{
 \item{x}{an object of class dvinecopula2}
 
 \item{maxlag}{maximum possible lag to consider}
-
-\item{truncate}{logical variable stating whether to truncate copulas with negligible dependence}
-
-\item{tol}{tolerance for truncation}
 }
 \value{
 a list of pair copulas

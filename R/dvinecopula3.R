@@ -19,7 +19,8 @@ setClass("dvinecopula3", contains = "tscopula", slots = list(
 #' This function sets up a stationary d-vine process of finite or infinite order based on a
 #' sequence of Gaussian copulas with a finite number of non-Gaussian substitutions at specified lags.
 #' The substituted families can be Gumbel, Clayton, Joe, Frank, t and BB1 copulas as implemented by the
-#' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
+#' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package. The Gauss copula can be
+#' named in the list of substitutions but does not need to be.
 #'
 #' For the substituted copulas (other than t and Frank) the user must specify the rotation that should be used for
 #' positive dependencies (0 or 180) and the rotation that should be used for negative dependencies (90 or 270).
@@ -30,21 +31,23 @@ setClass("dvinecopula3", contains = "tscopula", slots = list(
 #' of the kpacf should be set as a list using the \code{pars} argument; the required parameters should usually
 #' be clear from the documentation of the chosen kpacf function and must be correctly named.
 #'
-#' The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
-#' stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+#' In practice, the sequence of copulas will be truncated at the last copula for which the kpacf exceeds \code{tautol}.
+#' The \code{maxlag} parameter is typically used to force the truncation to take place at a lower lag (to increase speed).
+#' This can also be achieved by increasing the value of \code{tautol}.
 #'
 #' If one or more of the substituted copulas are t or BB1 copulas the argument \code{auxpar} should be used to
 #' specify the additional parameters. These are the degree-of-freedom parameter for t and the delta parameter for BB1;
 #' the former must be greater or equal 2 and the latter greater or equal 1.
 #'
-#' @param location vector of locations of non-Gaussian copula substitutions
-#' @param family vector of family names for non-Gaussian copula substitutions
+#' @param location vector of locations of copula substitutions
+#' @param family vector of family names for copula substitutions
 #' @param posrot vector of rotations for substituted families under positive dependence (default is 0)
 #' @param negrot vector of rotations for substituted families under negative dependence (default is 90)
 #' @param kpacf a character string giving the name of the Kendall pacf
 #' @param pars a list containing the parameters of the model
 #' @param auxpar vector of additional parameters for two-parameter copulas
-#' @param maxlag a scalar specifying the maximum lag
+#' @param tautol scalar value at which kpacf is truncated
+#' @param maxlag a scalar which can be used to force a given value for maximum lag
 #'
 #' @return An object of class \linkS4class{dvinecopula3}.
 #' @export
@@ -60,7 +63,9 @@ dvinecopula3 <- function(location = 1,
                          kpacf = "kpacf_arma",
                          pars = list(ar = 0.1, ma = 0.1),
                          auxpar = NA,
-                         maxlag = Inf) {
+                         tautol = 1e-04,
+                         maxlag = Inf
+                         ) {
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   if (is.null(names(pars)))
@@ -79,8 +84,8 @@ dvinecopula3 <- function(location = 1,
   if ((length(posrot) != nsub) | (length(negrot) != nsub) | (length(fam) != nsub))
     stop("Length of family and rotations must
          be equal to length of location or 1")
-  posrot[(fam == "frank") | (fam == "t")] <- 0 # radial symmetry
-  negrot[(fam == "frank") | (fam == "t")] <- 0 # radial symmetry
+  posrot[(fam == "frank") | (fam == "t") | (fam == "gauss")] <- 0 # radial symmetry
+  negrot[(fam == "frank") | (fam == "t") | (fam == "gauss")] <- 0 # radial symmetry
   twoparfamily <- fam[(fam == "t") | (fam == "bb1")]
   ntwopar <- length(twoparfamily)
   if (ntwopar > 0){
@@ -93,6 +98,7 @@ dvinecopula3 <- function(location = 1,
                     posrot = posrot,
                     negrot = negrot,
                     kpacf = kpacf,
+                    tautol = tautol,
                     maxlag = maxlag,
                     npar = length(unlist(pars)))
   output <- new("dvinecopula3",
@@ -100,7 +106,7 @@ dvinecopula3 <- function(location = 1,
       modelspec = modelspec,
       pars = pars
   )
-  check <- mklist_dvine3(output, max(location), truncate = TRUE)
+  check <- mklist_dvine3(output, max(location))
   output
 }
 
@@ -111,23 +117,40 @@ dvinecopula3 <- function(location = 1,
 #' @export
 #'
 setMethod("coef", c(object = "dvinecopula3"), function(object) {
-  if (length(object@pars) == 1) {
-    return(object@pars[[1]])
-  } else {
-    return(unlist(object@pars))
-  }
+  unlist(object@pars)
+  # if (length(object@pars) == 1) {
+  #   return(object@pars[[1]])
+  # } else {
+  #   return(unlist(object@pars))
+  # }
 })
+
+#' Find effective maximum lag
+#'
+#' @param tau values of Kendall partial autocorrelation function.
+#' @param tautol value at which kpacf should be truncated.
+#' @param maxlag manual override of maximum lag.
+#'
+#' @return a value for the effective maximum lag floored at one.
+#' @keywords internal
+#'
+effective_maxlag <- function(tau, tautol, maxlag){
+  min(max(1,which(abs(tau) > tautol)), maxlag)
+}
 
 #' @describeIn dvinecopula3 Calculate Kendall's tau values for pair copulas in type 3 d-vine copula
 #'
 #' @param object an object of the class.
-#' @param lagmax maximum value of lag.
+#' @param lagmax maximum value of lag to be considered.
 #'
 #' @export
 #'
 setMethod("kendall", c(object = "dvinecopula3"), function(object, lagmax = 20) {
   kpacf <- eval(parse(text = object@modelspec$kpacf))
-  kpacf(lagmax, object@pars)
+  tau <- kpacf(lagmax, object@pars)
+  k <- effective_maxlag(tau, object@modelspec$tautol, object@modelspec$maxlag)
+  tau[which((1:lagmax) > k)] <- 0
+  tau
 }
 )
 
@@ -141,7 +164,7 @@ setMethod("kendall", c(object = "dvinecopula3"), function(object, lagmax = 20) {
 setMethod("show", c(object = "dvinecopula3"), function(object) {
   cat("object class: ", is(object)[[1]], "\n", sep = "")
   cat("name: ", object@name, "\n", sep = "")
-  cat("non-Gaussian substitutions:\n")
+  cat("Explicit copula substitutions (all others Gaussian):\n")
   locs <- object@modelspec$location
   cat(" - locations:", locs, "\n", sep = " ")
   cat(" - families:", object@modelspec$family, "\n", sep = " ")
@@ -149,30 +172,26 @@ setMethod("show", c(object = "dvinecopula3"), function(object) {
   rot <- ifelse(tau >= 0, object@modelspec$posrot,object@modelspec$negrot)
   cat(" - rotations:", rot, "\n", sep = " ")
   cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
-  kpacf  <- object@modelspec$kpacf
-  if (object@modelspec$maxlag != Inf)
-    kpacf <- paste(kpacf, "with max lag", object@modelspec$maxlag)
-  cat("KPACF: ", kpacf,"\n", sep = "")
+  cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
+  cat(" - effective maximum lag is", length(mklist_dvine3(object, 100)), "\n")
   cat("parameters: \n")
   print(coef(object))
 })
+
+
 
 #' Make list of pair copulas for dvinecopula3 object
 #'
 #' @param x an object of class dvinecopula3
 #' @param maxlag maximum possible lag to consider
-#' @param truncate logical variable stating whether to truncate copulas with negligible dependence
-#' @param tol tolerance for truncation
 #'
 #' @return a list of pair copulas
 #' @keywords internal
 #'
-mklist_dvine3 <- function(x, maxlag, truncate, tol = 1){
-  k <- min(maxlag, x@modelspec$maxlag)
+mklist_dvine3 <- function(x, maxlag){
   kpacf <- eval(parse(text = x@modelspec$kpacf))
-  tauvals <- kpacf(k, x@pars)
-  if (truncate)
-    k <- max(c(1, which(abs(tauvals) > .Machine$double.eps^tol)))
+  tauvals <- kpacf(maxlag, x@pars)
+  k <- effective_maxlag(tauvals, x@modelspec$tautol, x@modelspec$maxlag)
   pc_list <- vector("list", k)
   auxpar <- 1
   for (i in 1:k) {
@@ -219,7 +238,7 @@ mklist_dvine3 <- function(x, maxlag, truncate, tol = 1){
 #' @export
 #'
 setMethod("sim", c(object = "dvinecopula3"), function(object, n = 1000) {
-  pc_list <- mklist_dvine3(object, n-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine3(object, n-1)
   simdvine(pc_list, n, innov = NA, start = NA)
 })
 
@@ -240,11 +259,7 @@ dvinecopula3_objective <- function(theta, modelspec, u) {
   tauvals <- kpacf((n-1), theta)
   if (is.na(sum(tauvals)))
     return(NA)
-  k <- 1
-  largetau <- (abs(tauvals) > .Machine$double.eps)
-  if (sum(largetau) > 0)
-    k <- max((1:(n-1))[largetau])
-  k <- min(k, modelspec$maxlag)
+  k <- effective_maxlag(tauvals, modelspec$tautol, modelspec$maxlag)
   pc_list <- vector("list", k)
   tpar <- 1
   for (i in 1:k) {
@@ -316,7 +331,7 @@ dvinecopula3_objective <- function(theta, modelspec, u) {
 #' @export
 #'
 setMethod("predict", c(object = "dvinecopula3"), function(object, data, x, type = "df") {
-  pc_list <- mklist_dvine3(object, length(data)-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine3(object, length(data)-1)
   switch(type,
          "df" = Rblatt(pc_list, data, x),
          "qf" = IRblatt(pc_list, data, x),
@@ -335,7 +350,7 @@ setMethod("predict", c(object = "dvinecopula3"), function(object, data, x, type 
 #'
 resid_dvinecopula3 <- function(object, data = NA, trace = FALSE){
   n <- length(data)
-  pc_list <- mklist_dvine3(object, n-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine3(object, n-1)
   k <- length(pc_list)
   for (i in 1:k)
     if (pc_list[[i]]$rotation %in% c(90,270))
@@ -367,6 +382,8 @@ resid_dvinecopula3 <- function(object, data = NA, trace = FALSE){
   qnorm(res)
 }
 
+
+
 #' Generalized lagging for fitted dvinecopula3 objects
 #'
 #' @param copula a dvinecopula3 object
@@ -382,7 +399,7 @@ resid_dvinecopula3 <- function(object, data = NA, trace = FALSE){
 glag_for_dvinecopula3 <- function(copula, data, lagmax, glagplot = FALSE) {
   if (glagplot)
     lagmax <- min(lagmax, 9)
-  pc_list <- mklist_dvine3(copula, lagmax, truncate = FALSE)
+  pc_list <- mklist_dvine3(copula, lagmax)
   k <- length(pc_list)
   n <- length(data)
   data <- cbind(as.numeric(data[1:(n - 1)]), as.numeric(data[2:n]))

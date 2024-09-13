@@ -27,6 +27,9 @@
 
 \item{n}{length of realization.}
 
+\item{forcetrunc}{logical parameter: TRUE truncates the copula sequence at lag 10
+to accelerate simulation if copula sequence is longer; FALSE turns this feature off.}
+
 \item{data}{vector of past data values.}
 
 \item{x}{vector of arguments of prediction function.}

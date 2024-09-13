@@ -40,8 +40,9 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' For data showing stochastic volatility, we expect positive serial dependencies in the base copula sequence.
 #' For this reason, we do not consider models where the kpacf takes negative values.
 #'
-#' The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
-#' stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+#' In practice, the sequence of base copulas will be truncated at the last copula for which the kpacf exceeds \code{tautol}.
+#' The \code{maxlag} parameter is typically used to force the truncation to take place at a lower lag (to increase speed).
+#' This can also be achieved by increasing the value of \code{tautol}.
 #'
 #' @param family family name
 #' @param rotation a scalar specifying the rotation (default is 0)
@@ -49,7 +50,8 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' @param pars a list containing the parameters of the model
 #' @param vt1 first v-transform
 #' @param vt2 second v-transform
-#' @param maxlag a scalar specifying the maximum lag
+#' @param tautol scalar value at which kpacf is truncated
+#' @param maxlag a scalar which can be used to force a given value for maximum lag
 #' @param V2override logical variable stating whether 2-parameter v-transform
 #' should be permitted
 #'
@@ -65,7 +67,8 @@ dvinecopulavt <- function(family = "joe",
                          pars = list(ar = 0.1, ma = 0),
                          vt1 = Vlinear(0.5),
                          vt2 = Vlinear(0.5),
-                         maxlag = 15,
+                         tautol = 1e-04,
+                         maxlag = Inf,
                          V2override = FALSE) {
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
@@ -98,6 +101,7 @@ dvinecopulavt <- function(family = "joe",
   modelspec <- list(family = fam,
                     rotation = rotation,
                     kpacf = kpacf,
+                    tautol = tautol,
                     maxlag = maxlag,
                     npar = length(unlist(pars)),
                     vt1 = vt1,
@@ -135,10 +139,7 @@ setMethod("show", c(object = "dvinecopulavt"), function(object) {
   cat("copula family: ", famname, "\n", sep = "")
   cat("v-transform 1: ", object@modelspec$vt1@name, "\n")
   cat("v-transform 2: ", object@modelspec$vt2@name, "\n")
-  kpacf  <- object@modelspec$kpacf
-  if (object@modelspec$maxlag != Inf)
-    kpacf <- paste(kpacf, "with max lag", object@modelspec$maxlag)
-  cat("KPACF: ", kpacf,"\n", sep = "")
+  cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
   cat("parameters: \n")
   print(coef(object))
 })
@@ -159,12 +160,8 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
   tauvals <- kpacf((n-1), theta)
   if (is.na(sum(tauvals)))
     return(NA)
-  k <- 1
-  largetau <- (abs(tauvals) > .Machine$double.eps)
-  if (sum(largetau) > 0)
-    k <- max((1:(n-1))[largetau])
-  k <- min(k, modelspec$maxlag)
-  if (min(tauvals[1:k]) <0)
+  k <- effective_maxlag(tauvals, modelspec$tautol, modelspec$maxlag)
+  if (min(tauvals[1:k]) < 0)
     return(NA)
   pc_list <- vector("list", k)
   for (i in 1:k) {
@@ -343,7 +340,10 @@ hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
 #' kendall(copmod)
 setMethod("kendall", c(object = "dvinecopulavt"), function(object, lagmax = 20) {
   kpacf <- eval(parse(text = object@modelspec$kpacf))
-  kpacf(lagmax, object@pars)
+  tau <- kpacf(lagmax, object@pars)
+  k <- effective_maxlag(tau, object@modelspec$tautol, object@modelspec$maxlag)
+  tau[which((1:lagmax) > k)] <- 0
+  tau
 }
 )
 
@@ -358,7 +358,7 @@ setMethod("kendall", c(object = "dvinecopulavt"), function(object, lagmax = 20) 
 #'
 resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
   n <- length(data)
-  pc_list <- mklist_dvine2(object, n-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine2(object, n-1)
   k <- length(pc_list)
   if (trace)
     target <- rep(0.5, n)
@@ -467,11 +467,13 @@ RforwardI <- function(x, u, pcs, vt1, vt2) {
 #'
 #' @param object an object of the class.
 #' @param n length of realization.
+#' @param forcetrunc logical parameter: TRUE truncates the copula sequence at lag 10
+#' to accelerate simulation if copula sequence is longer; FALSE turns this feature off.
 #'
 #' @export
 #'
 setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetrunc = TRUE) {
-  pc_list <- mklist_dvine2(object, n-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine2(object, n-1)
   k <- length(pc_list)
   if ((k > 10) & forcetrunc){
     k <- 10
@@ -505,7 +507,7 @@ setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetr
 glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
   if (glagplot)
     lagmax <- min(lagmax, 9)
-  pc_list <- mklist_dvine2(copula, lagmax, truncate = FALSE)
+  pc_list <- mklist_dvine2(copula, lagmax)
   k <- length(pc_list)
   n <- length(data)
   vt1 <- copula@modelspec$vt1
@@ -552,7 +554,7 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
 #' @export
 #'
 setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type = "df") {
-  pc_list <- mklist_dvine2(object, length(data)-1, truncate = TRUE, tol = 1/3)
+  pc_list <- mklist_dvine2(object, length(data)-1)
   k <- length(pc_list)
   n <- length(data)
   vt1 <- object@modelspec$vt1

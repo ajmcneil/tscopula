@@ -12,13 +12,14 @@ dvinecopula3(
   kpacf = "kpacf_arma",
   pars = list(ar = 0.1, ma = 0.1),
   auxpar = NA,
+  tautol = 1e-04,
   maxlag = Inf
 )
 }
 \arguments{
-\item{location}{vector of locations of non-Gaussian copula substitutions}
+\item{location}{vector of locations of copula substitutions}
 
-\item{family}{vector of family names for non-Gaussian copula substitutions}
+\item{family}{vector of family names for copula substitutions}
 
 \item{posrot}{vector of rotations for substituted families under positive dependence (default is 0)}
 
@@ -30,7 +31,9 @@ dvinecopula3(
 
 \item{auxpar}{vector of additional parameters for two-parameter copulas}
 
-\item{maxlag}{a scalar specifying the maximum lag}
+\item{tautol}{scalar value at which kpacf is truncated}
+
+\item{maxlag}{a scalar which can be used to force a given value for maximum lag}
 }
 \value{
 An object of class \linkS4class{dvinecopula3}.
@@ -39,7 +42,8 @@ An object of class \linkS4class{dvinecopula3}.
 This function sets up a stationary d-vine process of finite or infinite order based on a
 sequence of Gaussian copulas with a finite number of non-Gaussian substitutions at specified lags.
 The substituted families can be Gumbel, Clayton, Joe, Frank, t and BB1 copulas as implemented by the
-\code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
+\code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package. The Gauss copula can be
+named in the list of substitutions but does not need to be.
 }
 \details{
 For the substituted copulas (other than t and Frank) the user must specify the rotation that should be used for
@@ -51,8 +55,9 @@ implemented in the function \code{\link{kpacf_arma}}. The parameters
 of the kpacf should be set as a list using the \code{pars} argument; the required parameters should usually
 be clear from the documentation of the chosen kpacf function and must be correctly named.
 
-The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
-stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+In practice, the sequence of copulas will be truncated at the last copula for which the kpacf exceeds \code{tautol}.
+The \code{maxlag} parameter is typically used to force the truncation to take place at a lower lag (to increase speed).
+This can also be achieved by increasing the value of \code{tautol}.
 
 If one or more of the substituted copulas are t or BB1 copulas the argument \code{auxpar} should be used to
 specify the additional parameters. These are the degree-of-freedom parameter for t and the delta parameter for BB1;

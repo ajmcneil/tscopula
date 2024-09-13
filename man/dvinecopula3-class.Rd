@@ -23,7 +23,7 @@
 \arguments{
 \item{object}{an object of the class.}
 
-\item{lagmax}{maximum value of lag.}
+\item{lagmax}{maximum value of lag to be considered.}
 
 \item{n}{length of realization.}
 

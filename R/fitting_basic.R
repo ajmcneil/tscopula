@@ -140,14 +140,12 @@ setMethod("show", "tscopulafit", function(object) {
       cat("copula family: ", famname, "\n", sep = "")
       if (modobject@modelspec$negtau != "none")
         cat("negative tau treatment: ", modobject@modelspec$negtau, "\n", sep = "")
-      kpacf  <- modobject@modelspec$kpacf
-      if (modobject@modelspec$maxlag != Inf)
-        kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
-      cat("KPACF: ", kpacf,"\n", sep = "")
+      cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
+      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))), "\n")
     }
     if (is(object@tscopula, "dvinecopula3")) {
       modobject <- object@tscopula
-      cat("non-Gaussian substitutions:\n")
+      cat("Explicit copula substitutions (all others Gaussian):\n")
       locs <- modobject@modelspec$location
       cat(" - locations:", locs, "\n", sep = " ")
       cat(" - families:", modobject@modelspec$family, "\n", sep = " ")
@@ -155,10 +153,8 @@ setMethod("show", "tscopulafit", function(object) {
       rot <- ifelse(tau >= 0, modobject@modelspec$posrot, modobject@modelspec$negrot)
       cat(" - rotations:", rot, "\n", sep = " ")
       cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
-      kpacf  <- modobject@modelspec$kpacf
-      if (modobject@modelspec$maxlag != Inf)
-        kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
-      cat("KPACF: ", kpacf,"\n", sep = "")
+      cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
+        cat(" - effective maximum lag is", length(mklist_dvine3(modobject, length(object@data))), "\n")
     }
     if (is(object@tscopula, "dvinecopulavt")) {
       modobject <- object@tscopula
@@ -168,10 +164,8 @@ setMethod("show", "tscopulafit", function(object) {
       cat("copula family: ", famname, "\n", sep = "")
       cat("v-transform 1: ", modobject@modelspec$vt1@name, "\n")
       cat("v-transform 2: ", modobject@modelspec$vt2@name, "\n")
-      kpacf  <- modobject@modelspec$kpacf
-      if (modobject@modelspec$maxlag != Inf)
-        kpacf <- paste(kpacf, "with max lag", modobject@modelspec$maxlag)
-      cat("KPACF: ", kpacf,"\n", sep = "")
+      cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
+      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))), "\n")
     }
   }
   else {
@@ -183,6 +177,7 @@ setMethod("show", "tscopulafit", function(object) {
     ses <- safe_ses(object@fit$hessian)
     ests <- rbind(ests, ses)
     dimnames(ests)[[1]] <- c("par", "se")
+    dimnames(ests)[[2]] <- sub(".*\\.","", dimnames(ests)[[2]])
   }
   cat("_____________________\n")
   cat("Summary of estimates:\n")

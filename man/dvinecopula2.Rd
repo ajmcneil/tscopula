@@ -9,6 +9,7 @@ dvinecopula2(
   rotation = 0,
   kpacf = "kpacf_arma",
   pars = list(ar = 0.1, ma = 0.1),
+  tautol = 1e-04,
   maxlag = Inf,
   negtau = "none"
 )
@@ -22,7 +23,9 @@ dvinecopula2(
 
 \item{pars}{a list containing the parameters of the model}
 
-\item{maxlag}{a scalar specifying the maximum lag}
+\item{tautol}{scalar value at which kpacf is truncated}
+
+\item{maxlag}{a scalar which can be used to force a given value for maximum lag}
 
 \item{negtau}{a character string specifying the treatment of negative Kendall's tau values}
 }
@@ -51,8 +54,9 @@ different treatments may be specified using the \code{negtau} parameter: "gauss"
 Gaussian copula at that lag; "frank" substitutes a Frank copula; "right" and "left" rotate the copula
 through 90 degrees in a clockwise or anto-clockwise direction respectively.
 
-The \code{maxlag} parameter specifies the maximum lag of the process; a finite number gives a finite-order
-stationary d-vine process, but the parameter may also be set to \code{Inf} for an infinite-order process.
+In practice, the sequence of copulas will be truncated at the last copula for which the kpacf exceeds \code{tautol}.
+The \code{maxlag} parameter is typically used to force the truncation to take place at a lower lag (to increase speed).
+This can also be achieved by increasing the value of \code{tautol}.
 
 If the t copula is chosen by setting \code{family} equal to "t", the list of
 parameters needs to be augmented with a component named "df" which is
