@@ -189,7 +189,8 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
   v <- cbind(u[1:(n - 1)], u[2:n])
   vt1 <- getvt(modelspec$vt1, theta, 1)
   vt2 <- getvt(modelspec$vt2, theta, 2)
-  if ((vt1@pars["delta"] <= 0) | (vt2@pars["delta"] >= 1))
+  if ((vt1@pars["delta"] <= 0) | (vt1@pars["delta"] >= 1) |
+      (vt2@pars["delta"] <= 0) | (vt2@pars["delta"] >= 1))
     return(NA)
   if (length(vt1@pars) > 1)
     if (vt1@pars["kappa"] <= 0)

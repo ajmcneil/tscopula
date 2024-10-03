@@ -105,10 +105,11 @@ setMethod("show", c(object = "armacopula"), function(object) {
 #' @export
 #'
 non_stat <- function(ar) {
+  tol <- 1e-10
   status <- FALSE
   if (sum(ar^2) > 0) {
     roots <- polyroot(c(1, -ar))
-    if (min(abs(roots)) <= 1) {
+    if (min(abs(roots)) <= 1 + tol) {
       status <- TRUE
     }
   }
@@ -123,10 +124,11 @@ non_stat <- function(ar) {
 #' @export
 #'
 non_invert <- function(ma) {
+  tol <- 1e-10
   status <- FALSE
   if (sum(ma^2) > 0) {
     roots <- polyroot(c(1, ma))
-    if (min(abs(roots)) <= 1) {
+    if (min(abs(roots)) <= 1 + tol) {
       status <- TRUE
     }
   }
@@ -336,6 +338,8 @@ setMethod("kendall", c(object = "armacopula"), function(object, lagmax = 20){
   if (object@modelspec[2] > 0)
     ma <- object@pars$ma
   pacf <- ARMAacf(ar = ar, ma = ma, lag.max = lagmax, pacf = TRUE)
+  if (object@modelspec[2] == 0)
+    pacf[which((1:lagmax) > object@modelspec[1])] <- 0
   tau <- (2/pi)*asin(pacf)
   tau
 }

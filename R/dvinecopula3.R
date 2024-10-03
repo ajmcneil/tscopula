@@ -173,7 +173,8 @@ setMethod("show", c(object = "dvinecopula3"), function(object) {
   cat(" - rotations:", rot, "\n", sep = " ")
   cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
   cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
-  cat(" - effective maximum lag is", length(mklist_dvine3(object, 100)), "\n")
+  cat(" - effective maximum lag is", length(mklist_dvine3(object, 100)),
+      "at tolerance", object@modelspec$tautol, "\n")
   cat("parameters: \n")
   print(coef(object))
 })

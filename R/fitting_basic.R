@@ -141,7 +141,8 @@ setMethod("show", "tscopulafit", function(object) {
       if (modobject@modelspec$negtau != "none")
         cat("negative tau treatment: ", modobject@modelspec$negtau, "\n", sep = "")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))), "\n")
+      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))),
+          "at tolerance", modobject@modelspec$tautol, "\n")
     }
     if (is(object@tscopula, "dvinecopula3")) {
       modobject <- object@tscopula
@@ -154,7 +155,8 @@ setMethod("show", "tscopulafit", function(object) {
       cat(" - rotations:", rot, "\n", sep = " ")
       cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-        cat(" - effective maximum lag is", length(mklist_dvine3(modobject, length(object@data))), "\n")
+        cat(" - effective maximum lag is", length(mklist_dvine3(modobject, length(object@data))),
+            "at tolerance", modobject@modelspec$tautol, "\n")
     }
     if (is(object@tscopula, "dvinecopulavt")) {
       modobject <- object@tscopula
@@ -165,7 +167,8 @@ setMethod("show", "tscopulafit", function(object) {
       cat("v-transform 1: ", modobject@modelspec$vt1@name, "\n")
       cat("v-transform 2: ", modobject@modelspec$vt2@name, "\n")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))), "\n")
+      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))),
+          "at tolerance", modobject@modelspec$tautol, "\n")
     }
   }
   else {
@@ -177,7 +180,7 @@ setMethod("show", "tscopulafit", function(object) {
     ses <- safe_ses(object@fit$hessian)
     ests <- rbind(ests, ses)
     dimnames(ests)[[1]] <- c("par", "se")
-    dimnames(ests)[[2]] <- sub(".*\\.","", dimnames(ests)[[2]])
+    #dimnames(ests)[[2]] <- sub(".*\\.","", dimnames(ests)[[2]])
   }
   cat("_____________________\n")
   cat("Summary of estimates:\n")
@@ -252,8 +255,10 @@ setMethod(
     tsoptions <- setoptions(tsoptions, defaults)
     control <- setoptions(control, cdefaults)
     objective <- eval(parse(text = paste(is(x)[[1]], "_objective", sep = "")))
+    pars <- unlist(x@pars)
+    names(pars) <- sub(".*\\.","", names(pars))
     fit <- optim(
-      par = unlist(x@pars),
+      par = pars,
       fn = objective,
       modelspec = x@modelspec,
       u = as.numeric(y),

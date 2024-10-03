@@ -340,7 +340,8 @@ setMethod("show", c(object = "dvinecopula2"), function(object) {
   if (object@modelspec$negtau != "none")
     cat("negative tau treatment: ", object@modelspec$negtau, "\n", sep = "")
   cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
-  cat(" - effective maximum lag is", length(mklist_dvine2(object, 100)), "\n")
+  cat(" - effective maximum lag is", length(mklist_dvine2(object, 100)),
+      "at tolerance", object@modelspec$tautol, "\n")
   cat("parameters: \n")
   print(coef(object))
 })

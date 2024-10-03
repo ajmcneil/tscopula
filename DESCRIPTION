@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.4.1
-Date: 2024-09-13
+Version: 0.4.2
+Date: 2024-10-02
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
