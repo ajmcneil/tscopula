@@ -300,30 +300,23 @@ hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
   }
   else if (cond_var == 1)
   {
-    output <- rep(NA, nrow(u))
+    u[,1] <- pmax(u[,1], 1e-06) # lower bound on conditioning variable
     integrand <- function(x, y, family, vt1, vt2){
-        rvinecopulib::dbicop(u = cbind(vtrans(vt1, y), vtrans(vt2, x)), family = family)
+      rvinecopulib::dbicop(u = cbind(vtrans(vt1, y), vtrans(vt2, x)), family = family)
     }
-    for (i in 1:length(output)){
-      tmp <- integrate(integrand, lower = 0, upper = u[i,2], y = u[i,1],
-                             family = family, vt1 = vt1, vt2 = vt2)
-      output[i] <- tmp$value
-    }
-    return(pmax(pmin(output,1),0))
+    tmp <- sapply(seq_along(u[,1]), function(i) integrate(integrand, lower = 0, upper = u[i,2], y = u[i,1],
+                                                          family = family, vt1 = vt1, vt2 = vt2, stop.on.error=FALSE)$value)
+    return(pmax(pmin(tmp,1),0))
   }
   else if (cond_var == 2)
   {
-    output <- rep(NA, nrow(u))
+    u[,2] <- pmax(u[,2], 1e-06) # lower bound on conditioning variable
     integrand <- function(x, y, family, vt1, vt2){
       rvinecopulib::dbicop(u = cbind(vtrans(vt1, x), vtrans(vt2, y)), family = family)
     }
-    crudefix <- 5.5e-07 # bound conditioning variable below to fix integrability issue
-    for (i in 1:length(output)){
-      tmp <- integrate(integrand, lower = 0, upper = u[i,1], y = pmax(u[i,2], crudefix),
-                             family = family, vt1 = vt1, vt2 = vt2)
-      output[i] <- tmp$value
-    }
-    return(pmax(pmin(output,2),0))
+    tmp <- sapply(seq_along(u[,2]), function(i) integrate(integrand, lower = 0, upper = u[i,1], y = u[i,2],
+                                                          family = family, vt1 = vt1, vt2 = vt2, stop.on.error=FALSE)$value)
+    return(pmax(pmin(tmp,1),0))
   }
 }
 
