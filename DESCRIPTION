@@ -1,8 +1,8 @@
 Package: tscopula
 Type: Package
 Title: Time Series Copula Models
-Version: 0.4.2
-Date: 2024-10-02
+Version: 0.4.6
+Date: 2025-02-05
 Authors@R: 
     c(person(given = "Alexander", 
              family = "McNeil", 
@@ -21,7 +21,7 @@ Description: Functions for the analysis of time series using copula models.
 Depends: R (>= 3.5.0)
 License: GPL-3
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Imports:
     methods,
@@ -33,18 +33,22 @@ Imports:
     xts,
     FKF,
     ltsa,
+    copula,
     rvinecopulib,
     arfima,
     Matrix,
     polynom,
-    kdensity
+    kdensity,
+    ghyp
 Collate:
     'basic_objects.R'
+    'data.R'
     'armacopula.R'
     'sarmacopula.R'
     'dvinecopula.R'
     'dvinecopula2.R'
     'dvinecopula3.R'
+    'sdvinecopula.R'
     'dvinecopulavt.R'
     'fitting_basic.R'
     'margins.R'
@@ -52,6 +56,5 @@ Collate:
     'vtransforms.R'
     'fitting_vtscopula.R'
     'helper_vtarma.R'
-    'data.R'
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

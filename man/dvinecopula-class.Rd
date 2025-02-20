@@ -65,7 +65,6 @@ Class of objects for d-vine copula processes.
 }}
 
 \examples{
-sim(dvinecopula("gauss", 0.5))
 mixmod <- dvinecopula(family = c("gumbel", "gauss"), pars = list(1.5, -0.6))
 kendall(mixmod)
 }

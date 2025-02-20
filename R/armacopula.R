@@ -69,20 +69,28 @@ armacopula <- function(pars = list(ar = 0, ma = 0)) {
 #'
 #' @export
 setMethod("coef", "armacopula", function(object) {
-  p <- object@modelspec[1]
-  q <- object@modelspec[2]
-  if (p > 0) {
-    arpars <- object@pars$ar
-  } else {
-    arpars <- NULL
-  }
-  if (q > 0) {
-    mapars <- object@pars$ma
-  } else {
-    mapars <- NULL
-  }
-  c(arpars, mapars)
+  c(object@pars$ar, object@pars$ma)
 })
+
+
+#' Turn vector of ARMA parameters into list
+#'
+#' @param theta vector of ARMA model parameters
+#' @param order order of model
+#'
+#' @return a list containing ARMA parameters in components ar and ma
+#' @export
+#'
+armavec2list <- function(theta, order){
+  p <- order[1]
+  q <- order[2]
+  output <- list()
+  if (p > 0)
+    output$ar <- as.numeric(theta[1:p])
+  if (q > 0)
+    output$ma <- as.numeric(theta[(p + 1):(p + q)])
+  output
+}
 
 #' @describeIn armacopula Show method for ARMA copula process
 #'
@@ -105,7 +113,7 @@ setMethod("show", c(object = "armacopula"), function(object) {
 #' @export
 #'
 non_stat <- function(ar) {
-  tol <- 1e-10
+  tol <- 1e-8
   status <- FALSE
   if (sum(ar^2) > 0) {
     roots <- polyroot(c(1, -ar))
@@ -124,7 +132,7 @@ non_stat <- function(ar) {
 #' @export
 #'
 non_invert <- function(ma) {
-  tol <- 1e-10
+  tol <- 1e-8
   status <- FALSE
   if (sum(ma^2) > 0) {
     roots <- polyroot(c(1, ma))
@@ -168,12 +176,10 @@ setMethod("sim", c(object = "armacopula"), function(object, n = 1000) {
 sigmastarma <- function(x) {
   ar <- x@pars$ar
   ma <- x@pars$ma
-  if (length(ar) == 0) {
+  if (length(ar) == 0)
     ar <- 0
-  }
-  if (length(ma) == 0) {
+  if (length(ma) == 0)
     ma <- 0
-  }
   1 / sqrt(ltsa::tacvfARMA(phi = ar, theta = -ma, maxLag = 0, sigma2 = 1))
 }
 
@@ -188,20 +194,11 @@ sigmastarma <- function(x) {
 #'
 armacopula_objective <- function(theta, modelspec, u) {
   xdata <- qnorm(u)
-  p <- modelspec[1]
-  ar <- 0
-  q <- modelspec[2]
-  ma <- 0
-  if (p > 0) {
-    ar <- theta[1:p]
-  }
-  if (q > 0) {
-    ma <- theta[(p + 1):(p + q)]
-  }
-  if (non_stat(ar) | non_invert(ma)) {
+  pars <- armavec2list(theta, modelspec)
+  if (non_stat(pars$ar) | non_invert(pars$ma)) {
     output <- NA
   } else {
-    sp <- starmaStateSpace(ar, ma, c(p, q))
+    sp <- starmaStateSpace(pars$ar, pars$ma, c(modelspec[1], modelspec[2]))
     ans <- FKF::fkf(
       a0 = sp$a0, P0 = sp$P0, dt = sp$dt, ct = sp$ct, Tt = sp$Tt, Zt = sp$Zt,
       HHt = sp$HHt, GGt = sp$GGt, yt = rbind(xdata)
@@ -226,12 +223,14 @@ starmaStateSpace <- function(ar, ma, order) {
   m <- max(p, q + 1)
   allar <- rep(0, m)
   allma <- rep(0, m)
-  if (p > 0) {
+  if (p > 0)
     allar[1:p] <- ar
-  }
-  if (q > 0) {
+  else
+    ar <- 0
+  if (q > 0)
     allma[1:q] <- ma
-  }
+  else
+    ma <- 0
   Tt <- matrix(allar)
   Zt <- matrix(1)
   if (m > 1) {
@@ -276,14 +275,12 @@ kfilter <- function(x, y) {
   n <- length(y)
   ar <- x@pars$ar
   p <- x@modelspec[1]
-  if (p == 0) {
+  if (p == 0)
     ar <- 0
-  }
   ma <- x@pars$ma
   q <- x@modelspec[2]
-  if (q == 0) {
+  if (q == 0)
     ma <- 0
-  }
   sp <- starmaStateSpace(ar, ma, c(p, q))
   ans <- FKF::fkf(
     a0 = sp$a0, P0 = sp$P0, dt = sp$dt, ct = sp$ct, Tt = sp$Tt, Zt = sp$Zt,

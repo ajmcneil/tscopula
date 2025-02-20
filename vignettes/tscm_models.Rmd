@@ -51,12 +51,12 @@ plot(modfit, plottype = "kendall")
 plot(modfit, plottype = "margin")
 ```
 
-## 2. VT-D-Vine Process (type 2) with Skewed Laplace Margin 
+## 2. VT-D-Vine Process (ARMA type) with Skewed Laplace Margin 
 
 ### Construction
 
 ```{r tscm-dvine}
-copmod <- dvinecopula2(family = "joe",
+copmod <- sdvinecopula(basefamily = "joe",
                        kpacf = "kpacf_arma",
                        pars = list(ar = 0.9, ma = -0.8),
                        maxlag = 20)

@@ -30,53 +30,29 @@ setClass("sarmacopula", contains = "tscopula", slots = list(
 #' @examples
 #' sarmacopula(list(ar = 0.5, ma = 0.4, sar = 0.2, sma = 0.6), period = 4)
 sarmacopula <- function(pars = list(ar = 0, ma = 0, sar = 0, sma = 0), period = 4) {
-  if ("ar" %in% names(pars)) {
-    arpars <- pars$ar
-    if (is.null(arpars))
-      stop("No NULL values for parameters; omit from list instead")
-    if (non_stat(arpars))
+  p <- length(pars$ar)
+  q <- length(pars$ma)
+  P <- length(pars$sar)
+  Q <- length(pars$sma)
+  if (p > 0){
+    if (non_stat(pars$ar))
       stop("Non-stationary AR part")
-    p <- length(arpars)
     names(pars$ar) <- paste("ar", 1:p, sep = "")
   }
-  else {
-    p <- 0
-  }
-  if ("ma" %in% names(pars)) {
-    mapars <- pars$ma
-    if (is.null(mapars))
-      stop("No NULL values for parameters; omit from list instead")
-    if (non_invert(mapars))
-      stop("Non-invertible MA part")
-    q <- length(mapars)
+  if (q > 0){
+    if (non_invert(pars$ma))
+      stop("Non-stationary MA part")
     names(pars$ma) <- paste("ma", 1:q, sep = "")
   }
-  else {
-    q <- 0
-  }
-  if ("sar" %in% names(pars)) {
-    sarpars <- pars$sar
-    if (is.null(sarpars))
-      stop("No NULL values for parameters; omit from list instead")
-    if (non_stat(sarpars))
+  if (P > 0){
+    if (non_stat(pars$sar))
       stop("Non-stationary SAR part")
-    P <- length(sarpars)
     names(pars$sar) <- paste("sar", 1:P, sep = "")
   }
-  else {
-    P <- 0
-  }
-  if ("sma" %in% names(pars)) {
-    smapars <- pars$sma
-    if (is.null(smapars))
-      stop("No NULL values for parameters; omit from list instead")
-    if (non_invert(smapars))
-      stop("Non-invertible SMA part")
-    Q <- length(smapars)
+  if (Q > 0){
+    if (non_invert(pars$sma))
+      stop("Non-stationary SMA part")
     names(pars$sma) <- paste("sma", 1:Q, sep = "")
-  }
-  else {
-    Q <- 0
   }
   if ((p == 0) & (q == 0) & (P == 0) & (Q == 0)) {
     stop("Specify named ar, ma, sar or sma parameters")
@@ -94,32 +70,34 @@ sarmacopula <- function(pars = list(ar = 0, ma = 0, sar = 0, sma = 0), period = 
 #'
 #' @export
 setMethod("coef", "sarmacopula", function(object) {
-  p <- object@modelspec[1]
-  q <- object@modelspec[2]
-  P <- object@modelspec[3]
-  Q <- object@modelspec[4]
-  if (p > 0) {
-    arpars <- object@pars$ar
-  } else {
-    arpars <- NULL
-  }
-  if (q > 0) {
-    mapars <- object@pars$ma
-  } else {
-    mapars <- NULL
-  }
-  if (P > 0) {
-    sarpars <- object@pars$sar
-  } else {
-    sarpars <- NULL
-  }
-  if (Q > 0) {
-    smapars <- object@pars$sma
-  } else {
-    smapars <- NULL
-  }
-  c(arpars, mapars, sarpars, smapars)
+  c(object@pars$ar, object@pars$ma, object@pars$sar, object@pars$sma)
 })
+
+
+#' Turn vector of SARMA parameters into list
+#'
+#' @param theta vector of SARMA model parameters
+#' @param order order of model
+#'
+#' @return a list containing SARMA parameters in components ar, ma, sar and sma
+#' @export
+#'
+sarmavec2list <- function(theta, order){
+  p <- order[1]
+  q <- order[2]
+  P <- order[3]
+  Q <- order[4]
+  output <- list()
+  if (p > 0)
+    output$ar <- as.numeric(theta[1:p])
+  if (q > 0)
+    output$ma <- as.numeric(theta[(p + 1):(p + q)])
+  if (P > 0)
+    output$sar <- as.numeric(theta[(p + q + 1):(p + q + P)])
+  if (Q > 0)
+    output$sma <- as.numeric(theta[(p + q + P + 1):(p + q + P + Q)])
+  output
+}
 
 #' @describeIn sarmacopula Show method for SARMA copula process
 #'
@@ -147,26 +125,16 @@ sarma2arma <- function(object){
   if (!(is(object, "sarmacopula")))
     stop("Not sarmacopula object")
   period <- object@modelspec["period"]
-  ar <- numeric()
-  ma <- numeric()
-  sar <- numeric()
-  sma <- numeric()
-  if ("ar" %in% names(object@pars))
-    ar <- object@pars$ar
-  if ("ma" %in% names(object@pars))
-    ma <- object@pars$ma
-  if ("sar" %in% names(object@pars)){
-    sar <- object@pars$sar
-    ar <- expand_ar(ar, sar, period)
-  }
-  if ("sma" %in% names(object@pars)){
-    sma <- object@pars$sma
-    ma <- expand_ma(ma, sma, period)
-  }
+  ar <- as.numeric(object@pars$ar) # Null to numeric(0) if necessary
+  ma <- as.numeric(object@pars$ma)
+  if (object@modelspec[3] > 0)
+    ar <- expand_ar(ar, object@pars$sar, period)
+  if (object@modelspec[4] > 0)
+    ma <- expand_ma(ma, object@pars$sma, period)
   output <- list()
   if (length(ar) > 0)
     output$ar <- ar
-  if (length(ma >0))
+  if (length(ma) > 0)
     output$ma <- ma
   armacopula(pars = output)
 }
@@ -232,47 +200,15 @@ sim(sarma2arma(object), n = n)
 #' @keywords internal
 #'
 sarmacopula_objective <- function(theta, modelspec, u) {
-  xdata <- qnorm(u)
-  p <- modelspec[1]
-  q <- modelspec[2]
-  P <- modelspec[3]
-  Q <- modelspec[4]
   period <- modelspec[5]
-  ar <- numeric()
-  ma <- numeric()
-  sar <- numeric()
-  sma <- numeric()
-  if (p > 0)
-    ar <- theta[1:p]
-  if (q > 0)
-    ma <- theta[(p + 1):(p + q)]
-  if (P > 0)
-    sar <- theta[(p + q + 1):(p + q + P)]
-  if (Q > 0)
-    sma <- theta[(p + q + P + 1):(p + q + P + Q)]
-  if (non_stat(ar) | non_invert(ma) | non_stat(sar) | non_invert(sma)) {
-    output <- NA
-  } else {
-    if (P > 0){
-      ar <- expand_ar(ar, sar, period)
-      p <- p + period*P
-    }
-    if (Q > 0){
-      ma <- expand_ma(ma, sma, period)
-      q <- q + period*Q
-    }
-    if (length(ar) == 0)
-      ar <- 0
-    if (length(ma) == 0)
-      ma <- 0
-    sp <- starmaStateSpace(ar, ma, c(p,q))
-    ans <- FKF::fkf(
-      a0 = sp$a0, P0 = sp$P0, dt = sp$dt, ct = sp$ct, Tt = sp$Tt, Zt = sp$Zt,
-      HHt = sp$HHt, GGt = sp$GGt, yt = rbind(xdata)
-    )
-    output <- -ans$logLik + sum(log(dnorm(xdata)))
-  }
-  return(output)
+  pars <- sarmavec2list(theta, modelspec)
+  ar <- as.numeric(pars$ar) # Null to numeric(0) if necessary
+  ma <- as.numeric(pars$ma)
+  if (modelspec[3] > 0)
+    ar <- expand_ar(ar, pars$sar, period)
+  if (modelspec[4] > 0)
+    ma <- expand_ma(ma, pars$sma, period)
+  armacopula_objective(c(ar, ma), c(length(ar), length(ma)), u)
 }
 
 #' Residual function for sarmacopula object

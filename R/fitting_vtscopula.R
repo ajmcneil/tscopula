@@ -247,7 +247,8 @@ vtscopula_objective <- function(theta, fulcrum, modelspec, modeltype, vt, wcopul
       v$npars
     })),
     dvinecopula2 = modelspec$npar,
-    dvinecopula3 = modelspec$npar
+    dvinecopula3 = modelspec$npar,
+    sdvinecopula = modelspec$npar
   )
   theta_core <- theta[1:n_corepars]
   theta_vt <- c(delta = fulcrum)

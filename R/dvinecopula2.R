@@ -67,6 +67,7 @@ dvinecopula2 <- function(family = "gauss",
                          tautol = 1e-04,
                          maxlag = Inf,
                          negtau = "none") {
+  .Deprecated("sdvinecopula")
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   if (is.null(names(pars)))
@@ -340,8 +341,13 @@ setMethod("show", c(object = "dvinecopula2"), function(object) {
   if (object@modelspec$negtau != "none")
     cat("negative tau treatment: ", object@modelspec$negtau, "\n", sep = "")
   cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
-  cat(" - effective maximum lag is", length(mklist_dvine2(object, 100)),
-      "at tolerance", object@modelspec$tautol, "\n")
+  EML <- length(mklist_dvine2(object, 100))
+  ML <- object@modelspec$maxlag
+  if (ML <= EML)
+    cat(" - imposed maximum lag is", ML, "\n")
+  else
+    cat(" - effective maximum lag is", EML,
+        "at tolerance", object@modelspec$tautol, "\n")
   cat("parameters: \n")
   print(coef(object))
 })
@@ -423,6 +429,8 @@ dvinecopula2_objective <- function(theta, modelspec, u) {
 #' @return Scalar value of parameter giving tau for a copula family.
 #' @keywords internal
 ktau_to_par <- function(family, tau){
+  if (family == "ast")
+    return(predict(tauspline, tau)$y)
   if (family == "t")
     family <- "gauss"
   if (family == "bb1")

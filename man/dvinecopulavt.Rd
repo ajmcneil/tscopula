@@ -45,8 +45,8 @@ inverse-v-transformed copula family from a subset of those that can be implement
 \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
 }
 \details{
-The permitted choices of base copula family are currently Joe, Gumbel, Frank or Clayton survival. If
-Clayton is chosen, the \code{rotation} argument must be set to 180, while if Joe or Gumbel are chosen, the
+The permitted choices of base copula family are currently Joe, Gumbel, Frank, ast or Clayton survival. If
+Clayton is chosen, the \code{rotation} argument must be set to 180, while if Joe, Gumbel or ast are chosen, the
 \code{rotation} argument must be zero (which is the default); any other options will return an error
 
 The copulas are parameterized using the Kendall partial autocorrelation function (kpacf)

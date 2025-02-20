@@ -20,8 +20,8 @@ setClass("dvinecopulavt", contains = "tscopula", slots = list(
 #' inverse-v-transformed copula family from a subset of those that can be implemented using
 #' \code{\link[rvinecopulib]{bicop_dist}} in the \code{rvinecopulib} package.
 #'
-#' The permitted choices of base copula family are currently Joe, Gumbel, Frank or Clayton survival. If
-#' Clayton is chosen, the \code{rotation} argument must be set to 180, while if Joe or Gumbel are chosen, the
+#' The permitted choices of base copula family are currently Joe, Gumbel, Frank, ast or Clayton survival. If
+#' Clayton is chosen, the \code{rotation} argument must be set to 180, while if Joe, Gumbel or ast are chosen, the
 #' \code{rotation} argument must be zero (which is the default); any other options will return an error
 #'
 #' The copulas are parameterized using the Kendall partial autocorrelation function (kpacf)
@@ -73,13 +73,11 @@ dvinecopulavt <- function(family = "joe",
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   fam <- tolower(family)
-  permitted1 <- ((fam %in% c("joe", "gumbel", "frank")) & (rotation == 0))
+  permitted1 <- ((fam %in% c("joe", "gumbel", "frank", "ast")) & (rotation == 0))
   permitted2 <- ((fam %in% c("clayton","frank")) & (rotation == 180))
   if (!(permitted1 | permitted2))
-    stop ("Illegal family and rotation choice: can have Joe or
+    stop ("Illegal family and rotation choice: can have Joe, ast and
           Gumbel with no rotation or Clayton with 180 degree rotation")
-  if (is.null(names(pars)))
-    stop("parameters should be named (p1 and p2 for exp/power)")
   if (((vt1@name == "V2p") | (vt2@name == "V2p")) & (!V2override))
     stop("Use of 2-parameter v-transforms very slow. Set V2override to TRUE if you
          really want to use them.")
@@ -144,6 +142,74 @@ setMethod("show", c(object = "dvinecopulavt"), function(object) {
   print(coef(object))
 })
 
+#' Helper function for building lists of objects to describe copula sequence
+#'
+#' @param family name of copula family
+#' @param rotation rotation for copula family
+#' @param parameters parameters of copula
+#'
+#' @return a list containing specification of copula family
+#'
+#' @keywords internal
+#'
+tscopula_bicop_dist <- function(family, rotation, parameters){
+  if (family == "ast")
+    return(list(family = family, rotation = rotation, parameters = parameters))
+  else
+    return(tryCatch(rvinecopulib::bicop_dist(
+      family = family,
+      rotation = rotation,
+      parameters = parameters
+    ),
+    error = function(e) {
+      return(NA)
+    }
+    ))
+}
+
+#' Compute density of bivariate copula
+#'
+#' @param u matrix of data with two columns
+#' @param family list describing copula family
+#'
+#' @return a vector containing values of density
+#'
+#' @keywords internal
+#'
+tscopula_dbicop <- function(u, family){
+  if (family$family == "ast")
+    return(copula::dCopula((1+u)/2, copula::tCopula(0, df = family$parameters)))
+  else
+    return(rvinecopulib::dbicop(u = u, family = family))
+}
+
+#' Compute h function of bivariate copula
+#'
+#' @param u matrix of data with two columns
+#' @param cond_var conditioning variable (1 or 2)
+#' @param family list describing copula family
+#' @param inverse logical variable specifying whether inverse should be returned
+#'
+#' @return a vector containing values of density
+#'
+#' @keywords internal
+#'
+tscopula_hbicop <- function(u, cond_var, family, inverse = FALSE){
+  if (family$family == "ast"){
+    theta <- family$parameters
+    below <- switch(cond_var,
+                    qt((1+u[,1])/2, df = theta),
+                    qt((1+u[,2])/2, df = theta))
+    above <- switch(cond_var,
+                    qt((1+u[,2])/2, df = theta),
+                    qt((1+u[,1])/2, df = theta))
+    return(2*pt(sqrt(theta+1)*above/sqrt(theta + below^2), df = theta + 1) -1)
+  }
+  else
+    return(rvinecopulib::hbicop(u = u, cond_var = cond_var, family = family))
+}
+
+
 #' Objective function for dvinecopulavt process
 #'
 #' @param theta parameters of kpacf
@@ -173,15 +239,7 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
     )
     if (is.na(coppars))
       return(NA)
-    pc_list[[i]] <- tryCatch(rvinecopulib::bicop_dist(
-      family = fam,
-      rotation = rot,
-      parameters = coppars
-    ),
-    error = function(e) {
-      return(NA)
-    }
-    )
+    pc_list[[i]] <- tscopula_bicop_dist(fam, rot, coppars)
     if (is.na(pc_list[[i]][[1]])) {
       return(NA)
     }
@@ -201,15 +259,15 @@ dvinecopulavt_objective <- function(theta, modelspec, u) {
   LL <- 0
   for (j in 1:k) {
     v_vt <- cbind(vtrans(vt1, v[,1]), vtrans(vt2, v[,2]))
-    LL <- LL + sum(log(rvinecopulib::dbicop(u = v_vt, family = pc_list[[j]])))
+    LL <- LL + sum(log(tscopula_dbicop(u = v_vt, family = pc_list[[j]])))
     if (j == k) {
       return(-LL)
     }
     n <- dim(v)[1]
     v <- cbind(
-      hbicop(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]],
+      hbicop_vt(v[(1:(n - 1)), ], cond_var = 2, family = pc_list[[j]],
              vt1 = vt1, vt2 = vt2),
-      hbicop(v[(2:n), ], cond_var = 1, family = pc_list[[j]],
+      hbicop_vt(v[(2:n), ], cond_var = 1, family = pc_list[[j]],
              vt1 = vt1, vt2 = vt2)
     )
   }
@@ -233,39 +291,6 @@ getvt <- function(vt, theta, number){
   vt
 }
 
-#' #' h-function for linear inverse-v-transformed copula
-#' #'
-#' #' @param u two-column matrix of data at which h-function is evaluated
-#' #' @param cond_var identity of conditioning variable (1/2)
-#' #' @param family name of copula family
-#' #' @param vt1 first v-transform
-#' #' @param vt2 second v-transform
-#' #' @param inverse logical variable specifying whether inverse is taken
-#' #'
-#' #' @return vector of values of h-function
-#' #'
-#' #' @keywords internal
-#' #'
-#' hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
-#'   if (vt1@name != "Vlinear")
-#'     stop("first vt non-linear")
-#'   if (vt2@name != "Vlinear")
-#'     stop("second vt non-linear")
-#'   delta1 <- vt1@pars["delta"]
-#'   delta2 <- vt2@pars["delta"]
-#'   cond1 <- u[,2] > delta2
-#'   cond2 <- u[,1] > delta1
-#'   mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
-#'   mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
-#'   v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-#'   switch(cond_var,
-#'            mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
-#'                                         family = family, inverse = inverse) + delta2,
-#'            mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
-#'                                         family = family, inverse = inverse) + delta1
-#'     )
-#' }
-
 #' h-function for linear inverse-v-transformed copula
 #'
 #' @param u two-column matrix of data at which h-function is evaluated
@@ -279,14 +304,14 @@ getvt <- function(vt, theta, number){
 #'
 #' @keywords internal
 #'
-hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
+hbicop_vt <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
   if ((cond_var == 1) & (vt2@name == "Vlinear"))
   {
     delta2 <- vt2@pars["delta"]
     cond1 <- u[,2] > delta2
     mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
     v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-    return(mult1 * rvinecopulib::hbicop(u = v, cond_var = 1,
+    return(mult1 * tscopula_hbicop(u = v, cond_var = 1,
                                         family = family, inverse = inverse) + delta2)
   }
   else if ((cond_var == 2) & (vt1@name == "Vlinear"))
@@ -295,14 +320,14 @@ hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
     cond2 <- u[,1] > delta1
     mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
     v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-    return(mult2 * rvinecopulib::hbicop(u = v, cond_var = 2,
+    return(mult2 * tscopula_hbicop(u = v, cond_var = 2,
                                         family = family, inverse = inverse) + delta1)
   }
   else if (cond_var == 1)
   {
     u[,1] <- pmax(u[,1], 1e-06) # lower bound on conditioning variable
     integrand <- function(x, y, family, vt1, vt2){
-      rvinecopulib::dbicop(u = cbind(vtrans(vt1, y), vtrans(vt2, x)), family = family)
+      tscopula_dbicop(u = cbind(vtrans(vt1, y), vtrans(vt2, x)), family = family)
     }
     tmp <- sapply(seq_along(u[,1]), function(i) integrate(integrand, lower = 0, upper = u[i,2], y = u[i,1],
                                                           family = family, vt1 = vt1, vt2 = vt2, stop.on.error=FALSE)$value)
@@ -312,7 +337,7 @@ hbicop <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
   {
     u[,2] <- pmax(u[,2], 1e-06) # lower bound on conditioning variable
     integrand <- function(x, y, family, vt1, vt2){
-      rvinecopulib::dbicop(u = cbind(vtrans(vt1, x), vtrans(vt2, y)), family = family)
+      tscopula_dbicop(u = cbind(vtrans(vt1, x), vtrans(vt2, y)), family = family)
     }
     tmp <- sapply(seq_along(u[,2]), function(i) integrate(integrand, lower = 0, upper = u[i,1], y = u[i,2],
                                                           family = family, vt1 = vt1, vt2 = vt2, stop.on.error=FALSE)$value)
@@ -341,6 +366,36 @@ setMethod("kendall", c(object = "dvinecopulavt"), function(object, lagmax = 20) 
 }
 )
 
+#' Make list of pair copulas for dvinecopulavt object
+#'
+#' @param x an object of class dvinecopulavt
+#' @param maxlag maximum possible lag to consider
+#'
+#' @return a list of pair copulas
+#' @keywords internal
+#'
+mklist_dvinevt <- function(x, maxlag){
+  kpacf <- eval(parse(text = x@modelspec$kpacf))
+  tauvals <- kpacf(maxlag, x@pars)
+  k <- effective_maxlag(tauvals, x@modelspec$tautol, x@modelspec$maxlag)
+  pc_list <- vector("list", k)
+  for (i in 1:k) {
+    fam <- tolower(x@modelspec$family)
+    rot <- x@modelspec$rotation
+    coppars <- ktau_to_par(
+      family = fam,
+      tau = tauvals[i]
+    )
+    if (fam == "t")
+      coppars <- c(coppars, x@pars$df)
+    pc_list[[i]] <- tscopula_bicop_dist(
+      family = fam,
+      rotation = rot,
+      parameters = coppars)
+  }
+  pc_list
+}
+
 #' Residual function for dvinecopulavt object
 #'
 #' @param object a fitted dvinecopulavt object.
@@ -352,7 +407,7 @@ setMethod("kendall", c(object = "dvinecopulavt"), function(object, lagmax = 20) 
 #'
 resid_dvinecopulavt <- function(object, data = NA, trace = FALSE){
   n <- length(data)
-  pc_list <- mklist_dvine2(object, n-1)
+  pc_list <- mklist_dvinevt(object, n-1)
   k <- length(pc_list)
   if (trace)
     target <- rep(0.5, n)
@@ -391,10 +446,10 @@ Rforward <- function(x, u, pcs, vt1, vt2) {
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(as.vector(u), x), cond_var = 1,
+    return(as.numeric(hbicop_vt(cbind(as.vector(u), x), cond_var = 1,
                              family = pcs[[1]], vt1 = vt1, vt2 = vt2)))
   } else {
-    return(hbicop(cbind(
+    return(hbicop_vt(cbind(
       Rbackward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, vt1, vt2),
       Rforward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, vt1, vt2)
     ), cond_var = 1, family = pcs[[k]], vt1 = vt1, vt2 = vt2))
@@ -419,10 +474,10 @@ Rbackward <- function(x, u, pcs, vt1, vt2) {
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(x, as.vector(u)), cond_var = 2,
+    return(as.numeric(hbicop_vt(cbind(x, as.vector(u)), cond_var = 2,
                              pcs[[1]], vt1 = vt1, vt2 = vt2)))
   } else {
-    return(hbicop(cbind(
+    return(hbicop_vt(cbind(
       Rbackward(x, matrix(u[, (1:(k-1))], ncol = k-1), pcs, vt1, vt2),
       Rforward(u[, k], matrix(u[, ((k-1):1)], ncol = k-1), pcs, vt1, vt2)
     ), cond_var = 2, family = pcs[[k]], vt1 = vt1, vt2 = vt2))
@@ -447,11 +502,11 @@ RforwardI <- function(x, u, pcs, vt1, vt2) {
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop(cbind(as.vector(u), x),
+    return(as.numeric(hbicop_vt(cbind(as.vector(u), x),
                              cond_var = 1, family = pcs[[1]], vt1 = vt1,
                              vt2 = vt2, inverse = TRUE)))
   } else {
-    arg1 <- hbicop(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, vt1, vt2), x),
+    arg1 <- hbicop_vt(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, vt1, vt2), x),
                    cond_var = 1, family = pcs[[k]], vt1 = vt1, vt2 = vt2, inverse = TRUE)
     return(RforwardI(arg1, matrix(u[,(1:(k-1))], ncol = k-1), pcs, vt1, vt2))
   }
@@ -467,7 +522,7 @@ RforwardI <- function(x, u, pcs, vt1, vt2) {
 #' @export
 #'
 setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetrunc = TRUE) {
-  pc_list <- mklist_dvine2(object, n-1)
+  pc_list <- mklist_dvinevt(object, n-1)
   k <- length(pc_list)
   if ((k > 10) & forcetrunc){
     k <- 10
@@ -501,7 +556,7 @@ setMethod("sim", c(object = "dvinecopulavt"), function(object, n = 1000, forcetr
 glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
   if (glagplot)
     lagmax <- min(lagmax, 9)
-  pc_list <- mklist_dvine2(copula, lagmax)
+  pc_list <- mklist_dvinevt(copula, lagmax)
   k <- length(pc_list)
   n <- length(data)
   vt1 <- copula@modelspec$vt1
@@ -521,9 +576,9 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
     for (i in 1:(k - 1)) {
       n <- dim(data)[1]
       data <-
-        cbind(hbicop(data[(1:(n - 1)), ], cond_var = 2, family = pc_list[[i]],
+        cbind(hbicop_vt(data[(1:(n - 1)), ], cond_var = 2, family = pc_list[[i]],
                      vt1 = vt1, vt2 = vt2),
-              hbicop(data[(2:n), ], cond_var = 1, family = pc_list[[i]],
+              hbicop_vt(data[(2:n), ], cond_var = 1, family = pc_list[[i]],
                      vt1 = vt1, vt2 = vt2))
       if (glagplot)
         output[[i+1]] <- data
@@ -548,7 +603,7 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
 #' @export
 #'
 setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type = "df") {
-  pc_list <- mklist_dvine2(object, length(data)-1)
+  pc_list <- mklist_dvinevt(object, length(data)-1)
   k <- length(pc_list)
   n <- length(data)
   vt1 <- object@modelspec$vt1
@@ -566,15 +621,15 @@ setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type
               output[i] <- 0
               for (j in 1:k) {
                 v_vt <- cbind(vtrans(vt1, v[,1]), vtrans(vt2, v[,2]))
-                tmp <- log(rvinecopulib::dbicop(v_vt[n-1,], family = pc_list[[j]]))
+                tmp <- log(tscopula_dbicop(v_vt[n-1,], family = pc_list[[j]]))
                 output[i] <- output[i] + sum(tmp)
                   if (j < k) {
                     n <- dim(v)[1]
                     arg1 <- matrix(v[(1:(n - 1)), ], ncol =2)
                     arg2 <- matrix(v[(2:n), ], ncol =2)
                     v <- cbind(
-                 hbicop(arg1, cond_var = 2, family = pc_list[[j]], vt1 = vt1, vt2 = vt2),
-                 hbicop(arg2, cond_var = 1, family = pc_list[[j]], vt1 = vt1, vt2 = vt2)
+                 hbicop_vt(arg1, cond_var = 2, family = pc_list[[j]], vt1 = vt1, vt2 = vt2),
+                 hbicop_vt(arg2, cond_var = 1, family = pc_list[[j]], vt1 = vt1, vt2 = vt2)
                   )
                 }
               }

@@ -7,7 +7,7 @@
 #'
 setClassUnion("tscopulaU", c("armacopula", "sarmacopula",
                              "dvinecopula", "dvinecopula2", "dvinecopula3",
-                             "dvinecopulavt"))
+                             "dvinecopulavt", "sdvinecopula"))
 
 #' Calculate standardized ranks of data
 #'
@@ -141,8 +141,13 @@ setMethod("show", "tscopulafit", function(object) {
       if (modobject@modelspec$negtau != "none")
         cat("negative tau treatment: ", modobject@modelspec$negtau, "\n", sep = "")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))),
-          "at tolerance", modobject@modelspec$tautol, "\n")
+      EML <- object@fit$EML
+      ML <- modobject@modelspec$maxlag
+      if (ML <= EML)
+        cat(" - imposed maximum lag is", ML, "\n")
+      else
+        cat(" - effective maximum lag is", EML,
+            "at tolerance", modobject@modelspec$tautol, "\n")
     }
     if (is(object@tscopula, "dvinecopula3")) {
       modobject <- object@tscopula
@@ -155,7 +160,37 @@ setMethod("show", "tscopulafit", function(object) {
       cat(" - rotations:", rot, "\n", sep = " ")
       cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-        cat(" - effective maximum lag is", length(mklist_dvine3(modobject, length(object@data))),
+      EML <- object@fit$EML
+      ML <- modobject@modelspec$maxlag
+      if (ML <= EML)
+        cat(" - imposed maximum lag is", ML, "\n")
+      else
+        cat(" - effective maximum lag is", EML,
+            "at tolerance", modobject@modelspec$tautol, "\n")
+    }
+    if (is(object@tscopula, "sdvinecopula")) {
+      modobject <- object@tscopula
+      nreplace <- modobject@modelspec$nreplace
+      cat("kpacf: ", modobject@modelspec$kpacf,"\n", sep = "")
+      if (nreplace > 0){
+        cat(nreplace, "explicit copula substitutions:\n")
+        tau <- kendall(modobject, lagmax = nreplace)
+        family <- modobject@modelspec$family
+        rot <- as.character(ifelse(tau >= 0, modobject@modelspec$posrot, modobject@modelspec$negrot))
+        rot[family %in% c("gauss", "frank", "t")] <- ""
+        cat(" - families:", paste(family, rot, sep=""), "\n", sep = " ")
+      }
+      if (modobject@modelspec$maxlag > modobject@modelspec$nreplace){
+        cat("base family:", modobject@modelspec$basefamily, "\n")
+        if (!(modobject@modelspec$basefamily %in% c("gauss", "frank")))
+          cat(" - positive and negative rotations:", modobject@modelspec$baseposrot, modobject@modelspec$basenegrot, "\n")
+      }
+      EML <- length(mklist_sdvine(modobject, 100))
+      ML <- modobject@modelspec$maxlag
+      if (ML <= EML)
+        cat(" - maximum lag is", ML, "\n")
+      else
+        cat(" - effective maximum lag is", EML,
             "at tolerance", modobject@modelspec$tautol, "\n")
     }
     if (is(object@tscopula, "dvinecopulavt")) {
@@ -167,9 +202,14 @@ setMethod("show", "tscopulafit", function(object) {
       cat("v-transform 1: ", modobject@modelspec$vt1@name, "\n")
       cat("v-transform 2: ", modobject@modelspec$vt2@name, "\n")
       cat("KPACF: ", modobject@modelspec$kpacf,"\n", sep = "")
-      cat(" - effective maximum lag is", length(mklist_dvine2(modobject, length(object@data))),
-          "at tolerance", modobject@modelspec$tautol, "\n")
-    }
+      EML <- object@fit$EML
+      ML <- modobject@modelspec$maxlag
+      if (ML <= EML)
+        cat(" - imposed maximum lag is", ML, "\n")
+      else
+        cat(" - effective maximum lag is", EML,
+              "at tolerance", modobject@modelspec$tautol, "\n")
+      }
   }
   else {
     stop("Unknown tscopula type")
@@ -270,6 +310,13 @@ setMethod(
     if (is(x, "dvinecopulavt")){
       x@modelspec$vt1 <- getvt(x@modelspec$vt1, fit$par, 1)
       x@modelspec$vt2 <- getvt(x@modelspec$vt2, fit$par, 2)
+      fit$EML <- length(mklist_dvinevt(x, length(y)))
+    }
+    if (is(x, "dvinecopula2")){
+      fit$EML <- length(mklist_dvine2(x, length(y)))
+    }
+    if (is(x, "dvinecopula3")){
+      fit$EML <- length(mklist_dvine3(x, length(y)))
     }
     new("tscopulafit",
       tscopula = x,

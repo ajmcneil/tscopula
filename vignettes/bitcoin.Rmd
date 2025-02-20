@@ -55,12 +55,12 @@ fit_Gauss <- fit(mod_Gauss, U, tsoptions = tsoptions)
 fit_Gauss
 ```
 
-### D-Vine Copula (second kind)
+### D-Vine Copula (ARMA type)
 
 In this next section we try a d-vine copula model of the second kind with a finite value for `maxlag` and a linear v-transform. We continue to use the Frank copula. The resulting model is superior to the ARMA copula model and has the same number of parameters. Note that an infinite value for `maxlag` makes next to no difference in the fit.
 
 ```{r dvinecopula2}
-copmod_Frank <- dvinecopula2(family = "frank",
+copmod_Frank <- sdvinecopula(basefamily = "frank",
                              pars = list(ar = 0.95, ma = -0.85),
                              maxlag = 30)
 mod_Frank <- vtscopula(copmod_Frank, Vlinear(0.45))

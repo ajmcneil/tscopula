@@ -559,6 +559,199 @@ rsst <- function(n, df, gamma, mu, sigma) {
   result * sigma + mu
 }
 
+#' Johnson's SU distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param delta shape parameter.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param gamma skewness parameter.
+#' @param log flag for log density.
+#' @name jsu
+#' @return A vector of density, distribution function, quantile or random values.
+NULL
+#> NULL
+#' @rdname jsu
+#' @export
+pjsu <- function(q, delta = 2, mu = 0, sigma = 1, gamma = 0) {
+  pnorm(gamma + delta*asinh((q - mu) / sigma))
+}
+#' @rdname jsu
+#' @export
+qjsu <- function(p, delta, mu, sigma, gamma) {
+  sinh((qnorm(p)-gamma)/delta)*sigma + mu
+}
+#' @rdname jsu
+#' @export
+djsu <- function(x, delta, mu, sigma, gamma, log = FALSE) {
+  if ((sigma <= 0) | (delta <= 0)) {
+    return(NA)
+  }
+  logdens <- log(delta) -log(sigma) -0.5*log(1 + ((x-mu)/sigma)^2)  - 0.5*log(2*pi) -0.5*(gamma + delta*asinh((x-mu)/sigma))^2
+  if (log) {
+    return(logdens)
+  } else {
+    return(exp(logdens))
+  }
+}
+#' @rdname jsu
+#' @export
+rjsu <- function(n, delta, mu, sigma, gamma) {
+  sigma*sinh((qnorm(n)-gamma)/delta) + mu
+}
+
+#' Generalized hyperbolic distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param lambda overarching shape parameter.
+#' @param shape shape parameter.
+#' @param gamma skewness parameter.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
+#' @name gh
+#'
+NULL
+#> NULL
+#'
+#' @rdname gh
+#' @export
+pgh <- function(q, lambda = 0, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::ghyp(lambda = lambda, alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::pghyp(q, object = obj)
+}
+#' @rdname gh
+#' @export
+qgh <- function(p, lambda, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::ghyp(lambda = lambda, alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::qghyp(p, object = obj)
+}
+#' @rdname gh
+#' @export
+dgh <- function(x, lambda, shape = 1, gamma = 0, mu = 0, sigma = 1, log = FALSE) {
+  if ((shape < 0) | (sigma < 0)) {
+    return(NA)
+  }
+  obj <- ghyp::ghyp(lambda = lambda, alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  out <- ghyp::dghyp(x, object = obj, logvalue = TRUE)
+  if (log) {
+    return(out)
+  } else {
+    return(exp(out))
+  }
+}
+#' @rdname gh
+#' @export
+rgh <- function(n, lambda, shape = 1, gamma = 0, mu = 0, sigma = 0) {
+  obj <- ghyp::ghyp(lambda = lambda, alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::rghyp(n, object = obj)
+}
+
+#' Hyperbolic distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param shape shape parameter.
+#' @param gamma skewness parameter.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
+#' @name hyp
+#'
+NULL
+#> NULL
+#'
+#' @rdname hyp
+#' @export
+phyp <- function(q, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::hyp(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::pghyp(q, object = obj)
+}
+#' @rdname hyp
+#' @export
+qhyp <- function(p, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::hyp(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::qghyp(p, object = obj)
+}
+#' @rdname hyp
+#' @export
+dhyp <- function(x, shape = 1, gamma = 0, mu = 0, sigma = 1, log = FALSE) {
+  if ((shape < 0) | (sigma < 0)) {
+    return(NA)
+  }
+  obj <- ghyp::hyp(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  out <- ghyp::dghyp(x, object = obj, logvalue = TRUE)
+  if (log) {
+    return(out)
+  } else {
+    return(exp(out))
+  }
+}
+#' @rdname hyp
+#' @export
+rhyp <- function(n, shape = 1, gamma = 0, mu = 0, sigma = 0) {
+  obj <- ghyp::hyp(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::rghyp(n, object = obj)
+}
+
+#' Normal inverse Gaussian distribution
+#'
+#' @param x vector of values.
+#' @param q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of observations.
+#' @param shape shape parameter.
+#' @param gamma skewness parameter.
+#' @param mu location parameter.
+#' @param sigma scale parameter.
+#' @param log flag for log density.
+#' @name nig
+#'
+NULL
+#> NULL
+#'
+#' @rdname nig
+#' @export
+pnig <- function(q, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::NIG(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::pghyp(q, object = obj)
+}
+#' @rdname nig
+#' @export
+qnig <- function(p, shape = 1, gamma = 0, mu = 0, sigma = 1) {
+  obj <- ghyp::NIG(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::qghyp(p, object = obj)
+}
+#' @rdname nig
+#' @export
+dnig <- function(x, shape = 1, gamma = 0, mu = 0, sigma = 1, log = FALSE) {
+  if ((shape < 0) | (sigma < 0)) {
+    return(NA)
+  }
+  obj <- ghyp::NIG(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  out <- ghyp::dghyp(x, object = obj, logvalue = TRUE)
+  if (log) {
+    return(out)
+  } else {
+    return(exp(out))
+  }
+}
+#' @rdname nig
+#' @export
+rnig <- function(n, shape = 1, gamma = 0, mu = 0, sigma = 0) {
+  obj <- ghyp::NIG(alpha.bar = shape, mu = mu, sigma = sigma, gamma = gamma)
+  ghyp::rghyp(n, object = obj)
+}
+
+
 #' @describeIn margin Simulation method for margin class
 #'
 #' @param object an object of the class.

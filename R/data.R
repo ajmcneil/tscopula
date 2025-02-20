@@ -42,3 +42,4 @@ require(xts)
 #' X <- (diff(log(cpi))[-1]) * 100
 #' plot(X)
 "cpi"
+

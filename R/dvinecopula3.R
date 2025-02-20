@@ -66,6 +66,7 @@ dvinecopula3 <- function(location = 1,
                          tautol = 1e-04,
                          maxlag = Inf
                          ) {
+  .Deprecated("sdvinecopula")
   if (!(is(family, "character")))
     stop("copula family must be specified by name")
   if (is.null(names(pars)))
@@ -173,8 +174,13 @@ setMethod("show", c(object = "dvinecopula3"), function(object) {
   cat(" - rotations:", rot, "\n", sep = " ")
   cat(" - Kendall's tau:", round(tau,3), "\n", sep = " ")
   cat("KPACF: ", object@modelspec$kpacf,"\n", sep = "")
-  cat(" - effective maximum lag is", length(mklist_dvine3(object, 100)),
-      "at tolerance", object@modelspec$tautol, "\n")
+  EML <- length(mklist_dvine3(object, 100))
+  ML <- object@modelspec$maxlag
+  if (ML <= EML)
+    cat(" - imposed maximum lag is", ML, "\n")
+  else
+    cat(" - effective maximum lag is", EML,
+        "at tolerance", object@modelspec$tautol, "\n")
   cat("parameters: \n")
   print(coef(object))
 })

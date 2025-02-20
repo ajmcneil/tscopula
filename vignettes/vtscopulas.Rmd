@@ -57,16 +57,16 @@ profilefulcrum(data, tscopula = vtarma11spec, locations = seq(from = 0, to = 1, 
 abline(v = 0.6)
 ```
 
-## 2. VT-D-Vine Copula Processes (type 2)
+## 2. VT-D-Vine Copula Processes (ARMA type)
 
-VT-D-Vine processes are created by adding a v-transform to an `dvinecopula2` object using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
+VT-D-Vine processes are created by adding a v-transform to an `dsvinecopula` object using the command `vtscopula`. The generic commands `sim`, `fit` and `plot` also work for these processes.
 
 ### Construction
 
 We add a 2-parameter V-transform.
 
 ```{r vtdvinecopula2}
-copmod <- dvinecopula2(family = "joe",
+copmod <- sdvinecopula(basefamily = "joe",
                        kpacf = "kpacf_arma",
                        pars = list(ar = 0.9, ma = -0.85),
                        maxlag = 20)
@@ -88,7 +88,7 @@ ts.plot(data2)
 ### Estimation
 
 ```{r fitvtdvinecopula2}
-copspec_Joe <- dvinecopula2(family = "joe",
+copspec_Joe <- sdvinecopula(basefamily = "joe",
                             pars = list(ar = 0, ma = 0),
                             maxlag = 30)
 vcopspec <- vtscopula(copspec_Joe, V2p(delta = 0.6))
@@ -102,7 +102,7 @@ coef(vcopmod)
 
 ### Plotting
 
-We can plot the estimated v-transform and well as the goodness-of-fit plots for the `dvinecopula2` object based on Kendall rank correlations.
+We can plot the estimated v-transform and well as the goodness-of-fit plots for the `sdvinecopula` object based on Kendall rank correlations.
 
 ```{r finalplots, fig.show='hold', dev.args =list(pointsize=9)}
 plot(vcopfit, plottype = "vtransform")

@@ -78,17 +78,17 @@ The data for these plots come from applying the Kalman filter command `kfilter`.
 head(kfilter(arma11fit@tscopula, data2))
 ```
 
-## 2. D-Vine Copula Processes (type 1)
+## 2. D-Vine Copula Processes (AR type)
 
 ### Construction
 
 We construct a copula of order $p = 3$ in which the copulas are respectively Clayton, Frank, and Gauss. The parameters are given in a list. Individual copulas can be rotated through 180 degrees.
 
 ```{r dvinecopula-setup}
-copmod <- dvinecopula(
+copmod <- sdvinecopula(
+  pars = list(ar=c(0.7, -0.4, 0.15)),
   family = c("Clayton","Frank", "Gaussian"),
-  pars = list(1.2, 2, 0.15),
-  rotation = c(180,0, 0)
+  posrot = c(180,0, 0)
 )
 copmod
 ```
@@ -109,10 +109,10 @@ ts.plot(data1)
 A model spec can be fitted to data with the generic command `fit`.
 
 ```{r dvinecopula-est}
-copspec <- dvinecopula(
+copspec <- sdvinecopula(
+  pars = list(ar = rep(0,3)),
   family = c("Clayton","Frank", "Gaussian"),
-  pars = list(0.5, 1, 0),
-  rotation = c(180, 0, 0)
+  posrot = c(180, 0, 0)
 )
 copfit <- fit(copspec, data1, 
               tsoptions = list(hessian = TRUE),
@@ -137,16 +137,16 @@ Here is the generalized lag plot.
 plot(copfit, plottype = "glag")
 ```
 
-## 3. D-Vine Copula Processes (type 2)
+## 3. D-Vine Copula Processes (ARMA type)
 
 ### Construction
 
 We construct a model using the Joe copula and the Kendall partial autocorrelation function (KPACF) of a Gaussian ARMA process with autogressive (ar) parameter 0.9 and moving average (ma) parameter -0.85. The KPACF is truncated at lag 20, so this is a process of finite order. We can also set $\text{maxlag} = \inf$ but this leads to much slower simulation.
 
 ```{r dvinecopula2-setup}
-copmod <- dvinecopula2(family = "joe",
+copmod <- sdvinecopula(pars = list(ar = 0.9, ma = -0.85),
                        kpacf = "kpacf_arma",
-                       pars = list(ar = 0.9, ma = -0.85),
+                       basefamily = "joe",
                        maxlag = 20)
 copmod
 ```
@@ -167,15 +167,15 @@ ts.plot(data1)
 A model spec can be fitted to data with the generic command `fit`.
 
 ```{r dvinecopula2-est}
-copspec_Gauss <- dvinecopula2(family = "gauss",
-                              pars = list(ar = 0, ma = 0),
+copspec_Gauss <- sdvinecopula(pars = list(ar = 0, ma = 0),
                               maxlag = 20)
 fitGauss <- fit(copspec_Gauss, data1)
 fitGauss
 
-copspec_Joe <- dvinecopula2(family = "joe",
-                            pars = list(ar = 0, ma = 0),
-                            maxlag = 20)
+copspec_Joe <- sdvinecopula(pars = list(ar = 0, ma = 0),
+                       kpacf = "kpacf_arma",
+                       basefamily = "joe",
+                       maxlag = 20)
 fitJoe <- fit(copspec_Joe, data1)
 fitJoe
 

@@ -128,8 +128,6 @@ setMethod("show", "dvinecopula", function(object) {
 #'
 #' @export
 #'
-#' @examples
-#' sim(dvinecopula("gauss", 0.5))
 setMethod("sim", c(object = "dvinecopula"), function(object, n = 1000, innov = NA, start = NA) {
   pc_list <- mklist_dvine(object)
   simdvine(pc_list, n, innov, start)

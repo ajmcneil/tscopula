@@ -397,6 +397,7 @@ tsc_objectivea <-
       return(NA)
     }
     U <- do.call(cdf, append(margpars, list(q = y)))
+    U[U >= 1] <- 1-.Machine$double.eps # fix for problem with certain cdfs
     objective <- eval(parse(text = paste(modeltype, "_objective", sep = "")))
     termBC <-
       objective(nonmargpars, modelspec, U)
