@@ -197,16 +197,25 @@ tscopula_dbicop <- function(u, family){
 tscopula_hbicop <- function(u, cond_var, family, inverse = FALSE){
   if (family$family == "ast"){
     theta <- family$parameters
-    below <- switch(cond_var,
+    mult <- switch(cond_var,
                     qt((1+u[,1])/2, df = theta),
                     qt((1+u[,2])/2, df = theta))
-    above <- switch(cond_var,
-                    qt((1+u[,2])/2, df = theta),
-                    qt((1+u[,1])/2, df = theta))
-    return(2*pt(sqrt(theta+1)*above/sqrt(theta + below^2), df = theta + 1) -1)
+    ratio <- sqrt((theta + 1)/(theta + mult^2))
+    if (inverse){
+      mult2 <- switch(cond_var,
+                      qt((1+u[,2])/2, df = theta + 1),
+                      qt((1+u[,1])/2, df = theta + 1))
+      return(2*pt(mult2 / ratio , df = theta) -1)
+    }
+    else{
+      mult2 <- switch(cond_var,
+                      qt((1+u[,2])/2, df = theta),
+                      qt((1+u[,1])/2, df = theta))
+      return(2*pt(ratio * mult2, df = theta + 1) -1)
+    }
   }
   else
-    return(rvinecopulib::hbicop(u = u, cond_var = cond_var, family = family))
+    return(rvinecopulib::hbicop(u = u, cond_var = cond_var, family = family, inverse = inverse))
 }
 
 
@@ -309,19 +318,21 @@ hbicop_vt <- function(u, cond_var, family, vt1, vt2, inverse = FALSE) {
   {
     delta2 <- vt2@pars["delta"]
     cond1 <- u[,2] > delta2
-    mult1 <- -(delta2^(1-cond1))*(delta2 - 1)^cond1
+    mult1 <- (-1)*(delta2^(1-cond1))*((delta2 - 1)^cond1)
     v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-    return(mult1 * tscopula_hbicop(u = v, cond_var = 1,
-                                        family = family, inverse = inverse) + delta2)
+    hval <- tscopula_hbicop(u = v, cond_var = 1,
+                              family = family, inverse = inverse)
+    return(mult1 * hval + delta2)
   }
   else if ((cond_var == 2) & (vt1@name == "Vlinear"))
   {
     delta1 <- vt1@pars["delta"]
     cond2 <- u[,1] > delta1
-    mult2 <- -(delta1^(1-cond2))*(delta1 - 1)^cond2
+    mult2 <- (-1)*(delta1^(1-cond2))*((delta1 - 1)^cond2)
     v <- cbind(vtrans(vt1, u[,1]), vtrans(vt2, u[,2]))
-    return(mult2 * tscopula_hbicop(u = v, cond_var = 2,
-                                        family = family, inverse = inverse) + delta1)
+    hval <- tscopula_hbicop(u = v, cond_var = 2,
+                            family = family, inverse = inverse)
+    return(mult2 * hval + delta1)
   }
   else if (cond_var == 1)
   {
@@ -502,9 +513,10 @@ RforwardI <- function(x, u, pcs, vt1, vt2) {
     stop("Must have matrix of conditioning variables")
   k <- dim(u)[2]
   if (k == 1) {
-    return(as.numeric(hbicop_vt(cbind(as.vector(u), x),
-                             cond_var = 1, family = pcs[[1]], vt1 = vt1,
-                             vt2 = vt2, inverse = TRUE)))
+    hval <- hbicop_vt(cbind(as.vector(u), x),
+                      cond_var = 1, family = pcs[[1]], vt1 = vt1,
+                      vt2 = vt2, inverse = TRUE)
+    return(as.numeric(hval))
   } else {
     arg1 <- hbicop_vt(cbind(Rbackward(u[,k], matrix(u[,((k-1):1)], ncol = k-1), pcs, vt1, vt2), x),
                    cond_var = 1, family = pcs[[k]], vt1 = vt1, vt2 = vt2, inverse = TRUE)
@@ -603,7 +615,7 @@ glag_for_dvinecopulavt <- function(copula, data, lagmax, glagplot = FALSE) {
 #' @export
 #'
 setMethod("predict", c(object = "dvinecopulavt"), function(object, data, x, type = "df") {
-  pc_list <- mklist_dvinevt(object, length(data)-1)
+  pc_list <- mklist_dvinevt(object, length(data))
   k <- length(pc_list)
   n <- length(data)
   vt1 <- object@modelspec$vt1

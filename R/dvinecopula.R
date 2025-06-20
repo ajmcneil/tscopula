@@ -145,6 +145,9 @@ setMethod("sim", c(object = "dvinecopula"), function(object, n = 1000, innov = N
 #'
 setMethod("predict", c(object = "dvinecopula"), function(object, data, x, type = "df") {
   pc_list <- mklist_dvine(object)
+  if (length(data) < length(pc_list)){
+    pc_list <- pc_list[(length(pc_list) - length(data) + 1) : length(pc_list)]
+  }
   switch(type,
          "df" = Rblatt(pc_list, data, x),
          "qf" = IRblatt(pc_list, data, x),
